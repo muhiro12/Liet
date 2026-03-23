@@ -4,19 +4,34 @@ import ImageIO
 import LietLibrary
 import UIKit
 
+// swiftlint:disable no_magic_numbers
 enum BatchImageTestFactory {
-    private enum Metrics {
-        static let defaultPreviewSize = CGSize(width: 100, height: 100)
-        static let processedPreviewWidthMultiplier = 2
-        static let processedPreviewSize = CGSize(
-            width: defaultPreviewSize.width * CGFloat(processedPreviewWidthMultiplier),
-            height: defaultPreviewSize.height
-        )
-        static let rendererScale = 1.0
-        static let jpegQuality = 1.0
+    struct PixelSample: Equatable {
+        let red: UInt8
+        let green: UInt8
+        let blue: UInt8
+        let alpha: UInt8
+
+        var isTransparent: Bool {
+            alpha == 0
+        }
+
+        var isMostlyRed: Bool {
+            alpha > 200 &&
+                red > 200 &&
+                green < 80 &&
+                blue < 80
+        }
+
+        var isMostlyGreen: Bool {
+            alpha > 200 &&
+                red < 80 &&
+                green > 200 &&
+                blue < 80
+        }
     }
 
-    private enum Error: Swift.Error {
+    enum Failure: Error {
         case failedToCreateImageData
         case failedToCreateImageSource
         case failedToReadTypeIdentifier
@@ -26,11 +41,12 @@ enum BatchImageTestFactory {
         format: ImageFileFormat,
         size: CGSize,
         originalFilename: String,
-        selectionIndex: Int
+        selectionIndex: Int,
+        image: UIImage? = nil
     ) throws -> ImportedBatchImage {
-        let image = makeUIImage(size: size)
+        let resolvedImage = image ?? makeUIImage(size: size)
         let sourceURL = try writeImageData(
-            for: image,
+            for: resolvedImage,
             format: format == .heic ? .jpeg : format,
             filename: originalFilename
         )
@@ -40,7 +56,7 @@ enum BatchImageTestFactory {
             originalFilename: originalFilename,
             originalFormat: format,
             pixelSize: size,
-            previewImage: image,
+            previewImage: resolvedImage,
             selectionIndex: selectionIndex
         )
     }
@@ -56,14 +72,14 @@ enum BatchImageTestFactory {
                 .appendingPathExtension(format.filenameExtension),
             originalFilename: originalFilename,
             originalFormat: format,
-            pixelSize: Metrics.defaultPreviewSize,
-            previewImage: makeUIImage(size: Metrics.defaultPreviewSize),
+            pixelSize: .init(width: 100, height: 100),
+            previewImage: makeUIImage(size: .init(width: 100, height: 100)),
             selectionIndex: selectionIndex
         )
     }
 
     static func makeProcessedImage() throws -> ProcessedBatchImage {
-        let image = makeUIImage(size: Metrics.processedPreviewSize)
+        let image = makeUIImage(size: .init(width: 200, height: 100))
         let outputURL = try writeImageData(
             for: image,
             format: .jpeg,
@@ -76,7 +92,7 @@ enum BatchImageTestFactory {
             outputFilename: "processed.jpg",
             outputFormat: .jpeg,
             originalFormat: .jpeg,
-            pixelSize: Metrics.processedPreviewSize,
+            pixelSize: .init(width: 200, height: 100),
             previewImage: image,
             usedJPEGFallback: false,
             ignoredCompressionSetting: false
@@ -87,31 +103,162 @@ enum BatchImageTestFactory {
         for url: URL
     ) throws -> String {
         guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil) else {
-            throw Error.failedToCreateImageSource
+            throw Failure.failedToCreateImageSource
         }
 
         guard let typeIdentifier = CGImageSourceGetType(imageSource) as String? else {
-            throw Error.failedToReadTypeIdentifier
+            throw Failure.failedToReadTypeIdentifier
         }
 
         return typeIdentifier
+    }
+
+    static func pixelSample(
+        from url: URL,
+        sampleX: Int,
+        sampleY: Int
+    ) throws -> PixelSample {
+        guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let image = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) else {
+            throw Failure.failedToCreateImageSource
+        }
+
+        let width = image.width
+        let height = image.height
+        var bytes = [UInt8](
+            repeating: 0,
+            count: width * height * 4
+        )
+        guard let context = CGContext(
+            data: &bytes,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: width * 4,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else {
+            throw Failure.failedToCreateImageData
+        }
+
+        context.draw(
+            image,
+            in: CGRect(
+                x: 0,
+                y: 0,
+                width: width,
+                height: height
+            )
+        )
+
+        let clampedX = min(
+            max(sampleX, 0),
+            width - 1
+        )
+        let clampedY = min(
+            max(sampleY, 0),
+            height - 1
+        )
+        let index = (clampedY * width + clampedX) * 4
+
+        return .init(
+            red: bytes[index],
+            green: bytes[index + 1],
+            blue: bytes[index + 2],
+            alpha: bytes[index + 3]
+        )
     }
 
     static func makeUIImage(
         size: CGSize
     ) -> UIImage {
         let format = UIGraphicsImageRendererFormat()
-        format.scale = Metrics.rendererScale
+        format.scale = 1
+        format.opaque = true
         let renderer = UIGraphicsImageRenderer(
             size: size,
             format: format
         )
+
         return renderer.image { context in
             context.cgContext.setFillColor(UIColor.systemBlue.cgColor)
             context.cgContext.fill(
                 CGRect(
                     origin: .zero,
                     size: size
+                )
+            )
+        }
+    }
+
+    static func makeTransparentUIImage(
+        size: CGSize
+    ) -> UIImage {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        let renderer = UIGraphicsImageRenderer(
+            size: size,
+            format: format
+        )
+
+        return renderer.image { context in
+            context.cgContext.clear(
+                CGRect(
+                    origin: .zero,
+                    size: size
+                )
+            )
+            context.cgContext.setFillColor(UIColor.red.cgColor)
+            context.cgContext.fill(
+                CGRect(
+                    x: size.width * 0.22,
+                    y: size.height * 0.19,
+                    width: size.width * 0.33,
+                    height: size.height * 0.33
+                )
+            )
+        }
+    }
+
+    static func makeEdgeStripedUIImage(
+        size: CGSize
+    ) -> UIImage {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = true
+        let renderer = UIGraphicsImageRenderer(
+            size: size,
+            format: format
+        )
+
+        return renderer.image { context in
+            let fullRect = CGRect(
+                origin: .zero,
+                size: size
+            )
+            let stripeWidth = size.width * 0.1
+
+            context.cgContext.setFillColor(UIColor.green.cgColor)
+            context.cgContext.fill(fullRect)
+
+            context.cgContext.setFillColor(UIColor.red.cgColor)
+            context.cgContext.fill(
+                CGRect(
+                    x: 0,
+                    y: 0,
+                    width: stripeWidth,
+                    height: size.height
+                )
+            )
+
+            context.cgContext.setFillColor(UIColor.blue.cgColor)
+            context.cgContext.fill(
+                CGRect(
+                    x: size.width - stripeWidth,
+                    y: 0,
+                    width: stripeWidth,
+                    height: size.height
                 )
             )
         }
@@ -137,16 +284,14 @@ enum BatchImageTestFactory {
 
         switch format {
         case .jpeg, .other, .heic:
-            guard let jpegData = image.jpegData(
-                compressionQuality: Metrics.jpegQuality
-            ) else {
-                throw Error.failedToCreateImageData
+            guard let jpegData = image.jpegData(compressionQuality: 1.0) else {
+                throw Failure.failedToCreateImageData
             }
 
             data = jpegData
         case .png:
             guard let pngData = image.pngData() else {
-                throw Error.failedToCreateImageData
+                throw Failure.failedToCreateImageData
             }
 
             data = pngData
@@ -160,3 +305,4 @@ enum BatchImageTestFactory {
         return outputURL
     }
 }
+// swiftlint:enable no_magic_numbers

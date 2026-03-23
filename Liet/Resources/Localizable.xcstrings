@@ -811,6 +811,38 @@
         }
       }
     },
+    "batch.validation.shortEdge.invalid" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter a valid short-edge size."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効な短辺サイズを入力してください。"
+          }
+        }
+      }
+    },
+    "batch.validation.exact.invalid" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter valid long-edge and short-edge sizes."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効な長辺サイズと短辺サイズを入力してください。"
+          }
+        }
+      }
+    },
     "Start with a batch" : {
       "localizations" : {
         "en" : {

@@ -18,8 +18,18 @@ public struct BatchImageSettings: Equatable, Codable, Sendable {
 }
 
 public extension BatchImageSettings {
-    /// Resolved long-edge pixel target for the current resize mode.
-    var longEdgePixels: Int {
+    /// The configured long edge for long-edge and exact-size resizing.
+    var longEdgePixels: Int? {
         resizeMode.longEdgePixels
+    }
+
+    /// The configured short edge for short-edge and exact-size resizing.
+    var shortEdgePixels: Int? {
+        resizeMode.shortEdgePixels
+    }
+
+    /// The exact-size strategy when this setting targets both edges.
+    var exactResizeStrategy: BatchExactResizeStrategy? {
+        resizeMode.exactResizeStrategy
     }
 }

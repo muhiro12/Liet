@@ -29,7 +29,10 @@ struct ProcessingSetupTip: Tip {
     }
 
     var message: Text? {
-        Text("Set the long edge once, then pick a quality level. JPEG and HEIC use the quality setting. PNG keeps its format. Originals stay untouched.")
+        Text(
+            "Choose Long edge, Short edge, or Exact size, then pick a quality level. " +
+                "Exact size can contain or crop. PNG keeps transparency and format. Originals stay untouched."
+        )
     }
 
     var image: Image? {
@@ -71,7 +74,10 @@ struct ProcessedResultsTip: Tip {
     }
 
     var message: Text? {
-        Text("Successful outputs are ready even if some images failed. You can save only the new processed files from here.")
+        Text(
+            "Successful outputs are ready even if some images failed. " +
+                "You can save only the new processed files from here."
+        )
     }
 
     var image: Image? {
@@ -97,7 +103,10 @@ struct SaveDestinationTip: Tip {
     }
 
     var message: Text? {
-        Text("Use Files to choose a folder in the Files app. Use Photos to add the processed images to your photo library as new items.")
+        Text(
+            "Use Files to choose a folder in the Files app. " +
+                "Use Photos to add the processed images to your photo library as new items."
+        )
     }
 
     var image: Image? {

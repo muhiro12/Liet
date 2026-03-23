@@ -3,6 +3,8 @@ import PhotosUI
 import SwiftUI
 import TipKit
 
+// swiftlint:disable closure_body_length function_body_length
+
 struct BatchImageHomeView: View {
     private enum Layout {
         static let contentPadding = 20.0
@@ -19,9 +21,18 @@ struct BatchImageHomeView: View {
             "Choose multiple photos, then apply one resize and compression setting to all of them."
         static let loadingMessage = "Loading images..."
         static let settingsTitle = "Settings"
+        static let resizeModeTitle = "Resize mode"
         static let longEdgeTitle = "Long edge (px)"
+        static let shortEdgeTitle = "Short edge (px)"
+        static let methodTitle = "Method"
         static let longEdgePlaceholder = "1920"
-        static let longEdgeDetail = "Smaller images keep their original size."
+        static let shortEdgePlaceholder = "1080"
+        static let edgeDetail = "Smaller images keep their original size."
+        static let containDetail =
+            "Contain keeps the whole image in the target canvas. " +
+            "Cover Crop fills the canvas by cropping from the center."
+        static let transparencyDetail =
+            "PNG keeps transparent padding. JPEG and HEIC use white padding for Contain."
         static let compressionTitle = "Compression"
         static let compressionDetail = "PNG keeps its format and ignores the compression quality setting."
         static let processTitle = "Process Images"
@@ -29,9 +40,14 @@ struct BatchImageHomeView: View {
         static let clearTitle = "Clear"
     }
 
+    private enum ResizeField: Hashable {
+        case longEdge
+        case shortEdge
+    }
+
     @Bindable var model: BatchImageHomeModel
     @Binding var selectedItems: [PhotosPickerItem]
-    @FocusState private var isLongEdgeFieldFocused: Bool
+    @FocusState private var focusedResizeField: ResizeField?
 
     private let selectImagesTip = SelectImagesTip()
     private let processingSetupTip = ProcessingSetupTip()
@@ -70,7 +86,7 @@ struct BatchImageHomeView: View {
                 Spacer()
 
                 Button("Done") {
-                    isLongEdgeFieldFocused = false
+                    focusedResizeField = nil
                 }
             }
         }
@@ -126,13 +142,130 @@ private extension BatchImageHomeView {
         ) {
             Text(Copy.settingsTitle)
                 .font(.title3.weight(.semibold))
-            longEdgeSection()
+
+            resizeSection()
 
             if !model.importedImages.isEmpty {
                 TipView(processingSetupTip)
             }
 
             compressionSection()
+        }
+    }
+
+    func resizeSection() -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.cardSpacing
+        ) {
+            VStack(
+                alignment: .leading,
+                spacing: Layout.controlSpacing
+            ) {
+                Text(Copy.resizeModeTitle)
+                    .font(.subheadline.weight(.medium))
+
+                Picker(Copy.resizeModeTitle, selection: $model.resizeModeSelection) {
+                    Text("Long edge")
+                        .tag(BatchImageHomeModel.ResizeInputMode.longEdge)
+                    Text("Short edge")
+                        .tag(BatchImageHomeModel.ResizeInputMode.shortEdge)
+                    Text("Exact size")
+                        .tag(BatchImageHomeModel.ResizeInputMode.exactSize)
+                }
+                .pickerStyle(.segmented)
+            }
+
+            if model.isLongEdgeMode {
+                edgeInputSection(
+                    title: Copy.longEdgeTitle,
+                    placeholder: Copy.longEdgePlaceholder,
+                    text: $model.resizeLongEdgeText,
+                    focusField: .longEdge
+                )
+            }
+
+            if model.isShortEdgeMode {
+                edgeInputSection(
+                    title: Copy.shortEdgeTitle,
+                    placeholder: Copy.shortEdgePlaceholder,
+                    text: $model.resizeShortEdgeText,
+                    focusField: .shortEdge
+                )
+            }
+
+            if model.isExactSizeMode {
+                exactSizeSection()
+            }
+        }
+    }
+
+    private func edgeInputSection(
+        title: String,
+        placeholder: String,
+        text: Binding<String>,
+        focusField: ResizeField
+    ) -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.controlSpacing
+        ) {
+            Text(title)
+                .font(.subheadline.weight(.medium))
+
+            TextField(placeholder, text: text)
+                .focused($focusedResizeField, equals: focusField)
+                .keyboardType(.numberPad)
+                .textFieldStyle(.roundedBorder)
+
+            Text(Copy.edgeDetail)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    func exactSizeSection() -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.cardSpacing
+        ) {
+            edgeInputSection(
+                title: Copy.longEdgeTitle,
+                placeholder: Copy.longEdgePlaceholder,
+                text: $model.resizeLongEdgeText,
+                focusField: .longEdge
+            )
+
+            edgeInputSection(
+                title: Copy.shortEdgeTitle,
+                placeholder: Copy.shortEdgePlaceholder,
+                text: $model.resizeShortEdgeText,
+                focusField: .shortEdge
+            )
+
+            VStack(
+                alignment: .leading,
+                spacing: Layout.controlSpacing
+            ) {
+                Text(Copy.methodTitle)
+                    .font(.subheadline.weight(.medium))
+
+                Picker(Copy.methodTitle, selection: $model.exactResizeStrategy) {
+                    Text("Contain")
+                        .tag(BatchExactResizeStrategy.contain)
+                    Text("Cover Crop")
+                        .tag(BatchExactResizeStrategy.coverCrop)
+                }
+                .pickerStyle(.segmented)
+
+                Text(Copy.containDetail)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+
+                Text(Copy.transparencyDetail)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
@@ -219,28 +352,6 @@ private extension BatchImageHomeView {
         }
     }
 
-    func longEdgeSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.controlSpacing
-        ) {
-            Text(Copy.longEdgeTitle)
-                .font(.subheadline.weight(.medium))
-
-            TextField(
-                Copy.longEdgePlaceholder,
-                text: $model.resizeLongEdgeText
-            )
-            .focused($isLongEdgeFieldFocused)
-            .keyboardType(.numberPad)
-            .textFieldStyle(.roundedBorder)
-
-            Text(Copy.longEdgeDetail)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-    }
-
     func compressionSection() -> some View {
         VStack(
             alignment: .leading,
@@ -293,3 +404,5 @@ private extension BatchImageHomeView {
             .foregroundStyle(.secondary)
     }
 }
+
+// swiftlint:enable closure_body_length function_body_length

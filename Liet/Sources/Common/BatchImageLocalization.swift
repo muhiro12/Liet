@@ -8,6 +8,8 @@ struct BatchImageLocalization {
         case importFailureMultiple = "batch.import.failure.multiple"
         case importSelectionFailed = "batch.import.selection.failed"
         case invalidLongEdgeSize = "batch.validation.longEdge.invalid"
+        case invalidShortEdgeSize = "batch.validation.shortEdge.invalid"
+        case invalidExactSize = "batch.validation.exact.invalid"
         case processSelectionFailed = "batch.process.selection.failed"
         case resultReadySingle = "batch.result.ready.single"
         case resultReadyMultiple = "batch.result.ready.multiple"
@@ -43,6 +45,10 @@ struct BatchImageLocalization {
                 "Couldn't import the selected images."
             case .invalidLongEdgeSize:
                 "Enter a valid long-edge size."
+            case .invalidShortEdgeSize:
+                "Enter a valid short-edge size."
+            case .invalidExactSize:
+                "Enter valid long-edge and short-edge sizes."
             case .processSelectionFailed:
                 "Couldn't process the selected images."
             case .resultReadySingle:
@@ -134,6 +140,14 @@ extension BatchImageLocalization {
 
     nonisolated func invalidLongEdgeSizeMessage() -> String {
         string(.invalidLongEdgeSize)
+    }
+
+    nonisolated func invalidShortEdgeSizeMessage() -> String {
+        string(.invalidShortEdgeSize)
+    }
+
+    nonisolated func invalidExactSizeMessage() -> String {
+        string(.invalidExactSize)
     }
 
     nonisolated func processSelectionFailedMessage() -> String {

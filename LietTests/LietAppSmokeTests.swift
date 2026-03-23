@@ -13,6 +13,7 @@ struct LietAppSmokeTests {
         #expect(AppGroup.id == "group.com.muhiro12.Liet")
         #expect(BatchImageTipSupport.datastoreGroupIdentifier == AppGroup.id)
         #expect(model.resizeLongEdgePixels == 1_920)
+        #expect(model.resizeModeSelection == .longEdge)
         #expect(model.compression == .medium)
         #expect(model.resultModel == nil)
     }

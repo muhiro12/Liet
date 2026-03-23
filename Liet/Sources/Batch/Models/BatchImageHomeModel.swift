@@ -7,10 +7,43 @@ import SwiftUI
 @MainActor
 @Observable
 final class BatchImageHomeModel {
+    enum ResizeInputMode: String, CaseIterable, Identifiable {
+        case longEdge
+        case shortEdge
+        case exactSize
+
+        var id: Self {
+            self
+        }
+    }
+
+    private static let defaultShortEdgePixels = 1_080
+
     var importedImages: [ImportedBatchImage] = []
+    var resizeModeSelection: ResizeInputMode = .longEdge {
+        didSet {
+            if resizeModeSelection != oldValue {
+                invalidateProcessedResults()
+            }
+        }
+    }
     var resizeLongEdgeText = "\(BatchResizeMode.defaultLongEdgePixels)" {
         didSet {
             if resizeLongEdgeText != oldValue {
+                invalidateProcessedResults()
+            }
+        }
+    }
+    var resizeShortEdgeText = "\(BatchImageHomeModel.defaultShortEdgePixels)" {
+        didSet {
+            if resizeShortEdgeText != oldValue {
+                invalidateProcessedResults()
+            }
+        }
+    }
+    var exactResizeStrategy: BatchExactResizeStrategy = .contain {
+        didSet {
+            if exactResizeStrategy != oldValue {
                 invalidateProcessedResults()
             }
         }
@@ -40,7 +73,7 @@ final class BatchImageHomeModel {
 
 extension BatchImageHomeModel {
     var canProcess: Bool {
-        resizeLongEdgePixels != nil &&
+        settings != nil &&
             !importedImages.isEmpty &&
             !isImporting &&
             !isProcessing
@@ -55,19 +88,79 @@ extension BatchImageHomeModel {
         return value
     }
 
+    var resizeShortEdgePixels: Int? {
+        guard let value = Int(resizeShortEdgeText),
+              value > 0 else {
+            return nil
+        }
+
+        return value
+    }
+
+    var isLongEdgeMode: Bool {
+        resizeModeSelection == .longEdge
+    }
+
+    var isShortEdgeMode: Bool {
+        resizeModeSelection == .shortEdge
+    }
+
+    var isExactSizeMode: Bool {
+        resizeModeSelection == .exactSize
+    }
+
     var selectedImageCountText: String {
         localization.selectedImageCount(importedImages.count)
     }
 
     var settings: BatchImageSettings? {
-        guard let resizeLongEdgePixels else {
+        let resizeMode: BatchResizeMode?
+
+        switch resizeModeSelection {
+        case .longEdge:
+            guard let resizeLongEdgePixels else {
+                return nil
+            }
+
+            resizeMode = .longEdgePixels(resizeLongEdgePixels)
+        case .shortEdge:
+            guard let resizeShortEdgePixels else {
+                return nil
+            }
+
+            resizeMode = .shortEdgePixels(resizeShortEdgePixels)
+        case .exactSize:
+            guard let resizeLongEdgePixels,
+                  let resizeShortEdgePixels else {
+                return nil
+            }
+
+            resizeMode = .exactSize(
+                longEdgePixels: resizeLongEdgePixels,
+                shortEdgePixels: resizeShortEdgePixels,
+                strategy: exactResizeStrategy
+            )
+        }
+
+        guard let resizeMode else {
             return nil
         }
 
         return .init(
-            resizeMode: .longEdgePixels(resizeLongEdgePixels),
+            resizeMode: resizeMode,
             compression: compression
         )
+    }
+
+    var resizeValidationMessage: String {
+        switch resizeModeSelection {
+        case .longEdge:
+            localization.invalidLongEdgeSizeMessage()
+        case .shortEdge:
+            localization.invalidShortEdgeSizeMessage()
+        case .exactSize:
+            localization.invalidExactSizeMessage()
+        }
     }
 
     func importPhotos(
@@ -123,7 +216,7 @@ extension BatchImageHomeModel {
 
     func processImages() async {
         guard let settings else {
-            errorMessage = localization.invalidLongEdgeSizeMessage()
+            errorMessage = resizeValidationMessage
             return
         }
 

@@ -14,7 +14,26 @@ struct BatchImageValueTests {
         let settings: BatchImageSettings = .init()
 
         #expect(settings.longEdgePixels == 1_920)
+        #expect(settings.shortEdgePixels == nil)
+        #expect(settings.exactResizeStrategy == nil)
         #expect(settings.compression == .medium)
+    }
+
+    @Test
+    func resize_modes_expose_expected_edges_and_strategy() {
+        let shortEdgeResizeMode = BatchResizeMode.shortEdgePixels(320)
+        #expect(shortEdgeResizeMode.longEdgePixels == nil)
+        #expect(shortEdgeResizeMode.shortEdgePixels == 320)
+        #expect(shortEdgeResizeMode.exactResizeStrategy == nil)
+
+        let exactResizeMode = BatchResizeMode.exactSize(
+            longEdgePixels: 180,
+            shortEdgePixels: 120,
+            strategy: .contain
+        )
+        #expect(exactResizeMode.longEdgePixels == 180)
+        #expect(exactResizeMode.shortEdgePixels == 120)
+        #expect(exactResizeMode.exactResizeStrategy == .contain)
     }
 
     @Test

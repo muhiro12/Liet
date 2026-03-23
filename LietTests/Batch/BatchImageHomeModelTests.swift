@@ -1,14 +1,14 @@
 import CoreGraphics
 import Foundation
 @testable import Liet
+import LietLibrary
 import Testing
 
+// swiftlint:disable no_magic_numbers
 @MainActor
 struct BatchImageHomeModelTests {
     private enum Metrics {
-        static let updatedLongEdge = "1200"
         static let importedSelectionIndex = 1
-        static let outcomeCount = 0
         static let sourceSize = CGSize(width: 1_000, height: 500)
     }
 
@@ -18,26 +18,73 @@ struct BatchImageHomeModelTests {
         model.resultModel = .init(
             outcome: .init(
                 processedImages: [try BatchImageTestFactory.makeProcessedImage()],
-                failureCount: Metrics.outcomeCount,
-                jpegFallbackCount: Metrics.outcomeCount,
-                ignoredCompressionCount: Metrics.outcomeCount
+                failureCount: 0,
+                jpegFallbackCount: 0,
+                ignoredCompressionCount: 0
             )
         )
 
-        model.resizeLongEdgeText = Metrics.updatedLongEdge
+        model.resizeModeSelection = .shortEdge
         #expect(model.resultModel == nil)
 
         model.resultModel = .init(
             outcome: .init(
                 processedImages: [try BatchImageTestFactory.makeProcessedImage()],
-                failureCount: Metrics.outcomeCount,
-                jpegFallbackCount: Metrics.outcomeCount,
-                ignoredCompressionCount: Metrics.outcomeCount
+                failureCount: 0,
+                jpegFallbackCount: 0,
+                ignoredCompressionCount: 0
+            )
+        )
+
+        model.resizeShortEdgeText = "720"
+        #expect(model.resultModel == nil)
+
+        model.resultModel = .init(
+            outcome: .init(
+                processedImages: [try BatchImageTestFactory.makeProcessedImage()],
+                failureCount: 0,
+                jpegFallbackCount: 0,
+                ignoredCompressionCount: 0
+            )
+        )
+        model.resizeModeSelection = .exactSize
+        model.exactResizeStrategy = .coverCrop
+        #expect(model.resultModel == nil)
+
+        model.resultModel = .init(
+            outcome: .init(
+                processedImages: [try BatchImageTestFactory.makeProcessedImage()],
+                failureCount: 0,
+                jpegFallbackCount: 0,
+                ignoredCompressionCount: 0
             )
         )
 
         model.compression = .low
         #expect(model.resultModel == nil)
+    }
+
+    @Test
+    func settings_follow_selected_resize_mode() {
+        let model: BatchImageHomeModel = .init()
+
+        #expect(model.settings?.resizeMode == .longEdgePixels(1_920))
+
+        model.resizeModeSelection = .shortEdge
+        model.resizeShortEdgeText = "320"
+        #expect(model.settings?.resizeMode == .shortEdgePixels(320))
+
+        model.resizeModeSelection = .exactSize
+        model.resizeLongEdgeText = "180"
+        model.resizeShortEdgeText = "180"
+        model.exactResizeStrategy = .coverCrop
+        #expect(
+            model.settings?.resizeMode == .exactSize(
+                longEdgePixels: 180,
+                shortEdgePixels: 180,
+                strategy: .coverCrop
+            )
+        )
     }
 
     @Test
@@ -87,3 +134,4 @@ struct BatchImageHomeModelTests {
         #expect(BatchImageTipSupport.progressSnapshot().processCompleted)
     }
 }
+// swiftlint:enable no_magic_numbers
