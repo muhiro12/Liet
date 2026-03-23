@@ -2,6 +2,9 @@ import Foundation
 
 /// Shared output naming rules for processed images.
 public enum ProcessedImageNaming {
+    /// App-specific suffix appended to processed image names.
+    public static let appSuffix = "Liet"
+
     /// Builds a unique output filename for a processed image.
     public static func makeFilename(
         originalFilename: String?,
@@ -13,16 +16,27 @@ public enum ProcessedImageNaming {
             originalFilename: originalFilename,
             fallbackIndex: fallbackIndex
         )
-        let stem = resolvedStem(
-            originalFilename: originalFilename,
-            baseName: baseName
+
+        return makeFilename(
+            stem: "\(baseName)-\(appSuffix)",
+            outputFormat: outputFormat,
+            existingFilenames: existingFilenames
         )
+    }
+
+    /// Builds a unique output filename from an explicit stem.
+    public static func makeFilename(
+        stem: String,
+        outputFormat: ImageFileFormat,
+        existingFilenames: Set<String> = []
+    ) -> String {
+        let normalizedStem = normalizedStem(from: stem)
         let fileExtension = outputFormat.filenameExtension
-        let firstCandidate = "\(stem).\(fileExtension)"
+        let firstCandidate = "\(normalizedStem).\(fileExtension)"
 
         guard !existingFilenames.contains(firstCandidate) else {
             return numberedCandidate(
-                stem: stem,
+                stem: normalizedStem,
                 fileExtension: fileExtension,
                 existingFilenames: existingFilenames
             )
@@ -55,15 +69,17 @@ private extension ProcessedImageNaming {
         )
     }
 
-    static func resolvedStem(
-        originalFilename: String?,
-        baseName: String
+    static func normalizedStem(
+        from stem: String
     ) -> String {
-        if originalFilename == nil {
-            return baseName
+        let trimmedStem = stem
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if trimmedStem.isEmpty {
+            return appSuffix
         }
 
-        return "\(baseName)-processed"
+        return trimmedStem
     }
 
     static func numberedCandidate(

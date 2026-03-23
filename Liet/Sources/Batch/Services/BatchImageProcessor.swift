@@ -56,11 +56,10 @@ extension BatchImageProcessor {
             )
         }
 
-        let outputDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent(
-                "LietProcessed-\(UUID().uuidString)",
-                isDirectory: true
-            )
+        let outputDirectory = FileManager.default.temporaryDirectory.appendingPathComponent(
+            "LietProcessed-\(UUID().uuidString)",
+            isDirectory: true
+        )
 
         do {
             try FileManager.default.createDirectory(
@@ -100,11 +99,6 @@ extension BatchImageProcessor {
                     ignoredCompressionCount += 1
                 }
 
-                let renderedImage = try renderedImage(
-                    from: image.sourceURL,
-                    resizeMode: settings.resizeMode,
-                    outputFormat: outputFormat
-                )
                 let outputFilename = ProcessedImageNaming.makeFilename(
                     originalFilename: image.originalFilename,
                     fallbackIndex: image.selectionIndex,
@@ -113,26 +107,56 @@ extension BatchImageProcessor {
                 )
                 usedFilenames.insert(outputFilename)
                 let outputURL = outputDirectory.appendingPathComponent(outputFilename)
-                try writeImage(
-                    renderedImage.cgImage,
-                    format: outputFormat,
-                    compression: settings.compression,
-                    outputURL: outputURL
-                )
-                let previewImage = try ImageIOImageSupport.previewImage(from: outputURL)
-                processedImages.append(
-                    .init(
-                        sourceID: image.id,
-                        outputURL: outputURL,
-                        outputFilename: outputFilename,
-                        outputFormat: outputFormat,
-                        originalFormat: image.originalFormat,
-                        pixelSize: renderedImage.pixelSize,
-                        previewImage: previewImage,
-                        usedJPEGFallback: usedJPEGFallback,
-                        ignoredCompressionSetting: ignoredCompressionSetting
+
+                if shouldCopyOriginalImage(
+                    image: image,
+                    settings: settings,
+                    outputFormat: outputFormat
+                ) {
+                    try FileManager.default.copyItem(
+                        at: image.sourceURL,
+                        to: outputURL
                     )
-                )
+                    processedImages.append(
+                        .init(
+                            sourceID: image.id,
+                            outputURL: outputURL,
+                            outputFilename: outputFilename,
+                            outputFormat: outputFormat,
+                            originalFormat: image.originalFormat,
+                            pixelSize: image.pixelSize,
+                            previewImage: image.previewImage,
+                            usedJPEGFallback: usedJPEGFallback,
+                            ignoredCompressionSetting: ignoredCompressionSetting
+                        )
+                    )
+                } else {
+                    let renderedImage = try renderedImage(
+                        from: image.sourceURL,
+                        resizeMode: settings.resizeMode,
+                        outputFormat: outputFormat
+                    )
+                    try writeImage(
+                        renderedImage.cgImage,
+                        format: outputFormat,
+                        compression: settings.compression,
+                        outputURL: outputURL
+                    )
+                    let previewImage = try ImageIOImageSupport.previewImage(from: outputURL)
+                    processedImages.append(
+                        .init(
+                            sourceID: image.id,
+                            outputURL: outputURL,
+                            outputFilename: outputFilename,
+                            outputFormat: outputFormat,
+                            originalFormat: image.originalFormat,
+                            pixelSize: renderedImage.pixelSize,
+                            previewImage: previewImage,
+                            usedJPEGFallback: usedJPEGFallback,
+                            ignoredCompressionSetting: ignoredCompressionSetting
+                        )
+                    )
+                }
             } catch {
                 failureCount += 1
             }
@@ -162,35 +186,29 @@ private extension BatchImageProcessor {
         let originalPixelSize = try ImageIOImageSupport.pixelSize(from: imageSource)
 
         switch resizeMode {
-        case let .longEdgePixels(targetLongEdgePixels):
+        case let .fitWithin(
+            widthPixels,
+            heightPixels
+        ):
             return try resizedImage(
                 from: imageSource,
-                originalPixelSize: originalPixelSize,
-                targetMaxPixelSize: longEdgeTargetMaxPixelSize(
+                targetPixelSize: fitWithinPixelSize(
                     originalPixelSize: originalPixelSize,
-                    targetLongEdgePixels: targetLongEdgePixels
-                )
-            )
-        case let .shortEdgePixels(targetShortEdgePixels):
-            return try resizedImage(
-                from: imageSource,
-                originalPixelSize: originalPixelSize,
-                targetMaxPixelSize: shortEdgeTargetMaxPixelSize(
-                    originalPixelSize: originalPixelSize,
-                    targetShortEdgePixels: targetShortEdgePixels
+                    targetWidthPixels: widthPixels,
+                    targetHeightPixels: heightPixels
                 )
             )
         case let .exactSize(
-            longEdgePixels,
-            shortEdgePixels,
+            widthPixels,
+            heightPixels,
             strategy
         ):
             return try exactSizeImage(
                 from: imageSource,
                 originalPixelSize: originalPixelSize,
                 outputFormat: outputFormat,
-                longEdgePixels: longEdgePixels,
-                shortEdgePixels: shortEdgePixels,
+                widthPixels: widthPixels,
+                heightPixels: heightPixels,
                 strategy: strategy
             )
         }
@@ -198,12 +216,13 @@ private extension BatchImageProcessor {
 
     nonisolated static func resizedImage(
         from imageSource: CGImageSource,
-        originalPixelSize _: CGSize,
-        targetMaxPixelSize: Int
+        targetPixelSize: CGSize
     ) throws -> RenderedImage {
         let cgImage = try ImageIOImageSupport.cgImage(
             from: imageSource,
-            maxPixelSize: targetMaxPixelSize
+            maxPixelSize: ImageIOImageSupport.maxPixelSize(
+                for: targetPixelSize
+            )
         )
 
         return .init(
@@ -220,14 +239,13 @@ private extension BatchImageProcessor {
         from imageSource: CGImageSource,
         originalPixelSize: CGSize,
         outputFormat: ImageFileFormat,
-        longEdgePixels: Int,
-        shortEdgePixels: Int,
+        widthPixels: Int,
+        heightPixels: Int,
         strategy: BatchExactResizeStrategy
     ) throws -> RenderedImage {
         let canvasPixelSize = exactCanvasPixelSize(
-            originalPixelSize: originalPixelSize,
-            longEdgePixels: longEdgePixels,
-            shortEdgePixels: shortEdgePixels
+            widthPixels: widthPixels,
+            heightPixels: heightPixels
         )
         let projectedContentPixelSize = ImageIOImageSupport.projectedContentPixelSize(
             sourcePixelSize: originalPixelSize,
@@ -249,7 +267,6 @@ private extension BatchImageProcessor {
             canvasPixelSize: canvasPixelSize,
             strategy: strategy
         )
-        // PNG output keeps source alpha; lossy formats flatten onto white.
         let backgroundColor: UIColor? = if outputFormat == .png {
             nil
         } else {
@@ -268,74 +285,43 @@ private extension BatchImageProcessor {
         )
     }
 
-    nonisolated static func longEdgeTargetMaxPixelSize(
+    nonisolated static func fitWithinPixelSize(
         originalPixelSize: CGSize,
-        targetLongEdgePixels: Int
-    ) -> Int {
-        let originalLongEdgePixels = Int(
-            ceil(
-                max(
-                    originalPixelSize.width,
-                    originalPixelSize.height
-                )
-            )
+        targetWidthPixels: Int,
+        targetHeightPixels: Int
+    ) -> CGSize {
+        let targetPixelSize = CGSize(
+            width: max(1, targetWidthPixels),
+            height: max(1, targetHeightPixels)
         )
-
-        return min(
-            originalLongEdgePixels,
-            max(1, targetLongEdgePixels)
-        )
-    }
-
-    nonisolated static func shortEdgeTargetMaxPixelSize(
-        originalPixelSize: CGSize,
-        targetShortEdgePixels: Int
-    ) -> Int {
-        let originalLongEdgePixels = max(
-            originalPixelSize.width,
-            originalPixelSize.height
-        )
-        let originalShortEdgePixels = max(
-            1,
-            min(
-                originalPixelSize.width,
-                originalPixelSize.height
-            )
-        )
+        let widthScale = targetPixelSize.width /
+            max(ImageIOImageSupport.minimumPixelDimension, originalPixelSize.width)
+        let heightScale = targetPixelSize.height /
+            max(ImageIOImageSupport.minimumPixelDimension, originalPixelSize.height)
         let scale = min(
             1,
-            CGFloat(max(1, targetShortEdgePixels)) / originalShortEdgePixels
+            min(widthScale, heightScale)
         )
 
-        return max(
-            1,
-            Int(
-                ceil(
-                    originalLongEdgePixels * scale
-                )
+        return CGSize(
+            width: max(
+                ImageIOImageSupport.minimumPixelDimension,
+                ceil(originalPixelSize.width * scale)
+            ),
+            height: max(
+                ImageIOImageSupport.minimumPixelDimension,
+                ceil(originalPixelSize.height * scale)
             )
         )
     }
 
     nonisolated static func exactCanvasPixelSize(
-        originalPixelSize: CGSize,
-        longEdgePixels: Int,
-        shortEdgePixels: Int
+        widthPixels: Int,
+        heightPixels: Int
     ) -> CGSize {
-        let resolvedLongEdgePixels = CGFloat(max(1, longEdgePixels))
-        let resolvedShortEdgePixels = CGFloat(max(1, shortEdgePixels))
-        let isPortrait = originalPixelSize.height > originalPixelSize.width
-
-        if isPortrait {
-            return .init(
-                width: resolvedShortEdgePixels,
-                height: resolvedLongEdgePixels
-            )
-        }
-
-        return .init(
-            width: resolvedLongEdgePixels,
-            height: resolvedShortEdgePixels
+        .init(
+            width: CGFloat(max(1, widthPixels)),
+            height: CGFloat(max(1, heightPixels))
         )
     }
 
@@ -377,5 +363,38 @@ private extension BatchImageProcessor {
             to: outputURL,
             options: .atomic
         )
+    }
+
+    nonisolated static func shouldCopyOriginalImage(
+        image: ImportedBatchImage,
+        settings: BatchImageSettings,
+        outputFormat: ImageFileFormat
+    ) -> Bool {
+        guard case let .fitWithin(
+            widthPixels,
+            heightPixels
+        ) = settings.resizeMode else {
+            return false
+        }
+
+        guard outputFormat == image.originalFormat else {
+            return false
+        }
+
+        let preservesSourceData = settings.compression == .off ||
+            !outputFormat.supportsLossyCompressionQuality
+
+        guard preservesSourceData else {
+            return false
+        }
+
+        let targetPixelSize = fitWithinPixelSize(
+            originalPixelSize: image.pixelSize,
+            targetWidthPixels: widthPixels,
+            targetHeightPixels: heightPixels
+        )
+
+        return Int(targetPixelSize.width) == Int(image.pixelSize.width) &&
+            Int(targetPixelSize.height) == Int(image.pixelSize.height)
     }
 }

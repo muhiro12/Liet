@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import Photos
 
 @MainActor
 @Observable
@@ -15,6 +16,7 @@ final class BatchImageResultModel: Identifiable {
     let jpegFallbackCount: Int
     let ignoredCompressionCount: Int
 
+    private var customFilenameStems: [UUID: String] = [:]
     var isExportingFiles = false
     var isSavingToPhotos = false
     var saveFeedback: SaveFeedback?
@@ -31,13 +33,27 @@ final class BatchImageResultModel: Identifiable {
 }
 
 extension BatchImageResultModel {
-    var exportDocuments: [ProcessedImageExportDocument] {
-        processedImages.map { image in
-            .init(
+    var exportItems: [ProcessedImageExportItem] {
+        var usedFilenames: Set<String> = []
+
+        return processedImages.map { image in
+            let filename = resolvedFilename(
+                for: image,
+                existingFilenames: &usedFilenames
+            )
+
+            return .init(
+                id: image.id,
                 fileURL: image.outputURL,
-                filename: image.outputFilename,
+                filename: filename,
                 contentType: image.contentType
             )
+        }
+    }
+
+    var exportDocuments: [ProcessedImageExportDocument] {
+        exportItems.map { exportItem in
+            .init(exportItem: exportItem)
         }
     }
 
@@ -72,6 +88,41 @@ extension BatchImageResultModel {
         isExportingFiles = false
     }
 
+    func editableFilenameStem(
+        for image: ProcessedBatchImage
+    ) -> String {
+        customFilenameStems[image.id] ?? image.defaultOutputStem
+    }
+
+    func setEditableFilenameStem(
+        _ filenameStem: String,
+        for image: ProcessedBatchImage
+    ) {
+        customFilenameStems[image.id] = normalizedFilenameStem(
+            filenameStem,
+            for: image
+        )
+    }
+
+    func resolvedFilename(
+        for image: ProcessedBatchImage
+    ) -> String {
+        var usedFilenames: Set<String> = []
+
+        for currentImage in processedImages {
+            let filename = resolvedFilename(
+                for: currentImage,
+                existingFilenames: &usedFilenames
+            )
+
+            if currentImage.id == image.id {
+                return filename
+            }
+        }
+
+        return image.outputFilename
+    }
+
     func saveToPhotos() async {
         saveFeedback = nil
         activeError = nil
@@ -81,8 +132,10 @@ extension BatchImageResultModel {
         }
 
         do {
-            try await PhotoLibrarySaveService.save(processedImages)
-            saveFeedback = .savedToPhotos(count: processedImages.count)
+            try await PhotoLibrarySaveService.save(
+                photoLibraryInputs
+            )
+            saveFeedback = .savedToPhotos(count: exportItems.count)
             BatchImageTipSupport.donateSaveToPhotosSuccess()
         } catch {
             activeError = error
@@ -91,5 +144,59 @@ extension BatchImageResultModel {
 
     func replayTips() {
         BatchImageTipSupport.resetTips()
+    }
+}
+
+private extension BatchImageResultModel {
+    var photoLibraryInputs: [PhotoLibrarySaveService.AssetResourceInput] {
+        exportItems.map { exportItem in
+            .init(
+                resourceType: .photo,
+                fileURL: exportItem.fileURL,
+                originalFilename: exportItem.filename
+            )
+        }
+    }
+
+    func resolvedFilename(
+        for image: ProcessedBatchImage,
+        existingFilenames: inout Set<String>
+    ) -> String {
+        let candidateStem = normalizedResolvedStem(for: image)
+        let filename = ProcessedImageNaming.makeFilename(
+            stem: candidateStem,
+            outputFormat: image.outputFormat,
+            existingFilenames: existingFilenames
+        )
+        existingFilenames.insert(filename)
+        return filename
+    }
+
+    func normalizedResolvedStem(
+        for image: ProcessedBatchImage
+    ) -> String {
+        let customStem = customFilenameStems[image.id]?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+        if customStem.isEmpty {
+            return image.defaultOutputStem
+        }
+
+        return customStem
+    }
+
+    func normalizedFilenameStem(
+        _ filenameStem: String,
+        for image: ProcessedBatchImage
+    ) -> String {
+        let trimmedStem = filenameStem
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let filenameExtension = ".\(image.outputFilenameExtension)"
+
+        if trimmedStem.lowercased().hasSuffix(filenameExtension.lowercased()) {
+            return String(trimmedStem.dropLast(filenameExtension.count))
+        }
+
+        return trimmedStem
     }
 }

@@ -8,13 +8,16 @@ struct LietAppSmokeTests {
     func content_view_starts_with_batch_image_flow_defaults() {
         BatchImageTipSupport.configureIfNeeded()
         _ = ContentView()
-        let model: BatchImageHomeModel = .init()
+        let model: BatchImageHomeModel = .init(
+            settingsStore: .inMemory()
+        )
 
         #expect(AppGroup.id == "group.com.muhiro12.Liet")
         #expect(BatchImageTipSupport.datastoreGroupIdentifier == AppGroup.id)
-        #expect(model.resizeLongEdgePixels == 1_920)
-        #expect(model.resizeModeSelection == .longEdge)
-        #expect(model.compression == .medium)
+        #expect(model.resizeWidthPixels == 1_920)
+        #expect(model.resizeHeightPixels == 1_080)
+        #expect(model.keepsAspectRatio)
+        #expect(model.compression == .off)
         #expect(model.resultModel == nil)
     }
 }

@@ -25,12 +25,8 @@ extension BatchImageHomeView {
         for alert: BatchImageHomeModel.AlertState
     ) -> Text {
         switch alert {
-        case .invalidLongEdgeSize:
-            Text("Enter a valid long-edge size.")
-        case .invalidShortEdgeSize:
-            Text("Enter a valid short-edge size.")
-        case .invalidExactSize:
-            Text("Enter valid long-edge and short-edge sizes.")
+        case .invalidResizeSize:
+            Text("Enter valid width and height values.")
         case .importSelectionFailed:
             Text("Couldn't import the selected images.")
         case .processSelectionFailed:

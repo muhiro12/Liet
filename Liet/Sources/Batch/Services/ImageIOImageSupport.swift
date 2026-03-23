@@ -126,6 +126,10 @@ extension ImageIOImageSupport {
         canvasPixelSize: CGSize,
         strategy: BatchExactResizeStrategy
     ) -> CGSize {
+        if strategy == .stretch {
+            return canvasPixelSize
+        }
+
         let scale = resizeScale(
             sourcePixelSize: sourcePixelSize,
             canvasPixelSize: canvasPixelSize,
@@ -143,6 +147,13 @@ extension ImageIOImageSupport {
         canvasPixelSize: CGSize,
         strategy: BatchExactResizeStrategy
     ) -> CGRect {
+        if strategy == .stretch {
+            return CGRect(
+                origin: .zero,
+                size: canvasPixelSize
+            )
+        }
+
         let scale = resizeScale(
             sourcePixelSize: sourcePixelSize,
             canvasPixelSize: canvasPixelSize,
@@ -243,6 +254,8 @@ private extension ImageIOImageSupport {
         let heightScale = canvasPixelSize.height / max(minimumPixelDimension, sourcePixelSize.height)
 
         switch strategy {
+        case .stretch:
+            return minimumPixelDimension
         case .contain:
             return min(widthScale, heightScale)
         case .coverCrop:

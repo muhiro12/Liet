@@ -4,36 +4,43 @@ import Testing
 struct BatchImageValueTests {
     @Test
     func compression_quality_mapping_matches_mvp_values() {
+        #expect(BatchImageCompression.off.quality == 1.0)
         #expect(BatchImageCompression.high.quality == 0.9)
         #expect(BatchImageCompression.medium.quality == 0.7)
         #expect(BatchImageCompression.low.quality == 0.5)
     }
 
     @Test
-    func settings_default_to_manual_long_edge_and_medium_quality() {
+    func settings_default_to_fit_within_and_disable_compression() {
         let settings: BatchImageSettings = .init()
 
-        #expect(settings.longEdgePixels == 1_920)
-        #expect(settings.shortEdgePixels == nil)
+        #expect(settings.widthPixels == 1_920)
+        #expect(settings.heightPixels == 1_080)
         #expect(settings.exactResizeStrategy == nil)
-        #expect(settings.compression == .medium)
+        #expect(settings.keepsAspectRatio)
+        #expect(settings.compression == .off)
     }
 
     @Test
-    func resize_modes_expose_expected_edges_and_strategy() {
-        let shortEdgeResizeMode = BatchResizeMode.shortEdgePixels(320)
-        #expect(shortEdgeResizeMode.longEdgePixels == nil)
-        #expect(shortEdgeResizeMode.shortEdgePixels == 320)
-        #expect(shortEdgeResizeMode.exactResizeStrategy == nil)
+    func resize_modes_expose_expected_dimensions_and_strategy() {
+        let fitWithinResizeMode = BatchResizeMode.fitWithin(
+            widthPixels: 320,
+            heightPixels: 180
+        )
+        #expect(fitWithinResizeMode.widthPixels == 320)
+        #expect(fitWithinResizeMode.heightPixels == 180)
+        #expect(fitWithinResizeMode.exactResizeStrategy == nil)
+        #expect(fitWithinResizeMode.keepsAspectRatio)
 
         let exactResizeMode = BatchResizeMode.exactSize(
-            longEdgePixels: 180,
-            shortEdgePixels: 120,
-            strategy: .contain
+            widthPixels: 180,
+            heightPixels: 120,
+            strategy: .stretch
         )
-        #expect(exactResizeMode.longEdgePixels == 180)
-        #expect(exactResizeMode.shortEdgePixels == 120)
-        #expect(exactResizeMode.exactResizeStrategy == .contain)
+        #expect(exactResizeMode.widthPixels == 180)
+        #expect(exactResizeMode.heightPixels == 120)
+        #expect(exactResizeMode.exactResizeStrategy == .stretch)
+        #expect(exactResizeMode.keepsAspectRatio == false)
     }
 
     @Test
@@ -47,7 +54,7 @@ struct BatchImageValueTests {
     }
 
     @Test
-    func naming_appends_processed_suffix_and_avoids_duplicates() {
+    func naming_appends_liet_suffix_and_avoids_duplicates() {
         let firstFilename = ProcessedImageNaming.makeFilename(
             originalFilename: "receipt.png",
             fallbackIndex: 1,
@@ -65,8 +72,8 @@ struct BatchImageValueTests {
             outputFormat: .jpeg
         )
 
-        #expect(firstFilename == "receipt-processed.png")
-        #expect(secondFilename == "receipt-processed-2.png")
-        #expect(fallbackFilename == "image-003.jpg")
+        #expect(firstFilename == "receipt-Liet.png")
+        #expect(secondFilename == "receipt-Liet-2.png")
+        #expect(fallbackFilename == "image-003-Liet.jpg")
     }
 }

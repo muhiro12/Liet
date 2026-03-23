@@ -1,6 +1,8 @@
+import CoreTransferable
 import Foundation
 import PhotosUI
 import SwiftUI
+import UniformTypeIdentifiers
 
 enum PhotoImportService {
     struct Result {
@@ -50,7 +52,35 @@ extension PhotoImportService {
     }
 }
 
+extension PhotoImportService {
+    nonisolated static func originalFilename(
+        from transferredFileURL: URL?
+    ) -> String? {
+        guard let transferredFileURL else {
+            return nil
+        }
+
+        let filename = transferredFileURL.lastPathComponent
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return filename.isEmpty ? nil : filename
+    }
+}
+
 private extension PhotoImportService {
+    struct ImportedPhotoFile: Transferable {
+        static var transferRepresentation: some TransferRepresentation {
+            FileRepresentation(
+                importedContentType: .image,
+                shouldAttemptToOpenInPlace: true
+            ) { receivedFile in
+                .init(fileURL: receivedFile.file)
+            }
+        }
+
+        let fileURL: URL
+    }
+
     nonisolated static func makeImportDirectory() -> URL? {
         let directoryURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(
@@ -74,6 +104,17 @@ private extension PhotoImportService {
         selectionIndex: Int,
         into directoryURL: URL
     ) async throws -> ImportedBatchImage {
+        if let importedPhotoFile = try? await item.loadTransferable(
+            type: ImportedPhotoFile.self
+        ) {
+            return try importImage(
+                from: importedPhotoFile,
+                supportedTypeIdentifiers: item.supportedContentTypes.map(\.identifier),
+                selectionIndex: selectionIndex,
+                into: directoryURL
+            )
+        }
+
         guard let data = try await item.loadTransferable(type: Data.self) else {
             throw BatchImageServiceError.failedToLoadImageData
         }
@@ -96,6 +137,43 @@ private extension PhotoImportService {
         return .init(
             sourceURL: sourceURL,
             originalFilename: nil,
+            originalFormat: originalFormat,
+            pixelSize: try ImageIOImageSupport.pixelSize(from: imageSource),
+            previewImage: try ImageIOImageSupport.previewImage(from: sourceURL),
+            selectionIndex: selectionIndex
+        )
+    }
+
+    nonisolated static func importImage(
+        from importedPhotoFile: ImportedPhotoFile,
+        supportedTypeIdentifiers: [String],
+        selectionIndex: Int,
+        into directoryURL: URL
+    ) throws -> ImportedBatchImage {
+        let imageSource = try ImageIOImageSupport.imageSource(
+            url: importedPhotoFile.fileURL
+        )
+        let originalFormat = ImageIOImageSupport.detectedFormat(
+            for: imageSource,
+            supportedTypeIdentifiers: supportedTypeIdentifiers
+        )
+        let sourceURL = directoryURL.appendingPathComponent(
+            importedFilename(
+                for: originalFormat,
+                selectionIndex: selectionIndex
+            )
+        )
+
+        try FileManager.default.copyItem(
+            at: importedPhotoFile.fileURL,
+            to: sourceURL
+        )
+
+        return .init(
+            sourceURL: sourceURL,
+            originalFilename: originalFilename(
+                from: importedPhotoFile.fileURL
+            ),
             originalFormat: originalFormat,
             pixelSize: try ImageIOImageSupport.pixelSize(from: imageSource),
             previewImage: try ImageIOImageSupport.previewImage(from: sourceURL),

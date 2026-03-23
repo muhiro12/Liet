@@ -46,6 +46,13 @@ enum BatchImageTestFactory {
                 green > Metrics.dominantColorThreshold &&
                 blue < Metrics.secondaryColorThreshold
         }
+
+        var isMostlyBlue: Bool {
+            alpha > Metrics.dominantColorThreshold &&
+                red < Metrics.secondaryColorThreshold &&
+                green < Metrics.secondaryColorThreshold &&
+                blue > Metrics.dominantColorThreshold
+        }
     }
 
     enum Failure: Error {

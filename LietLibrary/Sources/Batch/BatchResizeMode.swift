@@ -1,46 +1,48 @@
 import Foundation
 
-/// Resizing modes supported by the MVP batch processor.
+/// Resizing modes supported by the batch processor.
 public enum BatchResizeMode: Equatable, Codable, Sendable {
-    /// Scales an image so its longest edge matches the provided pixel value.
-    case longEdgePixels(Int)
-    /// Scales an image so its shortest edge matches the provided pixel value.
-    case shortEdgePixels(Int)
-    /// Fits or crops an image into a canvas that fixes both edges.
+    /// Fits an image inside the provided bounding box while preserving aspect ratio.
+    case fitWithin(
+            widthPixels: Int,
+            heightPixels: Int
+         )
+    /// Renders an image into a fixed canvas using the provided strategy.
     case exactSize(
-            longEdgePixels: Int,
-            shortEdgePixels: Int,
+            widthPixels: Int,
+            heightPixels: Int,
             strategy: BatchExactResizeStrategy
          )
 
-    /// Default longest-edge target used by the app.
-    public static let defaultLongEdgePixels = 1_920
+    /// Default output width used by the app.
+    public static let defaultWidthPixels = 1_920
+    /// Default output height used by the app.
+    public static let defaultHeightPixels = 1_080
     /// Default resize mode used by the app.
-    public static let `default`: Self = .longEdgePixels(defaultLongEdgePixels)
+    public static let `default`: Self = .fitWithin(
+        widthPixels: defaultWidthPixels,
+        heightPixels: defaultHeightPixels
+    )
 }
 
 public extension BatchResizeMode {
-    /// The configured long edge for long-edge and exact-size resizing.
-    var longEdgePixels: Int? {
+    /// The configured width target for the current mode.
+    var widthPixels: Int {
         switch self {
-        case let .longEdgePixels(pixels):
-            max(1, pixels)
-        case let .exactSize(longEdgePixels, _, _):
-            max(1, longEdgePixels)
-        case .shortEdgePixels:
-            nil
+        case let .fitWithin(widthPixels, _):
+            max(1, widthPixels)
+        case let .exactSize(widthPixels, _, _):
+            max(1, widthPixels)
         }
     }
 
-    /// The configured short edge for short-edge and exact-size resizing.
-    var shortEdgePixels: Int? {
+    /// The configured height target for the current mode.
+    var heightPixels: Int {
         switch self {
-        case let .shortEdgePixels(pixels):
-            max(1, pixels)
-        case let .exactSize(_, shortEdgePixels, _):
-            max(1, shortEdgePixels)
-        case .longEdgePixels:
-            nil
+        case let .fitWithin(_, heightPixels):
+            max(1, heightPixels)
+        case let .exactSize(_, heightPixels, _):
+            max(1, heightPixels)
         }
     }
 
@@ -49,13 +51,29 @@ public extension BatchResizeMode {
         switch self {
         case let .exactSize(_, _, strategy):
             strategy
-        case .longEdgePixels, .shortEdgePixels:
+        case .fitWithin:
             nil
         }
     }
 
-    /// Creates a longest-edge resize mode using the default target when omitted.
-    init(longEdgePixels: Int = Self.defaultLongEdgePixels) {
-        self = .longEdgePixels(longEdgePixels)
+    /// Whether the mode keeps the source aspect ratio.
+    var keepsAspectRatio: Bool {
+        switch self {
+        case .fitWithin:
+            true
+        case .exactSize:
+            false
+        }
+    }
+
+    /// Creates an aspect-ratio-preserving resize mode using app defaults when omitted.
+    init(
+        widthPixels: Int = Self.defaultWidthPixels,
+        heightPixels: Int = Self.defaultHeightPixels
+    ) {
+        self = .fitWithin(
+            widthPixels: widthPixels,
+            heightPixels: heightPixels
+        )
     }
 }

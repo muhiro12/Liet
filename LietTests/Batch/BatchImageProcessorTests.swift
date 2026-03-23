@@ -17,7 +17,10 @@ struct BatchImageProcessorTests {
         let outcome = await BatchImageProcessor.process(
             images: [importedImage],
             settings: .init(
-                resizeMode: .longEdgePixels(500),
+                resizeMode: .fitWithin(
+                    widthPixels: 500,
+                    heightPixels: 500
+                ),
                 compression: .high
             ),
             heicEncoderAvailable: false
@@ -48,7 +51,10 @@ struct BatchImageProcessorTests {
         let outcome = await BatchImageProcessor.process(
             images: [importedImage],
             settings: .init(
-                resizeMode: .longEdgePixels(300),
+                resizeMode: .fitWithin(
+                    widthPixels: 300,
+                    heightPixels: 300
+                ),
                 compression: .low
             ),
             heicEncoderAvailable: false
@@ -87,8 +93,8 @@ struct BatchImageProcessorTests {
             images: [importedImage],
             settings: .init(
                 resizeMode: .exactSize(
-                    longEdgePixels: 180,
-                    shortEdgePixels: 180,
+                    widthPixels: 180,
+                    heightPixels: 180,
                     strategy: .contain
                 ),
                 compression: .medium
@@ -138,8 +144,8 @@ struct BatchImageProcessorTests {
             images: [importedImage],
             settings: .init(
                 resizeMode: .exactSize(
-                    longEdgePixels: 100,
-                    shortEdgePixels: 100,
+                    widthPixels: 100,
+                    heightPixels: 100,
                     strategy: .coverCrop
                 ),
                 compression: .medium
@@ -166,7 +172,7 @@ struct BatchImageProcessorTests {
     }
 
     @Test
-    func short_edge_resize_uses_shorter_dimension_without_upscaling() async throws {
+    func fit_within_uses_bounding_box_without_upscaling() async throws {
         let largeImage = try BatchImageTestFactory.makeImportedImage(
             format: .jpeg,
             size: .init(width: 1_200, height: 800),
@@ -176,7 +182,10 @@ struct BatchImageProcessorTests {
         let largeOutcome = await BatchImageProcessor.process(
             images: [largeImage],
             settings: .init(
-                resizeMode: .shortEdgePixels(200),
+                resizeMode: .fitWithin(
+                    widthPixels: 300,
+                    heightPixels: 200
+                ),
                 compression: .medium
             ),
             heicEncoderAvailable: false
@@ -195,7 +204,10 @@ struct BatchImageProcessorTests {
         let smallOutcome = await BatchImageProcessor.process(
             images: [smallImage],
             settings: .init(
-                resizeMode: .shortEdgePixels(180),
+                resizeMode: .fitWithin(
+                    widthPixels: 320,
+                    heightPixels: 180
+                ),
                 compression: .medium
             ),
             heicEncoderAvailable: false
@@ -204,5 +216,48 @@ struct BatchImageProcessorTests {
 
         #expect(Int(smallProcessedImage.pixelSize.width) == 200)
         #expect(Int(smallProcessedImage.pixelSize.height) == 100)
+    }
+
+    @Test
+    func exact_size_stretch_matches_target_canvas_without_cropping() async throws {
+        let importedImage = try BatchImageTestFactory.makeImportedImage(
+            format: .png,
+            size: .init(width: 400, height: 200),
+            originalFilename: "stretch.png",
+            selectionIndex: 1,
+            image: BatchImageTestFactory.makeEdgeStripedUIImage(
+                size: .init(width: 400, height: 200)
+            )
+        )
+
+        let outcome = await BatchImageProcessor.process(
+            images: [importedImage],
+            settings: .init(
+                resizeMode: .exactSize(
+                    widthPixels: 100,
+                    heightPixels: 100,
+                    strategy: .stretch
+                ),
+                compression: .off
+            ),
+            heicEncoderAvailable: false
+        )
+
+        let processedImage = try #require(outcome.processedImages.first)
+        let leftEdge = try BatchImageTestFactory.pixelSample(
+            from: processedImage.outputURL,
+            sampleX: 5,
+            sampleY: 50
+        )
+        let rightEdge = try BatchImageTestFactory.pixelSample(
+            from: processedImage.outputURL,
+            sampleX: 95,
+            sampleY: 50
+        )
+
+        #expect(Int(processedImage.pixelSize.width) == 100)
+        #expect(Int(processedImage.pixelSize.height) == 100)
+        #expect(leftEdge.isMostlyRed)
+        #expect(rightEdge.isMostlyBlue)
     }
 }

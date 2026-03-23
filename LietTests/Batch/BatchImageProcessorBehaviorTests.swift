@@ -16,8 +16,11 @@ struct BatchImageProcessorBehaviorTests {
         let outcome = await BatchImageProcessor.process(
             images: [importedImage],
             settings: .init(
-                resizeMode: .longEdgePixels(1_920),
-                compression: .medium
+                resizeMode: .fitWithin(
+                    widthPixels: 1_920,
+                    heightPixels: 1_080
+                ),
+                compression: .off
             ),
             heicEncoderAvailable: false
         )
@@ -41,7 +44,10 @@ struct BatchImageProcessorBehaviorTests {
         let outcome = await BatchImageProcessor.process(
             images: [importedImage],
             settings: .init(
-                resizeMode: .longEdgePixels(800),
+                resizeMode: .fitWithin(
+                    widthPixels: 800,
+                    heightPixels: 800
+                ),
                 compression: .medium
             ),
             heicEncoderAvailable: false
@@ -83,7 +89,10 @@ struct BatchImageProcessorBehaviorTests {
         let outcome = await BatchImageProcessor.process(
             images: [validImage, missingImage],
             settings: .init(
-                resizeMode: .longEdgePixels(400),
+                resizeMode: .fitWithin(
+                    widthPixels: 400,
+                    heightPixels: 400
+                ),
                 compression: .medium
             ),
             heicEncoderAvailable: false
@@ -91,5 +100,35 @@ struct BatchImageProcessorBehaviorTests {
 
         #expect(outcome.processedImages.count == 1)
         #expect(outcome.failureCount == 1)
+    }
+
+    @Test
+    func no_compression_reuses_original_file_when_resize_is_not_needed() async throws {
+        let importedImage = try BatchImageTestFactory.makeImportedImage(
+            format: .jpeg,
+            size: .init(width: 320, height: 180),
+            originalFilename: "poster.jpg",
+            selectionIndex: 1
+        )
+
+        let outcome = await BatchImageProcessor.process(
+            images: [importedImage],
+            settings: .init(
+                resizeMode: .fitWithin(
+                    widthPixels: 1_920,
+                    heightPixels: 1_080
+                ),
+                compression: .off
+            ),
+            heicEncoderAvailable: false
+        )
+
+        let processedImage = try #require(outcome.processedImages.first)
+        let originalData = try Data(contentsOf: importedImage.sourceURL)
+        let processedData = try Data(contentsOf: processedImage.outputURL)
+
+        #expect(processedImage.outputFilename == "poster-Liet.jpg")
+        #expect(processedData == originalData)
+        #expect(processedImage.outputURL != importedImage.sourceURL)
     }
 }

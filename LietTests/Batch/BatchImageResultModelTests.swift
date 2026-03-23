@@ -8,8 +8,8 @@ import UIKit
 struct BatchImageResultModelTests {
     @Test
     func result_state_reflects_processor_outcome() {
-        let firstImage = makeProcessedImage(filename: "first.jpg")
-        let secondImage = makeProcessedImage(filename: "second.jpg")
+        let firstImage = makeProcessedImage(filename: "first-Liet.jpg")
+        let secondImage = makeProcessedImage(filename: "second-Liet.jpg")
         let model = BatchImageResultModel(
             outcome: .init(
                 processedImages: [firstImage, secondImage],
@@ -23,6 +23,7 @@ struct BatchImageResultModelTests {
         #expect(model.failureCount == 3)
         #expect(model.jpegFallbackCount == 1)
         #expect(model.ignoredCompressionCount == 2)
+        #expect(model.resolvedFilename(for: firstImage) == "first-Liet.jpg")
         #expect(model.saveFeedback == nil)
         #expect(model.activeError == nil)
 
@@ -31,6 +32,31 @@ struct BatchImageResultModelTests {
         )
 
         #expect(model.saveFeedback == .exportedFiles(count: 2))
+    }
+
+    @Test
+    func custom_filenames_fall_back_when_blank_and_deduplicate_when_needed() {
+        let firstImage = makeProcessedImage(filename: "first-Liet.jpg")
+        let secondImage = makeProcessedImage(filename: "second-Liet.jpg")
+        let model = BatchImageResultModel(
+            outcome: .init(
+                processedImages: [firstImage, secondImage],
+                failureCount: 0,
+                jpegFallbackCount: 0,
+                ignoredCompressionCount: 0
+            )
+        )
+
+        model.setEditableFilenameStem("", for: firstImage)
+        model.setEditableFilenameStem("shared", for: secondImage)
+
+        #expect(model.resolvedFilename(for: firstImage) == "first-Liet.jpg")
+        #expect(model.resolvedFilename(for: secondImage) == "shared.jpg")
+
+        model.setEditableFilenameStem("shared", for: firstImage)
+
+        #expect(model.resolvedFilename(for: firstImage) == "shared.jpg")
+        #expect(model.resolvedFilename(for: secondImage) == "shared-2.jpg")
     }
 
     func makeProcessedImage(

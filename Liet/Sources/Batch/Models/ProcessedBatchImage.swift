@@ -45,6 +45,16 @@ extension ProcessedBatchImage {
         "\(outputFormat.displayName) • \(Int(pixelSize.width))×\(Int(pixelSize.height))"
     }
 
+    var defaultOutputStem: String {
+        URL(fileURLWithPath: outputFilename)
+            .deletingPathExtension()
+            .lastPathComponent
+    }
+
+    var outputFilenameExtension: String {
+        outputFormat.filenameExtension
+    }
+
     var contentType: UTType {
         ImageIOImageSupport.contentType(for: outputFormat)
     }

@@ -10,7 +10,7 @@ public struct BatchImageSettings: Equatable, Codable, Sendable {
     /// Creates a batch settings value with the repository defaults.
     public init(
         resizeMode: BatchResizeMode = .default,
-        compression: BatchImageCompression = .medium
+        compression: BatchImageCompression = .off
     ) {
         self.resizeMode = resizeMode
         self.compression = compression
@@ -18,18 +18,23 @@ public struct BatchImageSettings: Equatable, Codable, Sendable {
 }
 
 public extension BatchImageSettings {
-    /// The configured long edge for long-edge and exact-size resizing.
-    var longEdgePixels: Int? {
-        resizeMode.longEdgePixels
+    /// The configured width target.
+    var widthPixels: Int {
+        resizeMode.widthPixels
     }
 
-    /// The configured short edge for short-edge and exact-size resizing.
-    var shortEdgePixels: Int? {
-        resizeMode.shortEdgePixels
+    /// The configured height target.
+    var heightPixels: Int {
+        resizeMode.heightPixels
     }
 
     /// The exact-size strategy when this setting targets both edges.
     var exactResizeStrategy: BatchExactResizeStrategy? {
         resizeMode.exactResizeStrategy
+    }
+
+    /// Whether the resize mode preserves the source aspect ratio.
+    var keepsAspectRatio: Bool {
+        resizeMode.keepsAspectRatio
     }
 }

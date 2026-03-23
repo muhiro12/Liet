@@ -1,10 +1,15 @@
 import Foundation
-import Photos
 @testable import Liet
 import LietLibrary
+import Photos
 import Testing
 
 struct PhotoLibrarySaveServiceTests {
+    private enum Metrics {
+        static let previewWidth = 80.0
+        static let previewHeight = 60.0
+    }
+
     @Test
     func asset_resource_inputs_use_photo_resources_and_output_filenames() throws {
         let firstImage = try Self.makeProcessedImage(
@@ -36,7 +41,10 @@ private extension PhotoLibrarySaveServiceTests {
         outputFormat: ImageFileFormat
     ) throws -> ProcessedBatchImage {
         let previewImage = BatchImageTestFactory.makeUIImage(
-            size: CGSize(width: 80, height: 60)
+            size: CGSize(
+                width: Metrics.previewWidth,
+                height: Metrics.previewHeight
+            )
         )
         let outputURL = try BatchImageTestFactory.writeImageData(
             for: previewImage,
@@ -50,7 +58,10 @@ private extension PhotoLibrarySaveServiceTests {
             outputFilename: outputFilename,
             outputFormat: outputFormat,
             originalFormat: outputFormat,
-            pixelSize: CGSize(width: 80, height: 60),
+            pixelSize: CGSize(
+                width: Metrics.previewWidth,
+                height: Metrics.previewHeight
+            ),
             previewImage: previewImage,
             usedJPEGFallback: false,
             ignoredCompressionSetting: outputFormat == .png

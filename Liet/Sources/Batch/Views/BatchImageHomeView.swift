@@ -3,8 +3,6 @@ import PhotosUI
 import SwiftUI
 import TipKit
 
-// swiftlint:disable closure_body_length
-
 struct BatchImageHomeView: View {
     private enum Layout {
         static let contentPadding = 20.0
@@ -16,8 +14,8 @@ struct BatchImageHomeView: View {
     }
 
     private enum ResizeField: Hashable {
-        case longEdge
-        case shortEdge
+        case width
+        case height
     }
 
     @Bindable var model: BatchImageHomeModel
@@ -91,6 +89,39 @@ private extension BatchImageHomeView {
         )
     }
 
+    var resizeWidthBinding: Binding<String> {
+        Binding(
+            get: {
+                model.resizeWidthText
+            },
+            set: { newValue in
+                model.setResizeWidthText(newValue)
+            }
+        )
+    }
+
+    var resizeHeightBinding: Binding<String> {
+        Binding(
+            get: {
+                model.resizeHeightText
+            },
+            set: { newValue in
+                model.setResizeHeightText(newValue)
+            }
+        )
+    }
+
+    var keepsAspectRatioBinding: Binding<Bool> {
+        Binding(
+            get: {
+                model.keepsAspectRatio
+            },
+            set: { newValue in
+                model.setKeepsAspectRatio(newValue)
+            }
+        )
+    }
+
     func importSection() -> some View {
         VStack(
             alignment: .leading,
@@ -118,7 +149,9 @@ private extension BatchImageHomeView {
                 TipView(processingSetupTip)
             }
 
-            compressionSection()
+            if model.showsCompressionSection {
+                compressionSection()
+            }
         }
     }
 
@@ -127,51 +160,39 @@ private extension BatchImageHomeView {
             alignment: .leading,
             spacing: Layout.cardSpacing
         ) {
-            VStack(
-                alignment: .leading,
-                spacing: Layout.controlSpacing
-            ) {
-                Text("Resize mode")
-                    .font(.subheadline.weight(.medium))
+            Text("Output size")
+                .font(.subheadline.weight(.medium))
 
-                Picker(selection: $model.resizeModeSelection) {
-                    Text("Long edge")
-                        .tag(BatchImageHomeModel.ResizeInputMode.longEdge)
-                    Text("Short edge")
-                        .tag(BatchImageHomeModel.ResizeInputMode.shortEdge)
-                    Text("Exact size")
-                        .tag(BatchImageHomeModel.ResizeInputMode.exactSize)
-                } label: {
-                    Text("Resize mode")
-                }
-                .pickerStyle(.segmented)
-            }
+            dimensionInputSection(
+                title: Text("Width (px)"),
+                placeholder: "1920",
+                text: resizeWidthBinding,
+                focusField: .width
+            )
 
-            if model.isLongEdgeMode {
-                edgeInputSection(
-                    title: Text("Long edge (px)"),
-                    placeholder: "1920",
-                    text: $model.resizeLongEdgeText,
-                    focusField: .longEdge
-                )
-            }
+            dimensionInputSection(
+                title: Text("Height (px)"),
+                placeholder: "1080",
+                text: resizeHeightBinding,
+                focusField: .height
+            )
 
-            if model.isShortEdgeMode {
-                edgeInputSection(
-                    title: Text("Short edge (px)"),
-                    placeholder: "1080",
-                    text: $model.resizeShortEdgeText,
-                    focusField: .shortEdge
-                )
-            }
+            Toggle(
+                "Keep aspect ratio",
+                isOn: keepsAspectRatioBinding
+            )
 
-            if model.isExactSizeMode {
+            if model.keepsAspectRatio {
+                Text("Images stay within the target box and smaller images keep their original size.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
                 exactSizeSection()
             }
         }
     }
 
-    private func edgeInputSection(
+    private func dimensionInputSection(
         title: Text,
         placeholder: String,
         text: Binding<String>,
@@ -188,10 +209,6 @@ private extension BatchImageHomeView {
                 .focused($focusedResizeField, equals: focusField)
                 .keyboardType(.numberPad)
                 .textFieldStyle(.roundedBorder)
-
-            Text("Smaller images keep their original size.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
         }
     }
 
@@ -200,20 +217,6 @@ private extension BatchImageHomeView {
             alignment: .leading,
             spacing: Layout.cardSpacing
         ) {
-            edgeInputSection(
-                title: Text("Long edge (px)"),
-                placeholder: "1920",
-                text: $model.resizeLongEdgeText,
-                focusField: .longEdge
-            )
-
-            edgeInputSection(
-                title: Text("Short edge (px)"),
-                placeholder: "1080",
-                text: $model.resizeShortEdgeText,
-                focusField: .shortEdge
-            )
-
             VStack(
                 alignment: .leading,
                 spacing: Layout.controlSpacing
@@ -222,9 +225,11 @@ private extension BatchImageHomeView {
                     .font(.subheadline.weight(.medium))
 
                 Picker(selection: $model.exactResizeStrategy) {
+                    Text("Stretch")
+                        .tag(BatchExactResizeStrategy.stretch)
                     Text("Contain")
                         .tag(BatchExactResizeStrategy.contain)
-                    Text("Cover Crop")
+                    Text("Crop")
                         .tag(BatchExactResizeStrategy.coverCrop)
                 } label: {
                     Text("Method")
@@ -233,8 +238,8 @@ private extension BatchImageHomeView {
 
                 Text(
                     """
-                    Contain keeps the whole image in the target canvas. \
-                    Cover Crop fills the canvas by cropping from the center.
+                    Stretch fills the canvas exactly. Contain keeps the whole image inside the canvas. \
+                    Crop fills the canvas by trimming from the center.
                     """
                 )
                 .font(.footnote)
@@ -339,6 +344,8 @@ private extension BatchImageHomeView {
                 .font(.subheadline.weight(.medium))
 
             Picker("Compression", selection: $model.compression) {
+                Text("Off")
+                    .tag(BatchImageCompression.off)
                 Text("High")
                     .tag(BatchImageCompression.high)
                 Text("Medium")
@@ -348,9 +355,11 @@ private extension BatchImageHomeView {
             }
             .pickerStyle(.segmented)
 
-            Text("PNG keeps its format and ignores the compression quality setting.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            if model.showsMixedCompressionHint {
+                Text("PNG images keep their format and ignore the compression setting.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
@@ -377,10 +386,8 @@ private extension BatchImageHomeView {
     }
 
     func processDetail() -> some View {
-        Text("Processed images are always written as new files.")
+        Text("Processed images are always written as new files and default to the original name with a Liet suffix.")
             .font(.footnote)
             .foregroundStyle(.secondary)
     }
 }
-
-// swiftlint:enable closure_body_length

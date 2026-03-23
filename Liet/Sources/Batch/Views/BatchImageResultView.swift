@@ -108,13 +108,21 @@ private extension BatchImageResultView {
             Text("Processed images")
                 .font(.title3.weight(.semibold))
 
+            Text("Edit each export name before saving if needed.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
             LazyVGrid(
                 columns: columns,
                 alignment: .leading,
                 spacing: Layout.gridSpacing
             ) {
                 ForEach(model.processedImages) { image in
-                    ProcessedBatchImageTile(image: image)
+                    ProcessedBatchImageTile(
+                        image: image,
+                        resolvedFilename: model.resolvedFilename(for: image),
+                        filenameStem: filenameStemBinding(for: image)
+                    )
                 }
             }
         }
@@ -264,5 +272,21 @@ private extension BatchImageResultView {
         case .photoLibrarySaveFailed:
             Text("Couldn't save the processed images to Photos.")
         }
+    }
+
+    func filenameStemBinding(
+        for image: ProcessedBatchImage
+    ) -> Binding<String> {
+        Binding(
+            get: {
+                model.editableFilenameStem(for: image)
+            },
+            set: { newValue in
+                model.setEditableFilenameStem(
+                    newValue,
+                    for: image
+                )
+            }
+        )
     }
 }

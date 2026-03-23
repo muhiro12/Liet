@@ -13,7 +13,9 @@ struct BatchImageHomeModelTests {
 
     @Test
     func changing_settings_invalidates_processed_results() throws {
-        let model: BatchImageHomeModel = .init()
+        let model: BatchImageHomeModel = .init(
+            settingsStore: .inMemory()
+        )
         model.resultModel = .init(
             outcome: .init(
                 processedImages: [try BatchImageTestFactory.makeProcessedImage()],
@@ -23,7 +25,7 @@ struct BatchImageHomeModelTests {
             )
         )
 
-        model.resizeModeSelection = .shortEdge
+        model.setResizeWidthText("1280")
         #expect(model.resultModel == nil)
 
         model.resultModel = .init(
@@ -35,7 +37,7 @@ struct BatchImageHomeModelTests {
             )
         )
 
-        model.resizeShortEdgeText = "720"
+        model.setKeepsAspectRatio(false)
         #expect(model.resultModel == nil)
 
         model.resultModel = .init(
@@ -46,7 +48,6 @@ struct BatchImageHomeModelTests {
                 ignoredCompressionCount: 0
             )
         )
-        model.resizeModeSelection = .exactSize
         model.exactResizeStrategy = .coverCrop
         #expect(model.resultModel == nil)
 
@@ -64,32 +65,97 @@ struct BatchImageHomeModelTests {
     }
 
     @Test
-    func settings_follow_selected_resize_mode() {
-        let model: BatchImageHomeModel = .init()
+    func settings_follow_current_resize_configuration() {
+        let model: BatchImageHomeModel = .init(
+            settingsStore: .inMemory()
+        )
 
-        #expect(model.settings?.resizeMode == .longEdgePixels(1_920))
+        #expect(
+            model.settings?.resizeMode == .fitWithin(
+                widthPixels: 1_920,
+                heightPixels: 1_080
+            )
+        )
 
-        model.resizeModeSelection = .shortEdge
-        model.resizeShortEdgeText = "320"
-        #expect(model.settings?.resizeMode == .shortEdgePixels(320))
-
-        model.resizeModeSelection = .exactSize
-        model.resizeLongEdgeText = "180"
-        model.resizeShortEdgeText = "180"
+        model.setKeepsAspectRatio(false)
+        model.setResizeWidthText("320")
+        model.setResizeHeightText("180")
         model.exactResizeStrategy = .coverCrop
         #expect(
             model.settings?.resizeMode == .exactSize(
-                longEdgePixels: 180,
-                shortEdgePixels: 180,
+                widthPixels: 320,
+                heightPixels: 180,
                 strategy: .coverCrop
             )
         )
     }
 
     @Test
+    func aspect_ratio_lock_tracks_previous_ratio_and_persists_settings() {
+        let settingsStore = BatchImageSettingsStore.inMemory()
+        let firstModel: BatchImageHomeModel = .init(
+            settingsStore: settingsStore
+        )
+
+        firstModel.setResizeWidthText("1280")
+        firstModel.compression = .high
+
+        #expect(firstModel.resizeHeightText == "720")
+
+        let secondModel: BatchImageHomeModel = .init(
+            settingsStore: settingsStore
+        )
+
+        #expect(secondModel.resizeWidthText == "1280")
+        #expect(secondModel.resizeHeightText == "720")
+        #expect(secondModel.keepsAspectRatio)
+        #expect(secondModel.compression == .high)
+    }
+
+    @Test
+    func unlocked_size_allows_independent_edits_and_hides_png_only_compression() throws {
+        let model: BatchImageHomeModel = .init(
+            settingsStore: .inMemory()
+        )
+
+        model.setKeepsAspectRatio(false)
+        model.setResizeWidthText("300")
+        model.setResizeHeightText("120")
+
+        #expect(model.resizeWidthText == "300")
+        #expect(model.resizeHeightText == "120")
+
+        model.importedImages = [
+            try BatchImageTestFactory.makeImportedImage(
+                format: .png,
+                size: Metrics.sourceSize,
+                originalFilename: "diagram.png",
+                selectionIndex: Metrics.importedSelectionIndex
+            )
+        ]
+
+        #expect(model.showsCompressionSection == false)
+        #expect(model.showsMixedCompressionHint == false)
+
+        model.importedImages.append(
+            try BatchImageTestFactory.makeImportedImage(
+                format: .jpeg,
+                size: Metrics.sourceSize,
+                originalFilename: "photo.jpg",
+                selectionIndex: Metrics.importedSelectionIndex + 1
+            )
+        )
+
+        #expect(model.showsCompressionSection)
+        #expect(model.showsMixedCompressionHint)
+    }
+
+    @Test
     func process_images_only_presents_results_when_processing_succeeds() throws {
         BatchImageTipSupport.resetTips()
-        let failedModel: BatchImageHomeModel = .init()
+        let failedModel: BatchImageHomeModel = .init(
+            settingsStore: .inMemory()
+        )
         failedModel.importedImages = [
             BatchImageTestFactory.makeMissingImportedImage(
                 format: .jpeg,
@@ -104,7 +170,9 @@ struct BatchImageHomeModelTests {
         #expect(failedModel.activeAlert == .processSelectionFailed)
         #expect(BatchImageTipSupport.progressSnapshot().processCompleted == false)
 
-        let successfulModel: BatchImageHomeModel = .init()
+        let successfulModel: BatchImageHomeModel = .init(
+            settingsStore: .inMemory()
+        )
         successfulModel.importedImages = [
             try BatchImageTestFactory.makeImportedImage(
                 format: .jpeg,

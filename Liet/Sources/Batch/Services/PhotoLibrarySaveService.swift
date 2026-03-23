@@ -11,9 +11,9 @@ enum PhotoLibrarySaveService {
 
 extension PhotoLibrarySaveService {
     nonisolated static func save(
-        _ images: [ProcessedBatchImage]
+        _ inputs: [AssetResourceInput]
     ) async throws {
-        guard !images.isEmpty else {
+        guard !inputs.isEmpty else {
             return
         }
 
@@ -26,7 +26,7 @@ extension PhotoLibrarySaveService {
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             PHPhotoLibrary.shared().performChanges({
-                createAssetRequests(for: images)
+                createAssetRequests(for: inputs)
             }, completionHandler: { success, error in
                 resumeSave(
                     continuation: continuation,
@@ -52,9 +52,9 @@ extension PhotoLibrarySaveService {
 
 private extension PhotoLibrarySaveService {
     nonisolated static func createAssetRequests(
-        for images: [ProcessedBatchImage]
+        for inputs: [AssetResourceInput]
     ) {
-        for input in assetResourceInputs(for: images) {
+        for input in inputs {
             let request = PHAssetCreationRequest.forAsset()
             request.addResource(
                 with: input.resourceType,

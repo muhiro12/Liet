@@ -13,6 +13,17 @@ struct ProcessedImageExportDocument: FileDocument, Identifiable {
     let contentType: UTType
 
     init(
+        exportItem: ProcessedImageExportItem
+    ) {
+        self.init(
+            fileURL: exportItem.fileURL,
+            filename: exportItem.filename,
+            contentType: exportItem.contentType,
+            id: exportItem.id
+        )
+    }
+
+    init(
         fileURL: URL,
         filename: String,
         contentType: UTType,
