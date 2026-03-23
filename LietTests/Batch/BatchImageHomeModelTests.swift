@@ -87,16 +87,9 @@ struct BatchImageHomeModelTests {
     }
 
     @Test
-    func process_images_only_presents_results_when_processing_succeeds() async throws {
+    func process_images_only_presents_results_when_processing_succeeds() throws {
         BatchImageTipSupport.resetTips()
-        let localization = BatchImageLocalization(
-            locale: .init(identifier: "en"),
-            bundle: Bundle(for: BatchImageHomeModel.self)
-        )
-
-        let failedModel: BatchImageHomeModel = .init(
-            localization: localization
-        )
+        let failedModel: BatchImageHomeModel = .init()
         failedModel.importedImages = [
             BatchImageTestFactory.makeMissingImportedImage(
                 format: .jpeg,
@@ -105,18 +98,13 @@ struct BatchImageHomeModelTests {
             )
         ]
 
-        await failedModel.processImages()
+        failedModel.processImages()
 
         #expect(failedModel.resultModel == nil)
-        #expect(
-            failedModel.errorMessage ==
-                localization.processSelectionFailedMessage()
-        )
+        #expect(failedModel.activeAlert == .processSelectionFailed)
         #expect(BatchImageTipSupport.progressSnapshot().processCompleted == false)
 
-        let successfulModel: BatchImageHomeModel = .init(
-            localization: localization
-        )
+        let successfulModel: BatchImageHomeModel = .init()
         successfulModel.importedImages = [
             try BatchImageTestFactory.makeImportedImage(
                 format: .jpeg,
@@ -126,10 +114,10 @@ struct BatchImageHomeModelTests {
             )
         ]
 
-        await successfulModel.processImages()
+        successfulModel.processImages()
 
         #expect(successfulModel.resultModel != nil)
-        #expect(successfulModel.errorMessage == nil)
+        #expect(successfulModel.activeAlert == nil)
         #expect(BatchImageTipSupport.progressSnapshot().processCompleted)
     }
 }

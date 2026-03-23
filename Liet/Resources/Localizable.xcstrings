@@ -18,8 +18,7 @@
         }
       }
     },
-    "batch.error.failedToCreateImageSource" : {
-      "extractionState" : "stale",
+    "Couldn't read one of the selected images." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -35,8 +34,7 @@
         }
       }
     },
-    "batch.error.failedToCreateThumbnail" : {
-      "extractionState" : "stale",
+    "Couldn't generate an image preview." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -52,8 +50,7 @@
         }
       }
     },
-    "batch.error.failedToEncodeImage" : {
-      "extractionState" : "stale",
+    "Couldn't write one of the processed images." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -69,8 +66,7 @@
         }
       }
     },
-    "batch.error.failedToLoadImageData" : {
-      "extractionState" : "stale",
+    "Couldn't load one of the selected images." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -86,8 +82,7 @@
         }
       }
     },
-    "batch.error.failedToReadImageProperties" : {
-      "extractionState" : "stale",
+    "Couldn't inspect one of the selected images." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -103,8 +98,7 @@
         }
       }
     },
-    "batch.error.photoLibraryPermissionDenied" : {
-      "extractionState" : "stale",
+    "Photo Library access is required to save images." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -120,8 +114,7 @@
         }
       }
     },
-    "batch.error.photoLibrarySaveFailed" : {
-      "extractionState" : "stale",
+    "Couldn't save the processed images to Photos." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -137,13 +130,12 @@
         }
       }
     },
-    "batch.export.files.multiple" : {
-      "extractionState" : "stale",
+    "Exported %lld images to Files." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exported %@ images to Files."
+            "value" : "Exported %lld images to Files."
           }
         },
         "ja" : {
@@ -154,8 +146,7 @@
         }
       }
     },
-    "batch.export.files.single" : {
-      "extractionState" : "stale",
+    "Exported 1 image to Files." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -171,13 +162,12 @@
         }
       }
     },
-    "batch.export.photos.multiple" : {
-      "extractionState" : "stale",
+    "Saved %lld images to Photos." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Saved %@ images to Photos."
+            "value" : "Saved %lld images to Photos."
           }
         },
         "ja" : {
@@ -188,8 +178,7 @@
         }
       }
     },
-    "batch.export.photos.single" : {
-      "extractionState" : "stale",
+    "Saved 1 image to Photos." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -205,13 +194,12 @@
         }
       }
     },
-    "batch.import.failure.multiple" : {
-      "extractionState" : "stale",
+    "%lld images couldn't be loaded." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ images couldn't be loaded."
+            "value" : "%lld images couldn't be loaded."
           }
         },
         "ja" : {
@@ -222,8 +210,7 @@
         }
       }
     },
-    "batch.import.failure.single" : {
-      "extractionState" : "stale",
+    "1 image couldn't be loaded." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -239,8 +226,7 @@
         }
       }
     },
-    "batch.import.selection.failed" : {
-      "extractionState" : "stale",
+    "Couldn't import the selected images." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -256,8 +242,7 @@
         }
       }
     },
-    "batch.process.selection.failed" : {
-      "extractionState" : "stale",
+    "Couldn't process the selected images." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -273,13 +258,12 @@
         }
       }
     },
-    "batch.result.failure.multiple" : {
-      "extractionState" : "stale",
+    "%lld images couldn't be processed." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ images couldn't be processed."
+            "value" : "%lld images couldn't be processed."
           }
         },
         "ja" : {
@@ -290,8 +274,7 @@
         }
       }
     },
-    "batch.result.failure.single" : {
-      "extractionState" : "stale",
+    "1 image couldn't be processed." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -307,13 +290,12 @@
         }
       }
     },
-    "batch.result.jpegFallback.multiple" : {
-      "extractionState" : "stale",
+    "%lld images were exported as JPEG because the original format couldn't be preserved." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ images were exported as JPEG because the original format couldn't be preserved."
+            "value" : "%lld images were exported as JPEG because the original format couldn't be preserved."
           }
         },
         "ja" : {
@@ -324,8 +306,7 @@
         }
       }
     },
-    "batch.result.jpegFallback.single" : {
-      "extractionState" : "stale",
+    "1 image was exported as JPEG because the original format couldn't be preserved." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -341,8 +322,7 @@
         }
       }
     },
-    "batch.result.pngCompression.multiple" : {
-      "extractionState" : "stale",
+    "PNG images ignore the compression quality setting." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -358,8 +338,7 @@
         }
       }
     },
-    "batch.result.pngCompression.single" : {
-      "extractionState" : "stale",
+    "PNG ignores the compression quality setting." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -375,13 +354,12 @@
         }
       }
     },
-    "batch.result.ready.multiple" : {
-      "extractionState" : "stale",
+    "%lld images ready" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ images ready"
+            "value" : "%lld images ready"
           }
         },
         "ja" : {
@@ -392,8 +370,7 @@
         }
       }
     },
-    "batch.result.ready.single" : {
-      "extractionState" : "stale",
+    "1 image ready" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -409,13 +386,12 @@
         }
       }
     },
-    "batch.selection.count.multiple" : {
-      "extractionState" : "stale",
+    "%lld images selected" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ images selected"
+            "value" : "%lld images selected"
           }
         },
         "ja" : {
@@ -426,8 +402,7 @@
         }
       }
     },
-    "batch.selection.count.single" : {
-      "extractionState" : "stale",
+    "1 image selected" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -443,8 +418,7 @@
         }
       }
     },
-    "batch.validation.exact.invalid" : {
-      "extractionState" : "stale",
+    "Enter valid long-edge and short-edge sizes." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -460,8 +434,7 @@
         }
       }
     },
-    "batch.validation.longEdge.invalid" : {
-      "extractionState" : "stale",
+    "Enter a valid long-edge size." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -477,8 +450,7 @@
         }
       }
     },
-    "batch.validation.shortEdge.invalid" : {
-      "extractionState" : "stale",
+    "Enter a valid short-edge size." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -591,12 +563,8 @@
         }
       }
     },
-    "Contain keeps the whole image in the target canvas. Cover Crop fills the canvas by cropping from the center." : {
-
-    },
-    "Contain may leave padding when the image and target aspect ratios differ." : {
-
-    },
+    "Contain keeps the whole image in the target canvas. Cover Crop fills the canvas by cropping from the center." : {},
+    "Contain may leave padding when the image and target aspect ratios differ." : {},
     "Cover Crop" : {
       "localizations" : {
         "en" : {
@@ -773,9 +741,7 @@
         }
       }
     },
-    "Method" : {
-
-    },
+    "Method" : {},
     "OK" : {
       "localizations" : {
         "en" : {
@@ -904,9 +870,7 @@
         }
       }
     },
-    "Resize mode" : {
-
-    },
+    "Resize mode" : {},
     "Results" : {
       "localizations" : {
         "en" : {
@@ -1051,9 +1015,7 @@
         }
       }
     },
-    "Short edge (px)" : {
-
-    },
+    "Short edge (px)" : {},
     "Show Tips Again" : {
       "localizations" : {
         "en" : {

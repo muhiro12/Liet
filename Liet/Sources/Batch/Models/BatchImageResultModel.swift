@@ -4,6 +4,11 @@ import Observation
 @MainActor
 @Observable
 final class BatchImageResultModel: Identifiable {
+    enum SaveFeedback: Equatable {
+        case exportedFiles(count: Int)
+        case savedToPhotos(count: Int)
+    }
+
     let id: UUID = .init()
     let processedImages: [ProcessedBatchImage]
     let failureCount: Int
@@ -12,20 +17,16 @@ final class BatchImageResultModel: Identifiable {
 
     var isExportingFiles = false
     var isSavingToPhotos = false
-    var saveMessage: String?
-    var errorMessage: String?
-
-    private let localization: BatchImageLocalization
+    var saveFeedback: SaveFeedback?
+    var activeError: (any Error)?
 
     init(
-        outcome: BatchImageProcessor.Outcome,
-        localization: BatchImageLocalization = .init()
+        outcome: BatchImageProcessor.Outcome
     ) {
         processedImages = outcome.processedImages
         failureCount = outcome.failureCount
         jpegFallbackCount = outcome.jpegFallbackCount
         ignoredCompressionCount = outcome.ignoredCompressionCount
-        self.localization = localization
     }
 }
 
@@ -40,39 +41,9 @@ extension BatchImageResultModel {
         }
     }
 
-    var titleText: String {
-        localization.resultReadyTitle(count: processedImages.count)
-    }
-
-    var detailMessages: [String] {
-        var messages: [String] = []
-
-        if failureCount > 0 {
-            messages.append(
-                localization.resultFailureMessage(count: failureCount)
-            )
-        }
-
-        if jpegFallbackCount > 0 {
-            messages.append(
-                localization.jpegFallbackMessage(count: jpegFallbackCount)
-            )
-        }
-
-        if ignoredCompressionCount > 0 {
-            messages.append(
-                localization.pngCompressionMessage(
-                    count: ignoredCompressionCount
-                )
-            )
-        }
-
-        return messages
-    }
-
     func beginFileExport() {
-        saveMessage = nil
-        errorMessage = nil
+        saveFeedback = nil
+        activeError = nil
         isExportingFiles = true
     }
 
@@ -83,9 +54,7 @@ extension BatchImageResultModel {
 
         switch result {
         case let .success(urls):
-            saveMessage = localization.exportFilesSuccessMessage(
-                count: urls.count
-            )
+            saveFeedback = .exportedFiles(count: urls.count)
 
             guard !urls.isEmpty else {
                 return
@@ -95,7 +64,7 @@ extension BatchImageResultModel {
                 BatchImageTipSupport.donateSaveToFilesSuccess()
             }
         case let .failure(error):
-            errorMessage = error.localizedDescription
+            activeError = error
         }
     }
 
@@ -104,8 +73,8 @@ extension BatchImageResultModel {
     }
 
     func saveToPhotos() async {
-        saveMessage = nil
-        errorMessage = nil
+        saveFeedback = nil
+        activeError = nil
         isSavingToPhotos = true
         defer {
             isSavingToPhotos = false
@@ -113,12 +82,10 @@ extension BatchImageResultModel {
 
         do {
             try await PhotoLibrarySaveService.save(processedImages)
-            saveMessage = localization.exportPhotosSuccessMessage(
-                count: processedImages.count
-            )
+            saveFeedback = .savedToPhotos(count: processedImages.count)
             BatchImageTipSupport.donateSaveToPhotosSuccess()
         } catch {
-            errorMessage = error.localizedDescription
+            activeError = error
         }
     }
 

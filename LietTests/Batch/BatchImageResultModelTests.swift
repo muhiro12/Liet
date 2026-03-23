@@ -7,11 +7,7 @@ import UIKit
 @MainActor
 struct BatchImageResultModelTests {
     @Test
-    func result_messages_follow_injected_localization() {
-        let localization = BatchImageLocalization(
-            locale: .init(identifier: "ja"),
-            bundle: Bundle(for: BatchImageHomeModel.self)
-        )
+    func result_state_reflects_processor_outcome() {
         let firstImage = makeProcessedImage(filename: "first.jpg")
         let secondImage = makeProcessedImage(filename: "second.jpg")
         let model = BatchImageResultModel(
@@ -20,24 +16,21 @@ struct BatchImageResultModelTests {
                 failureCount: 3,
                 jpegFallbackCount: 1,
                 ignoredCompressionCount: 2
-            ),
-            localization: localization
+            )
         )
 
-        #expect(model.titleText == "2 枚の画像を処理しました")
-        #expect(
-            model.detailMessages == [
-                "3 枚の画像を処理できませんでした。",
-                "元の形式を保持できなかったため、1 枚を JPEG として書き出しました。",
-                "PNG 画像では圧縮品質の設定は適用されません。"
-            ]
-        )
+        #expect(model.processedImages.count == 2)
+        #expect(model.failureCount == 3)
+        #expect(model.jpegFallbackCount == 1)
+        #expect(model.ignoredCompressionCount == 2)
+        #expect(model.saveFeedback == nil)
+        #expect(model.activeError == nil)
 
         model.handleFileExportCompletion(
             .success([firstImage.outputURL, secondImage.outputURL])
         )
 
-        #expect(model.saveMessage == "2 枚の画像をファイルに保存しました。")
+        #expect(model.saveFeedback == .exportedFiles(count: 2))
     }
 
     func makeProcessedImage(

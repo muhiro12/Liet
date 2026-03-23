@@ -7,6 +7,14 @@ import SwiftUI
 @MainActor
 @Observable
 final class BatchImageHomeModel {
+    enum AlertState: Equatable {
+        case invalidLongEdgeSize
+        case invalidShortEdgeSize
+        case invalidExactSize
+        case importSelectionFailed
+        case processSelectionFailed
+    }
+
     enum ResizeInputMode: String, CaseIterable, Identifiable {
         case longEdge
         case shortEdge
@@ -57,18 +65,11 @@ final class BatchImageHomeModel {
     }
     var isImporting = false
     var isProcessing = false
-    var errorMessage: String?
-    var importMessage: String?
+    var activeAlert: AlertState?
+    var importFailureCount: Int?
     var resultModel: BatchImageResultModel?
 
-    private let localization: BatchImageLocalization
     private var importSessionID: UUID = .init()
-
-    init(
-        localization: BatchImageLocalization = .init()
-    ) {
-        self.localization = localization
-    }
 }
 
 extension BatchImageHomeModel {
@@ -107,10 +108,6 @@ extension BatchImageHomeModel {
 
     var isExactSizeMode: Bool {
         resizeModeSelection == .exactSize
-    }
-
-    var selectedImageCountText: String {
-        localization.selectedImageCount(importedImages.count)
     }
 
     var settings: BatchImageSettings? {
@@ -152,14 +149,14 @@ extension BatchImageHomeModel {
         )
     }
 
-    var resizeValidationMessage: String {
+    private var resizeValidationAlertState: AlertState {
         switch resizeModeSelection {
         case .longEdge:
-            localization.invalidLongEdgeSizeMessage()
+            .invalidLongEdgeSize
         case .shortEdge:
-            localization.invalidShortEdgeSizeMessage()
+            .invalidShortEdgeSize
         case .exactSize:
-            localization.invalidExactSizeMessage()
+            .invalidExactSize
         }
     }
 
@@ -169,8 +166,8 @@ extension BatchImageHomeModel {
         let sessionID: UUID = .init()
         importSessionID = sessionID
         invalidateProcessedResults()
-        errorMessage = nil
-        importMessage = nil
+        activeAlert = nil
+        importFailureCount = nil
 
         guard !items.isEmpty else {
             importedImages = []
@@ -188,13 +185,11 @@ extension BatchImageHomeModel {
         importedImages = result.importedImages
 
         if result.failureCount > 0 {
-            importMessage = localization.importFailureMessage(
-                count: result.failureCount
-            )
+            importFailureCount = result.failureCount
         }
 
         if importedImages.isEmpty {
-            errorMessage = localization.importSelectionFailedMessage()
+            activeAlert = .importSelectionFailed
             return
         }
 
@@ -205,8 +200,8 @@ extension BatchImageHomeModel {
         importSessionID = .init()
         isImporting = false
         importedImages = []
-        errorMessage = nil
-        importMessage = nil
+        activeAlert = nil
+        importFailureCount = nil
         invalidateProcessedResults()
     }
 
@@ -214,15 +209,15 @@ extension BatchImageHomeModel {
         resultModel = nil
     }
 
-    func processImages() async {
+    func processImages() {
         guard let settings else {
-            errorMessage = resizeValidationMessage
+            activeAlert = resizeValidationAlertState
             return
         }
 
-        errorMessage = nil
+        activeAlert = nil
         isProcessing = true
-        let outcome = await BatchImageProcessor.process(
+        let outcome = BatchImageProcessor.process(
             images: importedImages,
             settings: settings
         )
@@ -230,14 +225,11 @@ extension BatchImageHomeModel {
 
         guard !outcome.processedImages.isEmpty else {
             resultModel = nil
-            errorMessage = localization.processSelectionFailedMessage()
+            activeAlert = .processSelectionFailed
             return
         }
 
-        resultModel = .init(
-            outcome: outcome,
-            localization: localization
-        )
+        resultModel = .init(outcome: outcome)
         BatchImageTipSupport.donateProcessSuccess()
     }
 

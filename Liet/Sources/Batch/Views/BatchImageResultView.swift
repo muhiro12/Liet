@@ -57,10 +57,12 @@ struct BatchImageResultView: View {
             isPresented: errorPresented
         ) {
             Button("OK", role: .cancel) {
-                model.errorMessage = nil
+                model.activeError = nil
             }
         } message: {
-            Text(model.errorMessage ?? "")
+            if let activeError = model.activeError {
+                errorText(for: activeError)
+            }
         }
     }
 }
@@ -69,11 +71,11 @@ private extension BatchImageResultView {
     var errorPresented: Binding<Bool> {
         Binding(
             get: {
-                model.errorMessage != nil
+                model.activeError != nil
             },
             set: { isPresented in
                 if !isPresented {
-                    model.errorMessage = nil
+                    model.activeError = nil
                 }
             }
         )
@@ -84,17 +86,13 @@ private extension BatchImageResultView {
             alignment: .leading,
             spacing: Layout.controlSpacing
         ) {
-            Text(model.titleText)
+            resultTitleText(model.processedImages.count)
                 .font(.title2.weight(.semibold))
 
-            ForEach(model.detailMessages, id: \.self) { message in
-                Text(message)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
+            resultDetailMessages()
 
-            if let saveMessage = model.saveMessage {
-                Text(saveMessage)
+            if let saveFeedback = model.saveFeedback {
+                saveFeedbackText(saveFeedback)
                     .font(.subheadline.weight(.medium))
             }
 
@@ -154,6 +152,117 @@ private extension BatchImageResultView {
             }
             .buttonStyle(.bordered)
             .disabled(model.isSavingToPhotos)
+        }
+    }
+
+    @ViewBuilder
+    func resultDetailMessages() -> some View {
+        if model.failureCount > 0 {
+            resultFailureText(model.failureCount)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+
+        if model.jpegFallbackCount > 0 {
+            jpegFallbackText(model.jpegFallbackCount)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+
+        if model.ignoredCompressionCount > 0 {
+            pngCompressionText(model.ignoredCompressionCount)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    func resultTitleText(
+        _ count: Int
+    ) -> Text {
+        if count == 1 {
+            Text("1 image ready")
+        } else {
+            Text("\(count) images ready")
+        }
+    }
+
+    func resultFailureText(
+        _ count: Int
+    ) -> Text {
+        if count == 1 {
+            Text("1 image couldn't be processed.")
+        } else {
+            Text("\(count) images couldn't be processed.")
+        }
+    }
+
+    func jpegFallbackText(
+        _ count: Int
+    ) -> Text {
+        if count == 1 {
+            Text("1 image was exported as JPEG because the original format couldn't be preserved.")
+        } else {
+            Text("\(count) images were exported as JPEG because the original format couldn't be preserved.")
+        }
+    }
+
+    func pngCompressionText(
+        _ count: Int
+    ) -> Text {
+        if count == 1 {
+            Text("PNG ignores the compression quality setting.")
+        } else {
+            Text("PNG images ignore the compression quality setting.")
+        }
+    }
+
+    func saveFeedbackText(
+        _ feedback: BatchImageResultModel.SaveFeedback
+    ) -> Text {
+        switch feedback {
+        case let .exportedFiles(count):
+            if count == 1 {
+                Text("Exported 1 image to Files.")
+            } else {
+                Text("Exported \(count) images to Files.")
+            }
+        case let .savedToPhotos(count):
+            if count == 1 {
+                Text("Saved 1 image to Photos.")
+            } else {
+                Text("Saved \(count) images to Photos.")
+            }
+        }
+    }
+
+    func errorText(
+        for error: any Error
+    ) -> Text {
+        if let batchError = error as? BatchImageServiceError {
+            return batchServiceErrorText(for: batchError)
+        }
+
+        return Text(error.localizedDescription)
+    }
+
+    func batchServiceErrorText(
+        for error: BatchImageServiceError
+    ) -> Text {
+        switch error {
+        case .failedToLoadImageData:
+            Text("Couldn't load one of the selected images.")
+        case .failedToCreateImageSource:
+            Text("Couldn't read one of the selected images.")
+        case .failedToReadImageProperties:
+            Text("Couldn't inspect one of the selected images.")
+        case .failedToCreateThumbnail:
+            Text("Couldn't generate an image preview.")
+        case .failedToEncodeImage:
+            Text("Couldn't write one of the processed images.")
+        case .photoLibraryPermissionDenied:
+            Text("Photo Library access is required to save images.")
+        case .photoLibrarySaveFailed:
+            Text("Couldn't save the processed images to Photos.")
         }
     }
 }

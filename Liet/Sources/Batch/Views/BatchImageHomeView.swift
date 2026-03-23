@@ -67,10 +67,12 @@ struct BatchImageHomeView: View {
         }
         .alert("Error", isPresented: errorPresented) {
             Button("OK", role: .cancel) {
-                model.errorMessage = nil
+                model.activeAlert = nil
             }
         } message: {
-            Text(model.errorMessage ?? "")
+            if let activeAlert = model.activeAlert {
+                alertText(for: activeAlert)
+            }
         }
     }
 }
@@ -79,11 +81,11 @@ private extension BatchImageHomeView {
     var errorPresented: Binding<Bool> {
         Binding(
             get: {
-                model.errorMessage != nil
+                model.activeAlert != nil
             },
             set: { isPresented in
                 if !isPresented {
-                    model.errorMessage = nil
+                    model.activeAlert = nil
                 }
             }
         )
@@ -286,7 +288,7 @@ private extension BatchImageHomeView {
 
     func selectionStatusRow() -> some View {
         HStack {
-            Text(model.selectedImageCountText)
+            selectedImageCountText(model.importedImages.count)
                 .font(.subheadline.weight(.medium))
 
             Spacer()
@@ -306,8 +308,8 @@ private extension BatchImageHomeView {
             ProgressView("Loading images...")
         }
 
-        if let importMessage = model.importMessage {
-            Text(importMessage)
+        if let importFailureCount = model.importFailureCount {
+            importFailureText(importFailureCount)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -355,7 +357,7 @@ private extension BatchImageHomeView {
     func processButton() -> some View {
         Button {
             Task {
-                await model.processImages()
+                model.processImages()
             }
         } label: {
             if model.isProcessing {

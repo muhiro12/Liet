@@ -1,6 +1,6 @@
 import Foundation
 
-enum BatchImageServiceError: LocalizedError {
+enum BatchImageServiceError: Error {
     case failedToLoadImageData
     case failedToCreateImageSource
     case failedToReadImageProperties
@@ -8,10 +8,4 @@ enum BatchImageServiceError: LocalizedError {
     case failedToEncodeImage
     case photoLibraryPermissionDenied
     case photoLibrarySaveFailed
-}
-
-extension BatchImageServiceError {
-    nonisolated var errorDescription: String? {
-        BatchImageLocalization().serviceErrorMessage(self)
-    }
 }
