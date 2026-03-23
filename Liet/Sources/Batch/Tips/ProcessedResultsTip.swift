@@ -8,8 +8,10 @@ struct ProcessedResultsTip: Tip {
 
     var message: Text? {
         Text(
-            "Successful outputs are ready even if some images failed. " +
-                "You can save only the new processed files from here."
+            """
+            Successful outputs are ready even if some images failed. \
+            You can save only the new processed files from here.
+            """
         )
     }
 

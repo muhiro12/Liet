@@ -8,8 +8,10 @@ struct ProcessingSetupTip: Tip {
 
     var message: Text? {
         Text(
-            "Choose Long edge, Short edge, or Exact size, then pick a quality level. " +
-                "Exact size can contain or crop. PNG keeps its format. Originals stay untouched."
+            """
+            Choose Long edge, Short edge, or Exact size, then pick a quality level. \
+            Exact size can contain or crop. PNG keeps its format. Originals stay untouched.
+            """
         )
     }
 

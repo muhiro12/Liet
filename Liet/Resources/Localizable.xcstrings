@@ -1,23 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "1920" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1920"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1920"
-          }
-        }
-      }
-    },
     "Couldn't read one of the selected images." : {
       "localizations" : {
         "en" : {
@@ -467,7 +450,6 @@
       }
     },
     "Choose Long edge, Short edge, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -563,8 +545,38 @@
         }
       }
     },
-    "Contain keeps the whole image in the target canvas. Cover Crop fills the canvas by cropping from the center." : {},
-    "Contain may leave padding when the image and target aspect ratios differ." : {},
+    "Contain keeps the whole image in the target canvas. Cover Crop fills the canvas by cropping from the center." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contain keeps the whole image in the target canvas. Cover Crop fills the canvas by cropping from the center."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全体表示では画像全体を対象キャンバス内に収めます。中央クロップでは中央を基準に切り抜いてキャンバスを埋めます。"
+          }
+        }
+      }
+    },
+    "Contain may leave padding when the image and target aspect ratios differ." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contain may leave padding when the image and target aspect ratios differ."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像と目標サイズの縦横比が異なる場合、全体表示では余白が入ることがあります。"
+          }
+        }
+      }
+    },
     "Cover Crop" : {
       "localizations" : {
         "en" : {
@@ -741,7 +753,22 @@
         }
       }
     },
-    "Method" : {},
+    "Method" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Method"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "方法"
+          }
+        }
+      }
+    },
     "OK" : {
       "localizations" : {
         "en" : {
@@ -870,7 +897,22 @@
         }
       }
     },
-    "Resize mode" : {},
+    "Resize mode" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resize mode"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リサイズ方法"
+          }
+        }
+      }
+    },
     "Results" : {
       "localizations" : {
         "en" : {
@@ -1015,7 +1057,22 @@
         }
       }
     },
-    "Short edge (px)" : {},
+    "Short edge (px)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Short edge (px)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "短辺 (px)"
+          }
+        }
+      }
+    },
     "Show Tips Again" : {
       "localizations" : {
         "en" : {
@@ -1065,7 +1122,6 @@
       }
     },
     "Successful outputs are ready even if some images failed. You can save only the new processed files from here." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1082,7 +1138,6 @@
       }
     },
     "Use Files to choose a folder in the Files app. Use Photos to add the processed images to your photo library as new items." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

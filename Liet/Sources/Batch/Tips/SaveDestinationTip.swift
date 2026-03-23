@@ -11,8 +11,10 @@ struct SaveDestinationTip: Tip {
 
     var message: Text? {
         Text(
-            "Use Files to choose a folder in the Files app. " +
-                "Use Photos to add the processed images to your photo library as new items."
+            """
+            Use Files to choose a folder in the Files app. \
+            Use Photos to add the processed images to your photo library as new items.
+            """
         )
     }
 
