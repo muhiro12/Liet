@@ -1,178 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Couldn't read one of the selected images." : {
+    ".%@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't read one of the selected images."
+            "value" : ".%@"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選択した画像の一部を読み取れませんでした。"
-          }
-        }
-      }
-    },
-    "Couldn't generate an image preview." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't generate an image preview."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "画像のプレビューを生成できませんでした。"
-          }
-        }
-      }
-    },
-    "Couldn't write one of the processed images." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't write one of the processed images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "処理後の画像の一部を書き出せませんでした。"
-          }
-        }
-      }
-    },
-    "Couldn't load one of the selected images." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't load one of the selected images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選択した画像の一部を読み込めませんでした。"
-          }
-        }
-      }
-    },
-    "Couldn't inspect one of the selected images." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't inspect one of the selected images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選択した画像の一部の情報を取得できませんでした。"
-          }
-        }
-      }
-    },
-    "Photo Library access is required to save images." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo Library access is required to save images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "画像を保存するには写真ライブラリへのアクセスが必要です。"
-          }
-        }
-      }
-    },
-    "Couldn't save the processed images to Photos." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't save the processed images to Photos."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "処理後の画像を写真に保存できませんでした。"
-          }
-        }
-      }
-    },
-    "Exported %lld images to Files." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exported %lld images to Files."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 枚の画像をファイルに保存しました。"
-          }
-        }
-      }
-    },
-    "Exported 1 image to Files." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exported 1 image to Files."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 枚の画像をファイルに保存しました。"
-          }
-        }
-      }
-    },
-    "Saved %lld images to Photos." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Saved %lld images to Photos."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 枚の画像を写真に保存しました。"
-          }
-        }
-      }
-    },
-    "Saved 1 image to Photos." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Saved 1 image to Photos."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 枚の画像を写真に保存しました。"
+            "value" : ".%@"
           }
         }
       }
@@ -193,54 +33,6 @@
         }
       }
     },
-    "1 image couldn't be loaded." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 image couldn't be loaded."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 枚の画像を読み込めませんでした。"
-          }
-        }
-      }
-    },
-    "Couldn't import the selected images." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't import the selected images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選択した画像を読み込めませんでした。"
-          }
-        }
-      }
-    },
-    "Couldn't process the selected images." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't process the selected images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選択した画像を処理できませんでした。"
-          }
-        }
-      }
-    },
     "%lld images couldn't be processed." : {
       "localizations" : {
         "en" : {
@@ -253,86 +45,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 枚の画像を処理できませんでした。"
-          }
-        }
-      }
-    },
-    "1 image couldn't be processed." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 image couldn't be processed."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 枚の画像を処理できませんでした。"
-          }
-        }
-      }
-    },
-    "%lld images were exported as JPEG because the original format couldn't be preserved." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld images were exported as JPEG because the original format couldn't be preserved."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "元の形式を保持できなかったため、%lld 枚を JPEG として書き出しました。"
-          }
-        }
-      }
-    },
-    "1 image was exported as JPEG because the original format couldn't be preserved." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 image was exported as JPEG because the original format couldn't be preserved."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "元の形式を保持できなかったため、1 枚を JPEG として書き出しました。"
-          }
-        }
-      }
-    },
-    "PNG images ignore the compression quality setting." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PNG images ignore the compression quality setting."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PNG 画像では圧縮品質の設定は適用されません。"
-          }
-        }
-      }
-    },
-    "PNG ignores the compression quality setting." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PNG ignores the compression quality setting."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PNG では圧縮品質の設定は適用されません。"
           }
         }
       }
@@ -353,22 +65,6 @@
         }
       }
     },
-    "1 image ready" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 image ready"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 枚の画像を処理しました"
-          }
-        }
-      }
-    },
     "%lld images selected" : {
       "localizations" : {
         "en" : {
@@ -381,6 +77,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 枚を選択中"
+          }
+        }
+      }
+    },
+    "%lld images were exported as JPEG because the original format couldn't be preserved." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld images were exported as JPEG because the original format couldn't be preserved."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "元の形式を保持できなかったため、%lld 枚を JPEG として書き出しました。"
+          }
+        }
+      }
+    },
+    "1 image couldn't be loaded." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 image couldn't be loaded."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚の画像を読み込めませんでした。"
+          }
+        }
+      }
+    },
+    "1 image couldn't be processed." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 image couldn't be processed."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚の画像を処理できませんでした。"
+          }
+        }
+      }
+    },
+    "1 image ready" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 image ready"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚の画像を処理しました"
           }
         }
       }
@@ -401,50 +161,18 @@
         }
       }
     },
-    "Enter valid long-edge and short-edge sizes." : {
+    "1 image was exported as JPEG because the original format couldn't be preserved." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enter valid long-edge and short-edge sizes."
+            "value" : "1 image was exported as JPEG because the original format couldn't be preserved."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有効な長辺サイズと短辺サイズを入力してください。"
-          }
-        }
-      }
-    },
-    "Enter a valid long-edge size." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter a valid long-edge size."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "有効な長辺サイズを入力してください。"
-          }
-        }
-      }
-    },
-    "Enter a valid short-edge size." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter a valid short-edge size."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "有効な短辺サイズを入力してください。"
+            "value" : "元の形式を保持できなかったため、1 枚を JPEG として書き出しました。"
           }
         }
       }
@@ -545,22 +273,6 @@
         }
       }
     },
-    "Contain keeps the whole image in the target canvas. Cover Crop fills the canvas by cropping from the center." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Contain keeps the whole image in the target canvas. Cover Crop fills the canvas by cropping from the center."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "全体表示では画像全体を対象キャンバス内に収めます。中央クロップでは中央を基準に切り抜いてキャンバスを埋めます。"
-          }
-        }
-      }
-    },
     "Contain may leave padding when the image and target aspect ratios differ." : {
       "localizations" : {
         "en" : {
@@ -577,12 +289,140 @@
         }
       }
     },
-    "Cover Crop" : {
+    "Couldn't generate an image preview." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cover Crop"
+            "value" : "Couldn't generate an image preview."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像のプレビューを生成できませんでした。"
+          }
+        }
+      }
+    },
+    "Couldn't import the selected images." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't import the selected images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した画像を読み込めませんでした。"
+          }
+        }
+      }
+    },
+    "Couldn't inspect one of the selected images." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't inspect one of the selected images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した画像の一部の情報を取得できませんでした。"
+          }
+        }
+      }
+    },
+    "Couldn't load one of the selected images." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't load one of the selected images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した画像の一部を読み込めませんでした。"
+          }
+        }
+      }
+    },
+    "Couldn't process the selected images." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't process the selected images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した画像を処理できませんでした。"
+          }
+        }
+      }
+    },
+    "Couldn't read one of the selected images." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't read one of the selected images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した画像の一部を読み取れませんでした。"
+          }
+        }
+      }
+    },
+    "Couldn't save the processed images to Photos." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't save the processed images to Photos."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理後の画像を写真に保存できませんでした。"
+          }
+        }
+      }
+    },
+    "Couldn't write one of the processed images." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't write one of the processed images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理後の画像の一部を書き出せませんでした。"
+          }
+        }
+      }
+    },
+    "Crop" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crop"
           }
         },
         "ja" : {
@@ -609,6 +449,38 @@
         }
       }
     },
+    "Edit each export name before saving if needed." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit each export name before saving if needed."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "必要に応じて、保存前に各書き出し名を編集できます。"
+          }
+        }
+      }
+    },
+    "Enter valid width and height values." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter valid width and height values."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効な幅と高さを入力してください。"
+          }
+        }
+      }
+    },
     "Error" : {
       "localizations" : {
         "en" : {
@@ -625,18 +497,50 @@
         }
       }
     },
-    "Exact size" : {
+    "Exported %lld images to Files." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exact size"
+            "value" : "Exported %lld images to Files."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指定サイズ"
+            "value" : "%lld 枚の画像をファイルに保存しました。"
+          }
+        }
+      }
+    },
+    "Exported 1 image to Files." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exported 1 image to Files."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚の画像をファイルに保存しました。"
+          }
+        }
+      }
+    },
+    "Height (px)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Height (px)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高さ (px)"
           }
         }
       }
@@ -653,6 +557,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "高"
+          }
+        }
+      }
+    },
+    "Images stay within the target box and smaller images keep their original size." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Images stay within the target box and smaller images keep their original size."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像は目標サイズ内に収まり、小さい画像は元のサイズを維持します。"
+          }
+        }
+      }
+    },
+    "Keep aspect ratio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep aspect ratio"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "縦横比を保持"
           }
         }
       }
@@ -685,38 +621,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "画像を読み込み中..."
-          }
-        }
-      }
-    },
-    "Long edge" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Long edge"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "長辺"
-          }
-        }
-      }
-    },
-    "Long edge (px)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Long edge (px)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "長辺 (px)"
           }
         }
       }
@@ -769,6 +673,22 @@
         }
       }
     },
+    "Off" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "なし"
+          }
+        }
+      }
+    },
     "OK" : {
       "localizations" : {
         "en" : {
@@ -781,6 +701,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
+          }
+        }
+      }
+    },
+    "Output size" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Output size"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出力サイズ"
+          }
+        }
+      }
+    },
+    "Photo Library access is required to save images." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo Library access is required to save images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像を保存するには写真ライブラリへのアクセスが必要です。"
           }
         }
       }
@@ -817,18 +769,50 @@
         }
       }
     },
-    "PNG keeps its format and ignores the compression quality setting." : {
+    "PNG ignores the compression quality setting." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PNG keeps its format and ignores the compression quality setting."
+            "value" : "PNG ignores the compression quality setting."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PNG は形式を維持し、圧縮品質の設定は適用されません。"
+            "value" : "PNG では圧縮品質の設定は適用されません。"
+          }
+        }
+      }
+    },
+    "PNG images ignore the compression quality setting." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PNG images ignore the compression quality setting."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PNG 画像では圧縮品質の設定は適用されません。"
+          }
+        }
+      }
+    },
+    "PNG images keep their format and ignore the compression setting." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PNG images keep their format and ignore the compression setting."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PNG 画像は形式を維持し、圧縮設定は適用されません。"
           }
         }
       }
@@ -881,34 +865,18 @@
         }
       }
     },
-    "Processed images are always written as new files." : {
+    "Processed images are always written as new files and default to the original name with a Liet suffix." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Processed images are always written as new files."
+            "value" : "Processed images are always written as new files and default to the original name with a Liet suffix."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "処理後の画像は常に新しいファイルとして書き出されます。"
-          }
-        }
-      }
-    },
-    "Resize mode" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resize mode"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "リサイズ方法"
+            "value" : "処理後の画像は常に新しいファイルとして書き出され、既定では元の名前に Liet のサフィックスが付きます。"
           }
         }
       }
@@ -993,6 +961,38 @@
         }
       }
     },
+    "Saved %lld images to Photos." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved %lld images to Photos."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 枚の画像を写真に保存しました。"
+          }
+        }
+      }
+    },
+    "Saved 1 image to Photos." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved 1 image to Photos."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚の画像を写真に保存しました。"
+          }
+        }
+      }
+    },
     "Select images" : {
       "localizations" : {
         "en" : {
@@ -1041,38 +1041,6 @@
         }
       }
     },
-    "Short edge" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Short edge"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "短辺"
-          }
-        }
-      }
-    },
-    "Short edge (px)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Short edge (px)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "短辺 (px)"
-          }
-        }
-      }
-    },
     "Show Tips Again" : {
       "localizations" : {
         "en" : {
@@ -1089,22 +1057,6 @@
         }
       }
     },
-    "Smaller images keep their original size." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Smaller images keep their original size."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "小さい画像は元のサイズのまま保持されます。"
-          }
-        }
-      }
-    },
     "Start with a batch" : {
       "localizations" : {
         "en" : {
@@ -1117,6 +1069,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一括処理を始める"
+          }
+        }
+      }
+    },
+    "Stretch" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stretch"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "引き伸ばし"
+          }
+        }
+      }
+    },
+    "Stretch fills the canvas exactly. Contain keeps the whole image inside the canvas. Crop fills the canvas by trimming from the center." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stretch fills the canvas exactly. Contain keeps the whole image inside the canvas. Crop fills the canvas by trimming from the center."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "引き伸ばしではキャンバスをぴったり埋めます。全体表示では画像全体をキャンバス内に収めます。中央クロップでは中央を基準に切り抜いてキャンバスを埋めます。"
           }
         }
       }
@@ -1165,6 +1149,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "設定を確認したら、一括処理を実行してください。Liet は新しいファイルを作成し、元の画像を上書きしません。"
+          }
+        }
+      }
+    },
+    "Width (px)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Width (px)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "幅 (px)"
           }
         }
       }
