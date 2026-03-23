@@ -31,6 +31,7 @@ struct BatchImageHomeView: View {
 
     @Bindable var model: BatchImageHomeModel
     @Binding var selectedItems: [PhotosPickerItem]
+    @FocusState private var isLongEdgeFieldFocused: Bool
 
     private let selectImagesTip = SelectImagesTip()
     private let processingSetupTip = ProcessingSetupTip()
@@ -55,12 +56,21 @@ struct BatchImageHomeView: View {
             }
             .padding(Layout.contentPadding)
         }
+        .scrollDismissesKeyboard(.immediately)
         .navigationTitle("Liet")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Show Tips Again") {
                     model.replayTips()
+                }
+            }
+
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+
+                Button("Done") {
+                    isLongEdgeFieldFocused = false
                 }
             }
         }
@@ -221,6 +231,7 @@ private extension BatchImageHomeView {
                 Copy.longEdgePlaceholder,
                 text: $model.resizeLongEdgeText
             )
+            .focused($isLongEdgeFieldFocused)
             .keyboardType(.numberPad)
             .textFieldStyle(.roundedBorder)
 

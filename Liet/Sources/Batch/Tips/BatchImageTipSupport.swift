@@ -57,22 +57,22 @@ extension BatchImageTipSupport {
         SaveDestinationTip.hasSavedToPhotos = false
     }
 
-    static func donateImportSuccess() async {
+    static func donateImportSuccess() {
         SelectImagesTip.hasCompletedImportStep = true
         didImportImages.sendDonation()
     }
 
-    static func donateProcessSuccess() async {
+    static func donateProcessSuccess() {
         RunProcessingTip.hasCompletedProcessStep = true
         didProcessImages.sendDonation()
     }
 
-    static func donateSaveToFilesSuccess() async {
+    static func donateSaveToFilesSuccess() {
         SaveDestinationTip.hasSavedToFiles = true
         didSaveToFiles.sendDonation()
     }
 
-    static func donateSaveToPhotosSuccess() async {
+    static func donateSaveToPhotosSuccess() {
         SaveDestinationTip.hasSavedToPhotos = true
         didSaveToPhotos.sendDonation()
     }
