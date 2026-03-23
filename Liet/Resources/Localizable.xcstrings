@@ -518,6 +518,12 @@
             "state" : "translated",
             "value" : "Choose one setting set"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を1つ選ぶ"
+          }
         }
       }
     },
@@ -555,13 +561,52 @@
       }
     },
     "Contain" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contain"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全体表示"
+          }
+        }
+      }
     },
     "Cover Crop" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cover Crop"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中央クロップ"
+          }
+        }
+      }
     },
     "Done" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了"
+          }
+        }
+      }
     },
     "Error" : {
       "localizations" : {
@@ -580,7 +625,20 @@
       }
     },
     "Exact size" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exact size"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指定サイズ"
+          }
+        }
+      }
     },
     "High" : {
       "localizations" : {
@@ -632,7 +690,20 @@
       }
     },
     "Long edge" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long edge"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長辺"
+          }
+        }
+      }
     },
     "Long edge (px)" : {
       "extractionState" : "stale",
@@ -706,6 +777,12 @@
             "state" : "translated",
             "value" : "Pick one or more photos. Liet applies the same resize and compression settings to every selected image."
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚以上の写真を選択してください。Liet はすべての選択画像に同じリサイズ設定と圧縮設定を適用します。"
+          }
         }
       }
     },
@@ -715,6 +792,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pick where the new files go"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいファイルの保存先を選ぶ"
           }
         }
       }
@@ -742,6 +825,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Process everything together"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まとめて処理する"
           }
         }
       }
@@ -818,6 +907,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Review the batch result"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一括処理の結果を確認する"
           }
         }
       }
@@ -911,6 +1006,12 @@
             "state" : "translated",
             "value" : "Choose Long edge, Short edge, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched."
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長辺、短辺、または指定サイズを選び、品質レベルを設定します。指定サイズでは全体表示または中央クロップを選べます。PNG は形式を維持し、元の画像は変更されません。"
+          }
         }
       }
     },
@@ -932,7 +1033,20 @@
       }
     },
     "Short edge" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Short edge"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "短辺"
+          }
+        }
+      }
     },
     "Show Tips Again" : {
       "localizations" : {
@@ -940,6 +1054,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Show Tips Again"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヒントを再表示"
           }
         }
       }
@@ -968,6 +1088,12 @@
             "state" : "translated",
             "value" : "Start with a batch"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一括処理を始める"
+          }
         }
       }
     },
@@ -978,6 +1104,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Successful outputs are ready even if some images failed. You can save only the new processed files from here."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一部の画像が失敗しても、成功した出力は保存できます。ここから新しく処理したファイルだけを保存できます。"
           }
         }
       }
@@ -990,6 +1122,12 @@
             "state" : "translated",
             "value" : "Use Files to choose a folder in the Files app. Use Photos to add the processed images to your photo library as new items."
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「ファイル」を使うと、ファイルアプリ内のフォルダを選べます。「写真」を使うと、処理後の画像を新しい項目として写真ライブラリに追加できます。"
+          }
         }
       }
     },
@@ -999,6 +1137,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "When the settings look right, run one batch. Liet creates new files and never overwrites the originals."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を確認したら、一括処理を実行してください。Liet は新しいファイルを作成し、元の画像を上書きしません。"
           }
         }
       }
