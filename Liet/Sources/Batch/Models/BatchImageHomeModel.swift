@@ -198,7 +198,7 @@ extension BatchImageHomeModel {
             return
         }
 
-        await BatchImageTipSupport.donateImportSuccess()
+        BatchImageTipSupport.donateImportSuccess()
     }
 
     func clearSelection() {
@@ -238,7 +238,7 @@ extension BatchImageHomeModel {
             outcome: outcome,
             localization: localization
         )
-        await BatchImageTipSupport.donateProcessSuccess()
+        BatchImageTipSupport.donateProcessSuccess()
     }
 
     func replayTips() {

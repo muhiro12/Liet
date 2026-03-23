@@ -3,7 +3,7 @@ import PhotosUI
 import SwiftUI
 import TipKit
 
-// swiftlint:disable closure_body_length function_body_length
+// swiftlint:disable closure_body_length
 
 struct BatchImageHomeView: View {
     private enum Layout {
@@ -54,10 +54,7 @@ struct BatchImageHomeView: View {
     private let runProcessingTip = RunProcessingTip()
 
     private let columns = [
-        GridItem(
-            .adaptive(minimum: Layout.thumbnailColumnMinimum),
-            spacing: Layout.gridSpacing
-        )
+        GridItem(.adaptive(minimum: Layout.thumbnailColumnMinimum), spacing: Layout.gridSpacing)
     ]
 
     var body: some View {
@@ -85,9 +82,7 @@ struct BatchImageHomeView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
 
-                Button("Done") {
-                    focusedResizeField = nil
-                }
+                Button("Done") { focusedResizeField = nil }
             }
         }
         .onChange(of: selectedItems) { _, newValue in
@@ -95,10 +90,7 @@ struct BatchImageHomeView: View {
                 await model.importPhotos(from: newValue)
             }
         }
-        .alert(
-            "Error",
-            isPresented: errorPresented
-        ) {
+        .alert("Error", isPresented: errorPresented) {
             Button("OK", role: .cancel) {
                 model.errorMessage = nil
             }
@@ -405,4 +397,4 @@ private extension BatchImageHomeView {
     }
 }
 
-// swiftlint:enable closure_body_length function_body_length
+// swiftlint:enable closure_body_length

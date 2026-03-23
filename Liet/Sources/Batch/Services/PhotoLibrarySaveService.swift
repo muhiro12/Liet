@@ -17,15 +17,15 @@ enum PhotoLibrarySaveService {
         }
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            var failedToCreateAsset = false
+            let saveState = SaveState()
             PHPhotoLibrary.shared().performChanges({
-                failedToCreateAsset = !createAssetRequests(for: images)
+                saveState.failedToCreateAsset = !createAssetRequests(for: images)
             }, completionHandler: { success, error in
                 resumeSave(
                     continuation: continuation,
                     success: success,
                     error: error,
-                    failedToCreateAsset: failedToCreateAsset
+                    failedToCreateAsset: saveState.failedToCreateAsset
                 )
             })
         }
@@ -33,6 +33,10 @@ enum PhotoLibrarySaveService {
 }
 
 private extension PhotoLibrarySaveService {
+    final class SaveState {
+        var failedToCreateAsset = false
+    }
+
     nonisolated static func createAssetRequests(
         for images: [ProcessedBatchImage]
     ) -> Bool {

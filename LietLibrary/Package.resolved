@@ -1,5 +1,5 @@
 {
-  "originHash" : "8f66321301adb98a97e077f4f91229e3e59e001a851686a4b815be056f64d1b7",
+  "originHash" : "e21124daa887c02c7abbf752d50ff752b8bedf996b59bc038458c9d332d053c5",
   "pins" : [
     {
       "identity" : "googlemobileadswrapper",
@@ -53,6 +53,15 @@
       "state" : {
         "revision" : "13b248eaa73b7826f0efb1bcf455e251d65ecb1b",
         "version" : "3.1.0"
+      }
+    },
+    {
+      "identity" : "swiftlintplugins",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SimplyDanny/SwiftLintPlugins",
+      "state" : {
+        "revision" : "8a4640d14777685ba8f14e832373160498fbab92",
+        "version" : "0.63.2"
       }
     },
     {

@@ -4,7 +4,6 @@ import Foundation
 import LietLibrary
 import Testing
 
-// swiftlint:disable no_magic_numbers
 @MainActor
 struct BatchImageHomeModelTests {
     private enum Metrics {
@@ -134,4 +133,3 @@ struct BatchImageHomeModelTests {
         #expect(BatchImageTipSupport.progressSnapshot().processCompleted)
     }
 }
-// swiftlint:enable no_magic_numbers

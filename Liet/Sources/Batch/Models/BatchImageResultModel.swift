@@ -92,7 +92,7 @@ extension BatchImageResultModel {
             }
 
             Task {
-                await BatchImageTipSupport.donateSaveToFilesSuccess()
+                BatchImageTipSupport.donateSaveToFilesSuccess()
             }
         case let .failure(error):
             errorMessage = error.localizedDescription
@@ -116,7 +116,7 @@ extension BatchImageResultModel {
             saveMessage = localization.exportPhotosSuccessMessage(
                 count: processedImages.count
             )
-            await BatchImageTipSupport.donateSaveToPhotosSuccess()
+            BatchImageTipSupport.donateSaveToPhotosSuccess()
         } catch {
             errorMessage = error.localizedDescription
         }
