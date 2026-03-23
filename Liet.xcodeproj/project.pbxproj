@@ -30,7 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		D00000012F72000100000001 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		D00000012F72000100000001 /* Exceptions for "Liet" folder in "Liet" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Configurations/Info.plist,
@@ -43,21 +43,13 @@
 		AD87A26E2F715087006CC661 /* Liet */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				D00000012F72000100000001 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
+				D00000012F72000100000001 /* Exceptions for "Liet" folder in "Liet" target */,
 			);
 			path = Liet;
 			sourceTree = "<group>";
 		};
 		B00000012F72000100000002 /* LietTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
 			path = LietTests;
 			sourceTree = "<group>";
 		};

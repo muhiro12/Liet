@@ -2,32 +2,56 @@
 
 ## Overview
 
-Liet is an Apple-platform app scaffold aligned with the repository and
-architecture conventions used by `../Incomes`.
-It currently provides a thin iOS app target, a shared local package, app
-smoke tests, and repo-managed verification entrypoints so future feature work
-can start from a stable baseline.
+Liet is an iPhone batch image pre-processing app aligned with the repository
+and architecture conventions used by `../Incomes`.
+The current MVP focuses on one job: select multiple photos, apply one resize
+and compression setting to all of them, then save the processed results as new
+files to either Files or Photos.
 
 ## Targets
 
-- **Liet** - the iOS app target that owns SwiftUI presentation and future
-  Apple-framework adapters.
-- **LietTests** - a lightweight app smoke-test target.
-- **LietLibrary** - the shared library target intended to become the source of
-  truth for reusable domain logic.
+- **Liet** - the iOS app target that owns the SwiftUI flow and Apple-framework
+  adapters for photo import, image processing, file export, and photo saving.
+- **LietTests** - the app test target covering the MVP processing pipeline and
+  root wiring.
+- **LietLibrary** - the shared library target that owns reusable batch-image
+  settings, format rules, and output naming.
 
 ## Architecture and technologies
 
-- **Shared-library-first** - reusable business rules belong in `LietLibrary`
-  before they spread across app surfaces.
-- **App-side adapters** - Apple-only integrations stay in `Liet`.
+- **Shared-library-first** - reusable batch-image value types live in
+  `LietLibrary` before they spread across app surfaces.
+- **App-side adapters** - `PhotosUI`, `PhotoKit`, `ImageIO`, `UIKit`, and
+  `fileExporter` stay in `Liet`.
 - **Platform package posture** - `Liet` adopts the `MHPlatform` umbrella,
   while `LietLibrary` adopts `MHPlatformCore`.
 - **Utility package posture** - both the app target and shared library adopt
   `SwiftUtilities` through the repository-managed 1.x semver range.
-- **Future extension readiness** - `AppGroup.id` and
-  `Liet/Configurations/Liet.entitlements` already reserve the shared app group
-  needed for future widgets or companion targets.
+- **Non-destructive processing** - source images are never overwritten.
+  Processed images are always written as new files in a temporary workspace
+  before the user exports or saves them.
+
+## Current MVP behavior
+
+- Select multiple images from the photo library with `PhotosPicker`.
+- Review selected images in a thumbnail grid before processing.
+- Apply one long-edge resize setting to every image while preserving aspect
+  ratio and avoiding upscaling.
+- Apply one compression setting to every image:
+  JPEG and HEIC use quality values, while PNG keeps its format and ignores the
+  quality setting.
+- Preserve the original image format when possible for JPEG, PNG, and HEIC.
+- Fall back to JPEG when the original format is unsupported or when HEIC
+  output is unavailable on the current runtime.
+- Save processed results either to the Files app or to the Photos app.
+
+## Current limitations
+
+- Settings are session-only. The app does not persist preferences with
+  `UserDefaults` yet.
+- The MVP does not preserve detailed metadata such as EXIF payloads.
+- There is no per-image customization, editing UI, background processing, or
+  overwrite flow.
 
 ## Requirements
 
@@ -41,10 +65,12 @@ can start from a stable baseline.
    `Liet/Configurations/Liet.entitlements` if you are not using the default
    `com.muhiro12.Liet` identifiers.
 3. Review `Liet/Configurations/Secret.swift`.
-   The file contains compile-safe placeholder values and should be replaced
-   before shipping real capabilities.
+   The file contains compile-safe placeholder values inherited from the repo
+   baseline and should be replaced before shipping real capabilities.
 4. Open `Liet.xcodeproj` in Xcode and run the **Liet** scheme on an iOS 18
    simulator or device.
+5. When saving to Photos, allow the add-only Photo Library permission when the
+   app requests it.
 
 ## Build and Test
 

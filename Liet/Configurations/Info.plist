@@ -6,5 +6,7 @@
 	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>GADNativeAdValidatorEnabled</key>
 	<false/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Liet saves processed images to your Photo Library only when you ask it to.</string>
 </dict>
 </plist>
