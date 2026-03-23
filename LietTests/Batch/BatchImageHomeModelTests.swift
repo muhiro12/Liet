@@ -1,4 +1,5 @@
 import CoreGraphics
+import Foundation
 @testable import Liet
 import Testing
 
@@ -42,8 +43,14 @@ struct BatchImageHomeModelTests {
     @Test
     func process_images_only_presents_results_when_processing_succeeds() async throws {
         BatchImageTipSupport.resetTips()
+        let localization = BatchImageLocalization(
+            locale: .init(identifier: "en"),
+            bundle: Bundle(for: BatchImageHomeModel.self)
+        )
 
-        let failedModel: BatchImageHomeModel = .init()
+        let failedModel: BatchImageHomeModel = .init(
+            localization: localization
+        )
         failedModel.importedImages = [
             BatchImageTestFactory.makeMissingImportedImage(
                 format: .jpeg,
@@ -55,10 +62,15 @@ struct BatchImageHomeModelTests {
         await failedModel.processImages()
 
         #expect(failedModel.resultModel == nil)
-        #expect(failedModel.errorMessage == "Couldn't process the selected images.")
+        #expect(
+            failedModel.errorMessage ==
+                localization.processSelectionFailedMessage()
+        )
         #expect(BatchImageTipSupport.progressSnapshot().processCompleted == false)
 
-        let successfulModel: BatchImageHomeModel = .init()
+        let successfulModel: BatchImageHomeModel = .init(
+            localization: localization
+        )
         successfulModel.importedImages = [
             try BatchImageTestFactory.makeImportedImage(
                 format: .jpeg,

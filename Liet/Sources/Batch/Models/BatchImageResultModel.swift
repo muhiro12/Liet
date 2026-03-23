@@ -15,13 +15,17 @@ final class BatchImageResultModel: Identifiable {
     var saveMessage: String?
     var errorMessage: String?
 
+    private let localization: BatchImageLocalization
+
     init(
-        outcome: BatchImageProcessor.Outcome
+        outcome: BatchImageProcessor.Outcome,
+        localization: BatchImageLocalization = .init()
     ) {
         processedImages = outcome.processedImages
         failureCount = outcome.failureCount
         jpegFallbackCount = outcome.jpegFallbackCount
         ignoredCompressionCount = outcome.ignoredCompressionCount
+        self.localization = localization
     }
 }
 
@@ -37,43 +41,30 @@ extension BatchImageResultModel {
     }
 
     var titleText: String {
-        if processedImages.count == 1 {
-            return "1 image ready"
-        }
-
-        return "\(processedImages.count) images ready"
+        localization.resultReadyTitle(count: processedImages.count)
     }
 
     var detailMessages: [String] {
         var messages: [String] = []
 
         if failureCount > 0 {
-            if failureCount == 1 {
-                messages.append("1 image couldn't be processed.")
-            } else {
-                messages.append("\(failureCount) images couldn't be processed.")
-            }
+            messages.append(
+                localization.resultFailureMessage(count: failureCount)
+            )
         }
 
         if jpegFallbackCount > 0 {
-            if jpegFallbackCount == 1 {
-                messages.append(
-                    "1 image was exported as JPEG because the original format couldn't be preserved."
-                )
-            } else {
-                messages.append(
-                    "\(jpegFallbackCount) images were exported as JPEG because the original format " +
-                        "couldn't be preserved."
-                )
-            }
+            messages.append(
+                localization.jpegFallbackMessage(count: jpegFallbackCount)
+            )
         }
 
         if ignoredCompressionCount > 0 {
-            if ignoredCompressionCount == 1 {
-                messages.append("PNG ignores the compression quality setting.")
-            } else {
-                messages.append("PNG images ignore the compression quality setting.")
-            }
+            messages.append(
+                localization.pngCompressionMessage(
+                    count: ignoredCompressionCount
+                )
+            )
         }
 
         return messages
@@ -92,11 +83,9 @@ extension BatchImageResultModel {
 
         switch result {
         case let .success(urls):
-            if urls.count == 1 {
-                saveMessage = "Exported 1 image to Files."
-            } else {
-                saveMessage = "Exported \(urls.count) images to Files."
-            }
+            saveMessage = localization.exportFilesSuccessMessage(
+                count: urls.count
+            )
 
             guard !urls.isEmpty else {
                 return
@@ -124,11 +113,9 @@ extension BatchImageResultModel {
 
         do {
             try await PhotoLibrarySaveService.save(processedImages)
-            if processedImages.count == 1 {
-                saveMessage = "Saved 1 image to Photos."
-            } else {
-                saveMessage = "Saved \(processedImages.count) images to Photos."
-            }
+            saveMessage = localization.exportPhotosSuccessMessage(
+                count: processedImages.count
+            )
             await BatchImageTipSupport.donateSaveToPhotosSuccess()
         } catch {
             errorMessage = error.localizedDescription

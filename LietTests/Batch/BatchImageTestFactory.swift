@@ -7,7 +7,11 @@ import UIKit
 enum BatchImageTestFactory {
     private enum Metrics {
         static let defaultPreviewSize = CGSize(width: 100, height: 100)
-        static let processedPreviewSize = CGSize(width: 200, height: 100)
+        static let processedPreviewWidthMultiplier = 2
+        static let processedPreviewSize = CGSize(
+            width: defaultPreviewSize.width * CGFloat(processedPreviewWidthMultiplier),
+            height: defaultPreviewSize.height
+        )
         static let rendererScale = 1.0
         static let jpegQuality = 1.0
     }
