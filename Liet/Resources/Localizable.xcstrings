@@ -124,7 +124,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 枚の画像をファイルに保存しました。"
+            "value" : "%lld 枚の画像をファイルに保存しました。"
           }
         }
       }
@@ -156,7 +156,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 枚の画像を写真に保存しました。"
+            "value" : "%lld 枚の画像を写真に保存しました。"
           }
         }
       }
@@ -188,7 +188,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 枚の画像を読み込めませんでした。"
+            "value" : "%lld 枚の画像を読み込めませんでした。"
           }
         }
       }
@@ -252,7 +252,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 枚の画像を処理できませんでした。"
+            "value" : "%lld 枚の画像を処理できませんでした。"
           }
         }
       }
@@ -284,7 +284,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "元の形式を保持できなかったため、%@ 枚を JPEG として書き出しました。"
+            "value" : "元の形式を保持できなかったため、%lld 枚を JPEG として書き出しました。"
           }
         }
       }
@@ -348,7 +348,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 枚の画像を処理しました"
+            "value" : "%lld 枚の画像を処理しました"
           }
         }
       }
@@ -380,7 +380,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 枚を選択中"
+            "value" : "%lld 枚を選択中"
           }
         }
       }
