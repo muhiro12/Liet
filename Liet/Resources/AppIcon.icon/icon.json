@@ -8,7 +8,14 @@
             "automatic-gradient" : "srgb:1.00000,0.21569,0.37255,1.00000"
           },
           "image-name" : "AppIcon.001.png",
-          "name" : "AppIcon.001"
+          "name" : "AppIcon.001",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              160,
+              210
+            ]
+          }
         },
         {
           "fill" : {
@@ -16,7 +23,39 @@
           },
           "image-name" : "AppIcon.002.png",
           "name" : "AppIcon.002",
-          "opacity" : 0.2
+          "opacity" : 0.6,
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -16,
+              144
+            ]
+          }
+        },
+        {
+          "fill" : {
+            "automatic-gradient" : "srgb:1.00000,0.21569,0.37255,1.00000"
+          },
+          "image-name" : "AppIcon.003.png",
+          "name" : "AppIcon.003",
+          "opacity" : 0.8
+        },
+        {
+          "fill" : {
+            "automatic-gradient" : "srgb:1.00000,0.21569,0.37255,1.00000"
+          },
+          "hidden" : false,
+          "image-name" : "AppIcon.004.png",
+          "name" : "AppIcon.004",
+          "opacity" : 0.4
+        },
+        {
+          "fill" : {
+            "automatic-gradient" : "srgb:1.00000,0.21569,0.37255,1.00000"
+          },
+          "image-name" : "AppIcon.005.png",
+          "name" : "AppIcon.005",
+          "opacity" : 0.4
         }
       ],
       "shadow" : {
