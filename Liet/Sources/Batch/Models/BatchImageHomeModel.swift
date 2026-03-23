@@ -34,9 +34,9 @@ final class BatchImageHomeModel {
 extension BatchImageHomeModel {
     var canProcess: Bool {
         resizeLongEdgePixels != nil &&
-        !importedImages.isEmpty &&
-        !isImporting &&
-        !isProcessing
+            !importedImages.isEmpty &&
+            !isImporting &&
+            !isProcessing
     }
 
     var resizeLongEdgePixels: Int? {
@@ -101,7 +101,10 @@ extension BatchImageHomeModel {
 
         if importedImages.isEmpty {
             errorMessage = "Couldn't import the selected images."
+            return
         }
+
+        await BatchImageTipSupport.donateImportSuccess()
     }
 
     func clearSelection() {
@@ -138,5 +141,10 @@ extension BatchImageHomeModel {
         }
 
         resultModel = .init(outcome: outcome)
+        await BatchImageTipSupport.donateProcessSuccess()
+    }
+
+    func replayTips() {
+        BatchImageTipSupport.resetTips()
     }
 }

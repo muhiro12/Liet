@@ -12,13 +12,13 @@ struct ImportedBatchImage: Identifiable {
     let selectionIndex: Int
 
     nonisolated init(
-        id: UUID = .init(),
         sourceURL: URL,
         originalFilename: String?,
         originalFormat: ImageFileFormat,
         pixelSize: CGSize,
         previewImage: UIImage,
-        selectionIndex: Int
+        selectionIndex: Int,
+        id: UUID = .init()
     ) {
         self.id = id
         self.sourceURL = sourceURL

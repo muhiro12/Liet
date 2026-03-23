@@ -1,8 +1,8 @@
 import Foundation
 import ImageIO
 import LietLibrary
-import UniformTypeIdentifiers
 import UIKit
+import UniformTypeIdentifiers
 
 enum BatchImageProcessor {
     struct Outcome {
@@ -45,7 +45,7 @@ extension BatchImageProcessor {
         images: [ImportedBatchImage],
         settings: BatchImageSettings,
         heicEncoderAvailable: Bool = Self.heicEncoderAvailable
-    ) async -> Outcome {
+    ) -> Outcome {
         guard !images.isEmpty else {
             return .init(
                 processedImages: [],
@@ -55,18 +55,7 @@ extension BatchImageProcessor {
             )
         }
 
-        let outputDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent(
-                "LietProcessed-\(UUID().uuidString)",
-                isDirectory: true
-            )
-
-        do {
-            try FileManager.default.createDirectory(
-                at: outputDirectory,
-                withIntermediateDirectories: true
-            )
-        } catch {
+        guard let outputDirectory = makeOutputDirectory() else {
             return .init(
                 processedImages: [],
                 failureCount: images.count,
@@ -83,54 +72,16 @@ extension BatchImageProcessor {
 
         for image in images {
             do {
-                let outputFormat = resolvedOutputFormat(
-                    for: image.originalFormat,
-                    heicEncoderAvailable: heicEncoderAvailable
+                let output = try processImage(
+                    image,
+                    settings: settings,
+                    heicEncoderAvailable: heicEncoderAvailable,
+                    outputDirectory: outputDirectory,
+                    usedFilenames: &usedFilenames
                 )
-                let usedJPEGFallback = image.originalFormat.requiresOutputFallback ||
-                (image.originalFormat == .heic && outputFormat == .jpeg)
-                let ignoredCompressionSetting = outputFormat == .png
-
-                if usedJPEGFallback {
-                    jpegFallbackCount += 1
-                }
-
-                if ignoredCompressionSetting {
-                    ignoredCompressionCount += 1
-                }
-
-                let renderedImage = try renderedImage(
-                    from: image.sourceURL,
-                    targetLongEdgePixels: settings.longEdgePixels
-                )
-                let outputFilename = ProcessedImageNaming.makeFilename(
-                    originalFilename: image.originalFilename,
-                    fallbackIndex: image.selectionIndex,
-                    outputFormat: outputFormat,
-                    existingFilenames: usedFilenames
-                )
-                usedFilenames.insert(outputFilename)
-                let outputURL = outputDirectory.appendingPathComponent(outputFilename)
-                try writeImage(
-                    renderedImage.cgImage,
-                    format: outputFormat,
-                    compression: settings.compression,
-                    outputURL: outputURL
-                )
-                let previewImage = try ImageIOImageSupport.previewImage(from: outputURL)
-                processedImages.append(
-                    .init(
-                        sourceID: image.id,
-                        outputURL: outputURL,
-                        outputFilename: outputFilename,
-                        outputFormat: outputFormat,
-                        originalFormat: image.originalFormat,
-                        pixelSize: renderedImage.pixelSize,
-                        previewImage: previewImage,
-                        usedJPEGFallback: usedJPEGFallback,
-                        ignoredCompressionSetting: ignoredCompressionSetting
-                    )
-                )
+                processedImages.append(output.image)
+                jpegFallbackCount += output.usedJPEGFallback ? 1 : 0
+                ignoredCompressionCount += output.ignoredCompressionSetting ? 1 : 0
             } catch {
                 failureCount += 1
             }
@@ -146,9 +97,86 @@ extension BatchImageProcessor {
 }
 
 private extension BatchImageProcessor {
+    struct ProcessedImageOutput {
+        let image: ProcessedBatchImage
+        let usedJPEGFallback: Bool
+        let ignoredCompressionSetting: Bool
+    }
+
     struct RenderedImage {
         let cgImage: CGImage
         let pixelSize: CGSize
+    }
+
+    nonisolated static func makeOutputDirectory() -> URL? {
+        let directoryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(
+                "LietProcessed-\(UUID().uuidString)",
+                isDirectory: true
+            )
+
+        do {
+            try FileManager.default.createDirectory(
+                at: directoryURL,
+                withIntermediateDirectories: true
+            )
+            return directoryURL
+        } catch {
+            return nil
+        }
+    }
+
+    nonisolated static func processImage(
+        _ image: ImportedBatchImage,
+        settings: BatchImageSettings,
+        heicEncoderAvailable: Bool,
+        outputDirectory: URL,
+        usedFilenames: inout Set<String>
+    ) throws -> ProcessedImageOutput {
+        let outputFormat = resolvedOutputFormat(
+            for: image.originalFormat,
+            heicEncoderAvailable: heicEncoderAvailable
+        )
+        let usedJPEGFallback = image.originalFormat.requiresOutputFallback ||
+            (image.originalFormat == .heic && outputFormat == .jpeg)
+        let ignoredCompressionSetting = outputFormat == .png
+        let renderedImage = try renderedImage(
+            from: image.sourceURL,
+            targetLongEdgePixels: settings.longEdgePixels
+        )
+        let outputFilename = ProcessedImageNaming.makeFilename(
+            originalFilename: image.originalFilename,
+            fallbackIndex: image.selectionIndex,
+            outputFormat: outputFormat,
+            existingFilenames: usedFilenames
+        )
+        usedFilenames.insert(outputFilename)
+        let outputURL = outputDirectory.appendingPathComponent(outputFilename)
+
+        try writeImage(
+            renderedImage.cgImage,
+            format: outputFormat,
+            compression: settings.compression,
+            outputURL: outputURL
+        )
+
+        let processedImage = ProcessedBatchImage(
+            sourceID: image.id,
+            outputURL: outputURL,
+            outputFilename: outputFilename,
+            outputFormat: outputFormat,
+            originalFormat: image.originalFormat,
+            pixelSize: renderedImage.pixelSize,
+            previewImage: try ImageIOImageSupport.previewImage(from: outputURL),
+            usedJPEGFallback: usedJPEGFallback,
+            ignoredCompressionSetting: ignoredCompressionSetting
+        )
+
+        return .init(
+            image: processedImage,
+            usedJPEGFallback: usedJPEGFallback,
+            ignoredCompressionSetting: ignoredCompressionSetting
+        )
     }
 
     nonisolated static func renderedImage(

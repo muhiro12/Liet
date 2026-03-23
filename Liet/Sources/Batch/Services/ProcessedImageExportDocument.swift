@@ -13,10 +13,10 @@ struct ProcessedImageExportDocument: FileDocument, Identifiable {
     let contentType: UTType
 
     init(
-        id: UUID = .init(),
         fileURL: URL,
         filename: String,
-        contentType: UTType
+        contentType: UTType,
+        id: UUID = .init()
     ) {
         self.id = id
         self.fileURL = fileURL

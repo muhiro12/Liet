@@ -14,4 +14,8 @@ struct LietApp: App {
             ContentView()
         }
     }
+
+    init() {
+        BatchImageTipSupport.configureIfNeeded()
+    }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 struct BatchImageResultView: View {
     private enum Layout {
@@ -10,6 +11,9 @@ struct BatchImageResultView: View {
     }
 
     @Bindable var model: BatchImageResultModel
+
+    private let processedResultsTip = ProcessedResultsTip()
+    private let saveDestinationTip = SaveDestinationTip()
 
     private let columns = [
         GridItem(
@@ -32,6 +36,13 @@ struct BatchImageResultView: View {
         }
         .navigationTitle("Results")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Show Tips Again") {
+                    model.replayTips()
+                }
+            }
+        }
         .fileExporter(
             isPresented: $model.isExportingFiles,
             documents: model.exportDocuments,
@@ -86,6 +97,8 @@ private extension BatchImageResultView {
                 Text(saveMessage)
                     .font(.subheadline.weight(.medium))
             }
+
+            TipView(processedResultsTip)
         }
     }
 
@@ -121,6 +134,10 @@ private extension BatchImageResultView {
                 model.beginFileExport()
             }
             .buttonStyle(.borderedProminent)
+            .popoverTip(
+                saveDestinationTip,
+                arrowEdge: .top
+            )
 
             Button {
                 Task {

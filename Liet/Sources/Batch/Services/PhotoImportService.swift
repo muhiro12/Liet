@@ -20,18 +20,7 @@ extension PhotoImportService {
             )
         }
 
-        let importDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent(
-                "LietImported-\(UUID().uuidString)",
-                isDirectory: true
-            )
-
-        do {
-            try FileManager.default.createDirectory(
-                at: importDirectory,
-                withIntermediateDirectories: true
-            )
-        } catch {
+        guard let importDirectory = makeImportDirectory() else {
             return .init(
                 importedImages: [],
                 failureCount: items.count
@@ -43,34 +32,12 @@ extension PhotoImportService {
 
         for (index, item) in items.enumerated() {
             do {
-                guard let data = try await item.loadTransferable(type: Data.self) else {
-                    throw BatchImageServiceError.failedToLoadImageData
-                }
-
-                let imageSource = try ImageIOImageSupport.imageSource(data: data)
-                let originalFormat = ImageIOImageSupport.detectedFormat(
-                    for: imageSource,
-                    supportedTypeIdentifiers: item.supportedContentTypes.map(\.identifier)
+                let importedImage = try await importImage(
+                    item,
+                    selectionIndex: index + 1,
+                    into: importDirectory
                 )
-                let filename = "import-\(String(format: "%03d", index + 1)).\(originalFormat.preferredOutputFormat.filenameExtension)"
-                let sourceURL = importDirectory.appendingPathComponent(filename)
-                try data.write(
-                    to: sourceURL,
-                    options: .atomic
-                )
-
-                let pixelSize = try ImageIOImageSupport.pixelSize(from: imageSource)
-                let previewImage = try ImageIOImageSupport.previewImage(from: sourceURL)
-                importedImages.append(
-                    .init(
-                        sourceURL: sourceURL,
-                        originalFilename: nil,
-                        originalFormat: originalFormat,
-                        pixelSize: pixelSize,
-                        previewImage: previewImage,
-                        selectionIndex: index + 1
-                    )
-                )
+                importedImages.append(importedImage)
             } catch {
                 failureCount += 1
             }
@@ -80,5 +47,71 @@ extension PhotoImportService {
             importedImages: importedImages,
             failureCount: failureCount
         )
+    }
+}
+
+private extension PhotoImportService {
+    nonisolated static func makeImportDirectory() -> URL? {
+        let directoryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(
+                "LietImported-\(UUID().uuidString)",
+                isDirectory: true
+            )
+
+        do {
+            try FileManager.default.createDirectory(
+                at: directoryURL,
+                withIntermediateDirectories: true
+            )
+            return directoryURL
+        } catch {
+            return nil
+        }
+    }
+
+    nonisolated static func importImage(
+        _ item: PhotosPickerItem,
+        selectionIndex: Int,
+        into directoryURL: URL
+    ) async throws -> ImportedBatchImage {
+        guard let data = try await item.loadTransferable(type: Data.self) else {
+            throw BatchImageServiceError.failedToLoadImageData
+        }
+
+        let imageSource = try ImageIOImageSupport.imageSource(data: data)
+        let originalFormat = ImageIOImageSupport.detectedFormat(
+            for: imageSource,
+            supportedTypeIdentifiers: item.supportedContentTypes.map(\.identifier)
+        )
+        let filename = importedFilename(
+            for: originalFormat,
+            selectionIndex: selectionIndex
+        )
+        let sourceURL = directoryURL.appendingPathComponent(filename)
+        try data.write(
+            to: sourceURL,
+            options: .atomic
+        )
+
+        return .init(
+            sourceURL: sourceURL,
+            originalFilename: nil,
+            originalFormat: originalFormat,
+            pixelSize: try ImageIOImageSupport.pixelSize(from: imageSource),
+            previewImage: try ImageIOImageSupport.previewImage(from: sourceURL),
+            selectionIndex: selectionIndex
+        )
+    }
+
+    nonisolated static func importedFilename(
+        for format: ImageFileFormat,
+        selectionIndex: Int
+    ) -> String {
+        let paddedIndex = String(
+            format: "%03d",
+            selectionIndex
+        )
+        let fileExtension = format.preferredOutputFormat.filenameExtension
+        return "import-\(paddedIndex).\(fileExtension)"
     }
 }

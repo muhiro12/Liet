@@ -13,7 +13,7 @@ struct BatchImageValueTests {
     func settings_default_to_manual_long_edge_and_medium_quality() {
         let settings: BatchImageSettings = .init()
 
-        #expect(settings.longEdgePixels == 1920)
+        #expect(settings.longEdgePixels == 1_920)
         #expect(settings.compression == .medium)
     }
 

@@ -221,6 +221,16 @@
         }
       }
     },
+    "Show Tips Again" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Tips Again"
+          }
+        }
+      }
+    },
     "Settings" : {
       "localizations" : {
         "en" : {
@@ -237,6 +247,106 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Smaller images keep their original size."
+          }
+        }
+      }
+    },
+    "Start with a batch" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with a batch"
+          }
+        }
+      }
+    },
+    "Pick one or more photos. Liet applies the same resize and compression settings to every selected image." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick one or more photos. Liet applies the same resize and compression settings to every selected image."
+          }
+        }
+      }
+    },
+    "Choose one setting set" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose one setting set"
+          }
+        }
+      }
+    },
+    "Set the long edge once, then pick a quality level. JPEG and HEIC use the quality setting. PNG keeps its format. Originals stay untouched." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set the long edge once, then pick a quality level. JPEG and HEIC use the quality setting. PNG keeps its format. Originals stay untouched."
+          }
+        }
+      }
+    },
+    "Process everything together" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Process everything together"
+          }
+        }
+      }
+    },
+    "When the settings look right, run one batch. Liet creates new files and never overwrites the originals." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When the settings look right, run one batch. Liet creates new files and never overwrites the originals."
+          }
+        }
+      }
+    },
+    "Review the batch result" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the batch result"
+          }
+        }
+      }
+    },
+    "Successful outputs are ready even if some images failed. You can save only the new processed files from here." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Successful outputs are ready even if some images failed. You can save only the new processed files from here."
+          }
+        }
+      }
+    },
+    "Pick where the new files go" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick where the new files go"
+          }
+        }
+      }
+    },
+    "Use Files to choose a folder in the Files app. Use Photos to add the processed images to your photo library as new items." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Files to choose a folder in the Files app. Use Photos to add the processed images to your photo library as new items."
           }
         }
       }

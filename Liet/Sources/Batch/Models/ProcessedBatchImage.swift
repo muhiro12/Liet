@@ -1,7 +1,7 @@
 import Foundation
 import LietLibrary
-import UniformTypeIdentifiers
 import UIKit
+import UniformTypeIdentifiers
 
 struct ProcessedBatchImage: Identifiable {
     let id: UUID
@@ -16,7 +16,6 @@ struct ProcessedBatchImage: Identifiable {
     let ignoredCompressionSetting: Bool
 
     nonisolated init(
-        id: UUID = .init(),
         sourceID: UUID,
         outputURL: URL,
         outputFilename: String,
@@ -25,7 +24,8 @@ struct ProcessedBatchImage: Identifiable {
         pixelSize: CGSize,
         previewImage: UIImage,
         usedJPEGFallback: Bool,
-        ignoredCompressionSetting: Bool
+        ignoredCompressionSetting: Bool,
+        id: UUID = .init()
     ) {
         self.id = id
         self.sourceID = sourceID

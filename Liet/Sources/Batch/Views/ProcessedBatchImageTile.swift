@@ -5,6 +5,7 @@ struct ProcessedBatchImageTile: View {
         static let cornerRadius = 12.0
         static let textSpacing = 4.0
         static let imageHeight = 112.0
+        static let detailLineLimit = 2
     }
 
     let image: ProcessedBatchImage
@@ -19,6 +20,7 @@ struct ProcessedBatchImageTile: View {
                 .aspectRatio(contentMode: .fill)
                 .frame(maxWidth: .infinity)
                 .frame(height: Layout.imageHeight)
+                .accessibilityHidden(true)
                 .clipShape(
                     RoundedRectangle(
                         cornerRadius: Layout.cornerRadius,
@@ -33,7 +35,7 @@ struct ProcessedBatchImageTile: View {
             Text(image.detailText)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
-                .lineLimit(2)
+                .lineLimit(Layout.detailLineLimit)
         }
     }
 }

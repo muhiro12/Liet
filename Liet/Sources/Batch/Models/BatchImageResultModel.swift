@@ -57,9 +57,14 @@ extension BatchImageResultModel {
 
         if jpegFallbackCount > 0 {
             if jpegFallbackCount == 1 {
-                messages.append("1 image was exported as JPEG because the original format couldn't be preserved.")
+                messages.append(
+                    "1 image was exported as JPEG because the original format couldn't be preserved."
+                )
             } else {
-                messages.append("\(jpegFallbackCount) images were exported as JPEG because the original format couldn't be preserved.")
+                messages.append(
+                    "\(jpegFallbackCount) images were exported as JPEG because the original format " +
+                        "couldn't be preserved."
+                )
             }
         }
 
@@ -92,6 +97,14 @@ extension BatchImageResultModel {
             } else {
                 saveMessage = "Exported \(urls.count) images to Files."
             }
+
+            guard !urls.isEmpty else {
+                return
+            }
+
+            Task {
+                await BatchImageTipSupport.donateSaveToFilesSuccess()
+            }
         case let .failure(error):
             errorMessage = error.localizedDescription
         }
@@ -116,8 +129,13 @@ extension BatchImageResultModel {
             } else {
                 saveMessage = "Saved \(processedImages.count) images to Photos."
             }
+            await BatchImageTipSupport.donateSaveToPhotosSuccess()
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    func replayTips() {
+        BatchImageTipSupport.resetTips()
     }
 }

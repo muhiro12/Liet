@@ -1,28 +1,19 @@
 import Foundation
 
+/// Image file formats recognized by the batch processor.
 public enum ImageFileFormat: String, CaseIterable, Codable, Sendable {
+    /// JPEG input or output.
     case jpeg
+    /// PNG input or output.
     case png
+    /// HEIC input or output.
     case heic
+    /// Any unsupported format that falls back to JPEG output.
     case other
 }
 
 public extension ImageFileFormat {
-    init(typeIdentifier: String?) {
-        let normalizedIdentifier = typeIdentifier?.lowercased() ?? ""
-
-        switch normalizedIdentifier {
-        case "public.jpeg", "public.jpg":
-            self = .jpeg
-        case "public.png":
-            self = .png
-        case "public.heic", "public.heif":
-            self = .heic
-        default:
-            self = .other
-        }
-    }
-
+    /// User-facing format label shown in the UI.
     var displayName: String {
         switch self {
         case .jpeg:
@@ -36,6 +27,7 @@ public extension ImageFileFormat {
         }
     }
 
+    /// Preferred file extension used for output filenames.
     var filenameExtension: String {
         switch self {
         case .jpeg:
@@ -49,6 +41,7 @@ public extension ImageFileFormat {
         }
     }
 
+    /// Uniform type identifier used for Image I/O reads and writes.
     var sourceTypeIdentifier: String {
         switch self {
         case .jpeg:
@@ -62,6 +55,7 @@ public extension ImageFileFormat {
         }
     }
 
+    /// Whether the format supports a lossy compression quality parameter.
     var supportsLossyCompressionQuality: Bool {
         switch self {
         case .jpeg, .heic:
@@ -71,6 +65,7 @@ public extension ImageFileFormat {
         }
     }
 
+    /// Preferred output format after applying MVP fallback rules.
     var preferredOutputFormat: Self {
         switch self {
         case .other:
@@ -80,7 +75,24 @@ public extension ImageFileFormat {
         }
     }
 
+    /// Whether the format requires JPEG fallback on export.
     var requiresOutputFallback: Bool {
         self == .other
+    }
+
+    /// Resolves a format from an input type identifier.
+    init(typeIdentifier: String?) {
+        let normalizedIdentifier = typeIdentifier?.lowercased() ?? ""
+
+        switch normalizedIdentifier {
+        case "public.jpeg", "public.jpg":
+            self = .jpeg
+        case "public.png":
+            self = .png
+        case "public.heic", "public.heif":
+            self = .heic
+        default:
+            self = .other
+        }
     }
 }

@@ -1,6 +1,8 @@
 import Foundation
 
+/// Shared output naming rules for processed images.
 public enum ProcessedImageNaming {
+    /// Builds a unique output filename for a processed image.
     public static func makeFilename(
         originalFilename: String?,
         fallbackIndex: Int,

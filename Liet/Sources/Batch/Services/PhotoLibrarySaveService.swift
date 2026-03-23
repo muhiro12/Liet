@@ -12,13 +12,11 @@ enum PhotoLibrarySaveService {
         let authorizationStatus = await authorizationStatus()
 
         guard authorizationStatus == .authorized ||
-              authorizationStatus == .limited else {
+                authorizationStatus == .limited else {
             throw BatchImageServiceError.photoLibraryPermissionDenied
         }
 
-        try await withCheckedThrowingContinuation { (
-            continuation: CheckedContinuation<Void, Error>
-        ) in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             PHPhotoLibrary.shared().performChanges({
                 for image in images {
                     let request = PHAssetCreationRequest.forAsset()
