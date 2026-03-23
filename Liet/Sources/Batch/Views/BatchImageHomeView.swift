@@ -15,31 +15,6 @@ struct BatchImageHomeView: View {
         static let controlSpacing = 12.0
     }
 
-    private enum Copy {
-        static let importTitle = "Select images"
-        static let importMessage =
-            "Choose multiple photos, then apply one resize and compression setting to all of them."
-        static let loadingMessage = "Loading images..."
-        static let settingsTitle = "Settings"
-        static let resizeModeTitle = "Resize mode"
-        static let longEdgeTitle = "Long edge (px)"
-        static let shortEdgeTitle = "Short edge (px)"
-        static let methodTitle = "Method"
-        static let longEdgePlaceholder = "1920"
-        static let shortEdgePlaceholder = "1080"
-        static let edgeDetail = "Smaller images keep their original size."
-        static let containDetail =
-            "Contain keeps the whole image in the target canvas. " +
-            "Cover Crop fills the canvas by cropping from the center."
-        static let containPaddingDetail =
-            "Contain may leave padding when the image and target aspect ratios differ."
-        static let compressionTitle = "Compression"
-        static let compressionDetail = "PNG keeps its format and ignores the compression quality setting."
-        static let processTitle = "Process Images"
-        static let processDetail = "Processed images are always written as new files."
-        static let clearTitle = "Clear"
-    }
-
     private enum ResizeField: Hashable {
         case longEdge
         case shortEdge
@@ -132,7 +107,7 @@ private extension BatchImageHomeView {
             alignment: .leading,
             spacing: Layout.cardSpacing
         ) {
-            Text(Copy.settingsTitle)
+            Text("Settings")
                 .font(.title3.weight(.semibold))
 
             resizeSection()
@@ -154,24 +129,26 @@ private extension BatchImageHomeView {
                 alignment: .leading,
                 spacing: Layout.controlSpacing
             ) {
-                Text(Copy.resizeModeTitle)
+                Text("Resize mode")
                     .font(.subheadline.weight(.medium))
 
-                Picker(Copy.resizeModeTitle, selection: $model.resizeModeSelection) {
+                Picker(selection: $model.resizeModeSelection) {
                     Text("Long edge")
                         .tag(BatchImageHomeModel.ResizeInputMode.longEdge)
                     Text("Short edge")
                         .tag(BatchImageHomeModel.ResizeInputMode.shortEdge)
                     Text("Exact size")
                         .tag(BatchImageHomeModel.ResizeInputMode.exactSize)
+                } label: {
+                    Text("Resize mode")
                 }
                 .pickerStyle(.segmented)
             }
 
             if model.isLongEdgeMode {
                 edgeInputSection(
-                    title: Copy.longEdgeTitle,
-                    placeholder: Copy.longEdgePlaceholder,
+                    title: Text("Long edge (px)"),
+                    placeholder: "1920",
                     text: $model.resizeLongEdgeText,
                     focusField: .longEdge
                 )
@@ -179,8 +156,8 @@ private extension BatchImageHomeView {
 
             if model.isShortEdgeMode {
                 edgeInputSection(
-                    title: Copy.shortEdgeTitle,
-                    placeholder: Copy.shortEdgePlaceholder,
+                    title: Text("Short edge (px)"),
+                    placeholder: "1080",
                     text: $model.resizeShortEdgeText,
                     focusField: .shortEdge
                 )
@@ -193,7 +170,7 @@ private extension BatchImageHomeView {
     }
 
     private func edgeInputSection(
-        title: String,
+        title: Text,
         placeholder: String,
         text: Binding<String>,
         focusField: ResizeField
@@ -202,7 +179,7 @@ private extension BatchImageHomeView {
             alignment: .leading,
             spacing: Layout.controlSpacing
         ) {
-            Text(title)
+            title
                 .font(.subheadline.weight(.medium))
 
             TextField(placeholder, text: text)
@@ -210,7 +187,7 @@ private extension BatchImageHomeView {
                 .keyboardType(.numberPad)
                 .textFieldStyle(.roundedBorder)
 
-            Text(Copy.edgeDetail)
+            Text("Smaller images keep their original size.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -222,15 +199,15 @@ private extension BatchImageHomeView {
             spacing: Layout.cardSpacing
         ) {
             edgeInputSection(
-                title: Copy.longEdgeTitle,
-                placeholder: Copy.longEdgePlaceholder,
+                title: Text("Long edge (px)"),
+                placeholder: "1920",
                 text: $model.resizeLongEdgeText,
                 focusField: .longEdge
             )
 
             edgeInputSection(
-                title: Copy.shortEdgeTitle,
-                placeholder: Copy.shortEdgePlaceholder,
+                title: Text("Short edge (px)"),
+                placeholder: "1080",
                 text: $model.resizeShortEdgeText,
                 focusField: .shortEdge
             )
@@ -239,22 +216,29 @@ private extension BatchImageHomeView {
                 alignment: .leading,
                 spacing: Layout.controlSpacing
             ) {
-                Text(Copy.methodTitle)
+                Text("Method")
                     .font(.subheadline.weight(.medium))
 
-                Picker(Copy.methodTitle, selection: $model.exactResizeStrategy) {
+                Picker(selection: $model.exactResizeStrategy) {
                     Text("Contain")
                         .tag(BatchExactResizeStrategy.contain)
                     Text("Cover Crop")
                         .tag(BatchExactResizeStrategy.coverCrop)
+                } label: {
+                    Text("Method")
                 }
                 .pickerStyle(.segmented)
 
-                Text(Copy.containDetail)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                Text(
+                    """
+                    Contain keeps the whole image in the target canvas. \
+                    Cover Crop fills the canvas by cropping from the center.
+                    """
+                )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
 
-                Text(Copy.containPaddingDetail)
+                Text("Contain may leave padding when the image and target aspect ratios differ.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -276,9 +260,9 @@ private extension BatchImageHomeView {
             alignment: .leading,
             spacing: Layout.controlSpacing
         ) {
-            Text(Copy.importTitle)
+            Text("Select images")
                 .font(.title2.weight(.semibold))
-            Text(Copy.importMessage)
+            Text("Choose multiple photos, then apply one resize and compression setting to all of them.")
                 .foregroundStyle(.secondary)
         }
     }
@@ -308,7 +292,7 @@ private extension BatchImageHomeView {
             Spacer()
 
             if !model.importedImages.isEmpty {
-                Button(Copy.clearTitle) {
+                Button("Clear") {
                     selectedItems = []
                     model.clearSelection()
                 }
@@ -319,7 +303,7 @@ private extension BatchImageHomeView {
     @ViewBuilder
     func importFeedback() -> some View {
         if model.isImporting {
-            ProgressView(Copy.loadingMessage)
+            ProgressView("Loading images...")
         }
 
         if let importMessage = model.importMessage {
@@ -349,7 +333,7 @@ private extension BatchImageHomeView {
             alignment: .leading,
             spacing: Layout.controlSpacing
         ) {
-            Text(Copy.compressionTitle)
+            Text("Compression")
                 .font(.subheadline.weight(.medium))
 
             Picker("Compression", selection: $model.compression) {
@@ -362,7 +346,7 @@ private extension BatchImageHomeView {
             }
             .pickerStyle(.segmented)
 
-            Text(Copy.compressionDetail)
+            Text("PNG keeps its format and ignores the compression quality setting.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -378,7 +362,7 @@ private extension BatchImageHomeView {
                 ProgressView()
                     .frame(maxWidth: .infinity)
             } else {
-                Text(Copy.processTitle)
+                Text("Process Images")
                     .frame(maxWidth: .infinity)
             }
         }
@@ -391,7 +375,7 @@ private extension BatchImageHomeView {
     }
 
     func processDetail() -> some View {
-        Text(Copy.processDetail)
+        Text("Processed images are always written as new files.")
             .font(.footnote)
             .foregroundStyle(.secondary)
     }

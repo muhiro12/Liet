@@ -494,8 +494,24 @@
         }
       }
     },
-    "Choose multiple photos, then apply one resize and compression setting to all of them." : {
+    "Choose Long edge, Short edge, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched." : {
       "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose Long edge, Short edge, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長辺、短辺、または指定サイズを選び、品質レベルを設定します。指定サイズでは全体表示または中央クロップを選べます。PNG は形式を維持し、元の画像は変更されません。"
+          }
+        }
+      }
+    },
+    "Choose multiple photos, then apply one resize and compression setting to all of them." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -528,7 +544,6 @@
       }
     },
     "Clear" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -575,6 +590,12 @@
           }
         }
       }
+    },
+    "Contain keeps the whole image in the target canvas. Cover Crop fills the canvas by cropping from the center." : {
+
+    },
+    "Contain may leave padding when the image and target aspect ratios differ." : {
+
     },
     "Cover Crop" : {
       "localizations" : {
@@ -673,7 +694,6 @@
       }
     },
     "Loading images..." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -706,7 +726,6 @@
       }
     },
     "Long edge (px)" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -753,6 +772,9 @@
           }
         }
       }
+    },
+    "Method" : {
+
     },
     "OK" : {
       "localizations" : {
@@ -803,7 +825,6 @@
       }
     },
     "PNG keeps its format and ignores the compression quality setting." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -836,7 +857,6 @@
       }
     },
     "Process Images" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -869,7 +889,6 @@
       }
     },
     "Processed images are always written as new files." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -884,6 +903,9 @@
           }
         }
       }
+    },
+    "Resize mode" : {
+
     },
     "Results" : {
       "localizations" : {
@@ -966,7 +988,6 @@
       }
     },
     "Select images" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -998,25 +1019,7 @@
         }
       }
     },
-    "Choose Long edge, Short edge, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose Long edge, Short edge, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "長辺、短辺、または指定サイズを選び、品質レベルを設定します。指定サイズでは全体表示または中央クロップを選べます。PNG は形式を維持し、元の画像は変更されません。"
-          }
-        }
-      }
-    },
     "Settings" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1048,6 +1051,9 @@
         }
       }
     },
+    "Short edge (px)" : {
+
+    },
     "Show Tips Again" : {
       "localizations" : {
         "en" : {
@@ -1065,7 +1071,6 @@
       }
     },
     "Smaller images keep their original size." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
