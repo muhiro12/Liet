@@ -1,7 +1,7 @@
 import Foundation
 import ImageIO
-import LietLibrary
 @testable import Liet
+import LietLibrary
 import Testing
 import UIKit
 
@@ -174,7 +174,12 @@ struct BatchImageHomeModelTests {
 
     @Test
     func process_images_only_presents_results_when_processing_succeeds() async throws {
-        let failedModel: BatchImageHomeModel = .init()
+        let localization = BatchImageTestFactory.makeLocalization(
+            localeIdentifier: "en"
+        )
+        let failedModel: BatchImageHomeModel = .init(
+            localization: localization
+        )
         failedModel.importedImages = [
             BatchImageTestFactory.makeMissingImportedImage(
                 format: .jpeg,
@@ -186,9 +191,13 @@ struct BatchImageHomeModelTests {
         await failedModel.processImages()
 
         #expect(failedModel.resultModel == nil)
-        #expect(failedModel.errorMessage == "Couldn't process the selected images.")
+        #expect(
+            failedModel.errorMessage == localization.processSelectionFailedMessage()
+        )
 
-        let successfulModel: BatchImageHomeModel = .init()
+        let successfulModel: BatchImageHomeModel = .init(
+            localization: localization
+        )
         successfulModel.importedImages = [
             try BatchImageTestFactory.makeImportedImage(
                 format: .jpeg,
@@ -206,6 +215,15 @@ struct BatchImageHomeModelTests {
 }
 
 private enum BatchImageTestFactory {
+    static func makeLocalization(
+        localeIdentifier: String
+    ) -> BatchImageLocalization {
+        .init(
+            locale: .init(identifier: localeIdentifier),
+            bundle: Bundle(for: BatchImageHomeModel.self)
+        )
+    }
+
     static func makeImportedImage(
         format: ImageFileFormat,
         size: CGSize,

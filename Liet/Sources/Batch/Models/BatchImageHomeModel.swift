@@ -28,15 +28,22 @@ final class BatchImageHomeModel {
     var importMessage: String?
     var resultModel: BatchImageResultModel?
 
+    private let localization: BatchImageLocalization
     private var importSessionID: UUID = .init()
+
+    init(
+        localization: BatchImageLocalization = .init()
+    ) {
+        self.localization = localization
+    }
 }
 
 extension BatchImageHomeModel {
     var canProcess: Bool {
         resizeLongEdgePixels != nil &&
-        !importedImages.isEmpty &&
-        !isImporting &&
-        !isProcessing
+            !importedImages.isEmpty &&
+            !isImporting &&
+            !isProcessing
     }
 
     var resizeLongEdgePixels: Int? {
@@ -49,11 +56,7 @@ extension BatchImageHomeModel {
     }
 
     var selectedImageCountText: String {
-        if importedImages.count == 1 {
-            return "1 image selected"
-        }
-
-        return "\(importedImages.count) images selected"
+        localization.selectedImageCount(importedImages.count)
     }
 
     var settings: BatchImageSettings? {
@@ -92,15 +95,13 @@ extension BatchImageHomeModel {
         importedImages = result.importedImages
 
         if result.failureCount > 0 {
-            importMessage = if result.failureCount == 1 {
-                "1 image couldn't be loaded."
-            } else {
-                "\(result.failureCount) images couldn't be loaded."
-            }
+            importMessage = localization.importFailureMessage(
+                count: result.failureCount
+            )
         }
 
         if importedImages.isEmpty {
-            errorMessage = "Couldn't import the selected images."
+            errorMessage = localization.importSelectionFailedMessage()
         }
     }
 
@@ -119,7 +120,7 @@ extension BatchImageHomeModel {
 
     func processImages() async {
         guard let settings else {
-            errorMessage = "Enter a valid long-edge size."
+            errorMessage = localization.invalidLongEdgeSizeMessage()
             return
         }
 
@@ -133,10 +134,13 @@ extension BatchImageHomeModel {
 
         guard !outcome.processedImages.isEmpty else {
             resultModel = nil
-            errorMessage = "Couldn't process the selected images."
+            errorMessage = localization.processSelectionFailedMessage()
             return
         }
 
-        resultModel = .init(outcome: outcome)
+        resultModel = .init(
+            outcome: outcome,
+            localization: localization
+        )
     }
 }
