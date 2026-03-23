@@ -1,0 +1,26 @@
+{
+  "configurations" : [
+    {
+      "id" : "8AB7CC4D-96C9-40D4-9B8C-9C680CF6C5D9",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "language" : "en",
+    "performanceAntipatternCheckerEnabled" : true,
+    "region" : "US"
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "LietLibraryTests",
+        "name" : "LietLibraryTests"
+      }
+    }
+  ],
+  "version" : 2
+}
