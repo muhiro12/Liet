@@ -2,6 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "1920" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -17,7 +18,484 @@
         }
       }
     },
+    "batch.error.failedToCreateImageSource" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't read one of the selected images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した画像の一部を読み取れませんでした。"
+          }
+        }
+      }
+    },
+    "batch.error.failedToCreateThumbnail" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't generate an image preview."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像のプレビューを生成できませんでした。"
+          }
+        }
+      }
+    },
+    "batch.error.failedToEncodeImage" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't write one of the processed images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理後の画像の一部を書き出せませんでした。"
+          }
+        }
+      }
+    },
+    "batch.error.failedToLoadImageData" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't load one of the selected images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した画像の一部を読み込めませんでした。"
+          }
+        }
+      }
+    },
+    "batch.error.failedToReadImageProperties" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't inspect one of the selected images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した画像の一部の情報を取得できませんでした。"
+          }
+        }
+      }
+    },
+    "batch.error.photoLibraryPermissionDenied" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo Library access is required to save images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像を保存するには写真ライブラリへのアクセスが必要です。"
+          }
+        }
+      }
+    },
+    "batch.error.photoLibrarySaveFailed" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't save the processed images to Photos."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理後の画像を写真に保存できませんでした。"
+          }
+        }
+      }
+    },
+    "batch.export.files.multiple" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exported %@ images to Files."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 枚の画像をファイルに保存しました。"
+          }
+        }
+      }
+    },
+    "batch.export.files.single" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exported 1 image to Files."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚の画像をファイルに保存しました。"
+          }
+        }
+      }
+    },
+    "batch.export.photos.multiple" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved %@ images to Photos."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 枚の画像を写真に保存しました。"
+          }
+        }
+      }
+    },
+    "batch.export.photos.single" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved 1 image to Photos."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚の画像を写真に保存しました。"
+          }
+        }
+      }
+    },
+    "batch.import.failure.multiple" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ images couldn't be loaded."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 枚の画像を読み込めませんでした。"
+          }
+        }
+      }
+    },
+    "batch.import.failure.single" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 image couldn't be loaded."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚の画像を読み込めませんでした。"
+          }
+        }
+      }
+    },
+    "batch.import.selection.failed" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't import the selected images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した画像を読み込めませんでした。"
+          }
+        }
+      }
+    },
+    "batch.process.selection.failed" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't process the selected images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した画像を処理できませんでした。"
+          }
+        }
+      }
+    },
+    "batch.result.failure.multiple" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ images couldn't be processed."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 枚の画像を処理できませんでした。"
+          }
+        }
+      }
+    },
+    "batch.result.failure.single" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 image couldn't be processed."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚の画像を処理できませんでした。"
+          }
+        }
+      }
+    },
+    "batch.result.jpegFallback.multiple" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ images were exported as JPEG because the original format couldn't be preserved."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "元の形式を保持できなかったため、%@ 枚を JPEG として書き出しました。"
+          }
+        }
+      }
+    },
+    "batch.result.jpegFallback.single" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 image was exported as JPEG because the original format couldn't be preserved."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "元の形式を保持できなかったため、1 枚を JPEG として書き出しました。"
+          }
+        }
+      }
+    },
+    "batch.result.pngCompression.multiple" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PNG images ignore the compression quality setting."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PNG 画像では圧縮品質の設定は適用されません。"
+          }
+        }
+      }
+    },
+    "batch.result.pngCompression.single" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PNG ignores the compression quality setting."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PNG では圧縮品質の設定は適用されません。"
+          }
+        }
+      }
+    },
+    "batch.result.ready.multiple" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ images ready"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 枚の画像を処理しました"
+          }
+        }
+      }
+    },
+    "batch.result.ready.single" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 image ready"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚の画像を処理しました"
+          }
+        }
+      }
+    },
+    "batch.selection.count.multiple" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ images selected"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 枚を選択中"
+          }
+        }
+      }
+    },
+    "batch.selection.count.single" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 image selected"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 枚を選択中"
+          }
+        }
+      }
+    },
+    "batch.validation.exact.invalid" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter valid long-edge and short-edge sizes."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効な長辺サイズと短辺サイズを入力してください。"
+          }
+        }
+      }
+    },
+    "batch.validation.longEdge.invalid" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter a valid long-edge size."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効な長辺サイズを入力してください。"
+          }
+        }
+      }
+    },
+    "batch.validation.shortEdge.invalid" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter a valid short-edge size."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効な短辺サイズを入力してください。"
+          }
+        }
+      }
+    },
     "Choose multiple photos, then apply one resize and compression setting to all of them." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -33,7 +511,18 @@
         }
       }
     },
+    "Choose one setting set" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose one setting set"
+          }
+        }
+      }
+    },
     "Clear" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -65,6 +554,15 @@
         }
       }
     },
+    "Contain" : {
+
+    },
+    "Cover Crop" : {
+
+    },
+    "Done" : {
+
+    },
     "Error" : {
       "localizations" : {
         "en" : {
@@ -80,6 +578,9 @@
           }
         }
       }
+    },
+    "Exact size" : {
+
     },
     "High" : {
       "localizations" : {
@@ -114,6 +615,7 @@
       }
     },
     "Loading images..." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -129,7 +631,11 @@
         }
       }
     },
+    "Long edge" : {
+
+    },
     "Long edge (px)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -193,7 +699,28 @@
         }
       }
     },
+    "Pick one or more photos. Liet applies the same resize and compression settings to every selected image." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick one or more photos. Liet applies the same resize and compression settings to every selected image."
+          }
+        }
+      }
+    },
+    "Pick where the new files go" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick where the new files go"
+          }
+        }
+      }
+    },
     "PNG keeps its format and ignores the compression quality setting." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -209,7 +736,18 @@
         }
       }
     },
+    "Process everything together" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Process everything together"
+          }
+        }
+      }
+    },
     "Process Images" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -242,6 +780,7 @@
       }
     },
     "Processed images are always written as new files." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -269,6 +808,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "結果"
+          }
+        }
+      }
+    },
+    "Review the batch result" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the batch result"
           }
         }
       }
@@ -321,6 +870,23 @@
         }
       }
     },
+    "Select images" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select images"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像を選択"
+          }
+        }
+      }
+    },
     "Select Photos" : {
       "localizations" : {
         "en" : {
@@ -337,33 +903,19 @@
         }
       }
     },
-    "Select images" : {
+    "Set the long edge once, then pick a quality level. JPEG and HEIC use the quality setting. PNG keeps its format. Originals stay untouched." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select images"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "画像を選択"
-          }
-        }
-      }
-    },
-    "Show Tips Again" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show Tips Again"
+            "value" : "Set the long edge once, then pick a quality level. JPEG and HEIC use the quality setting. PNG keeps its format. Originals stay untouched."
           }
         }
       }
     },
     "Settings" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -379,7 +931,21 @@
         }
       }
     },
+    "Short edge" : {
+
+    },
+    "Show Tips Again" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Tips Again"
+          }
+        }
+      }
+    },
     "Smaller images keep their original size." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -395,454 +961,6 @@
         }
       }
     },
-    "batch.error.failedToCreateImageSource" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't read one of the selected images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選択した画像の一部を読み取れませんでした。"
-          }
-        }
-      }
-    },
-    "batch.error.failedToCreateThumbnail" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't generate an image preview."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "画像のプレビューを生成できませんでした。"
-          }
-        }
-      }
-    },
-    "batch.error.failedToEncodeImage" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't write one of the processed images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "処理後の画像の一部を書き出せませんでした。"
-          }
-        }
-      }
-    },
-    "batch.error.failedToLoadImageData" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't load one of the selected images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選択した画像の一部を読み込めませんでした。"
-          }
-        }
-      }
-    },
-    "batch.error.failedToReadImageProperties" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't inspect one of the selected images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選択した画像の一部の情報を取得できませんでした。"
-          }
-        }
-      }
-    },
-    "batch.error.photoLibraryPermissionDenied" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo Library access is required to save images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "画像を保存するには写真ライブラリへのアクセスが必要です。"
-          }
-        }
-      }
-    },
-    "batch.error.photoLibrarySaveFailed" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't save the processed images to Photos."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "処理後の画像を写真に保存できませんでした。"
-          }
-        }
-      }
-    },
-    "batch.export.files.multiple" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exported %@ images to Files."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 枚の画像をファイルに保存しました。"
-          }
-        }
-      }
-    },
-    "batch.export.files.single" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exported 1 image to Files."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 枚の画像をファイルに保存しました。"
-          }
-        }
-      }
-    },
-    "batch.export.photos.multiple" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Saved %@ images to Photos."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 枚の画像を写真に保存しました。"
-          }
-        }
-      }
-    },
-    "batch.export.photos.single" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Saved 1 image to Photos."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 枚の画像を写真に保存しました。"
-          }
-        }
-      }
-    },
-    "batch.import.failure.multiple" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ images couldn't be loaded."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 枚の画像を読み込めませんでした。"
-          }
-        }
-      }
-    },
-    "batch.import.failure.single" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 image couldn't be loaded."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 枚の画像を読み込めませんでした。"
-          }
-        }
-      }
-    },
-    "batch.import.selection.failed" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't import the selected images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選択した画像を読み込めませんでした。"
-          }
-        }
-      }
-    },
-    "batch.process.selection.failed" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't process the selected images."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選択した画像を処理できませんでした。"
-          }
-        }
-      }
-    },
-    "batch.result.failure.multiple" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ images couldn't be processed."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 枚の画像を処理できませんでした。"
-          }
-        }
-      }
-    },
-    "batch.result.failure.single" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 image couldn't be processed."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 枚の画像を処理できませんでした。"
-          }
-        }
-      }
-    },
-    "batch.result.jpegFallback.multiple" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ images were exported as JPEG because the original format couldn't be preserved."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "元の形式を保持できなかったため、%@ 枚を JPEG として書き出しました。"
-          }
-        }
-      }
-    },
-    "batch.result.jpegFallback.single" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 image was exported as JPEG because the original format couldn't be preserved."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "元の形式を保持できなかったため、1 枚を JPEG として書き出しました。"
-          }
-        }
-      }
-    },
-    "batch.result.pngCompression.multiple" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PNG images ignore the compression quality setting."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PNG 画像では圧縮品質の設定は適用されません。"
-          }
-        }
-      }
-    },
-    "batch.result.pngCompression.single" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PNG ignores the compression quality setting."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PNG では圧縮品質の設定は適用されません。"
-          }
-        }
-      }
-    },
-    "batch.result.ready.multiple" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ images ready"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 枚の画像を処理しました"
-          }
-        }
-      }
-    },
-    "batch.result.ready.single" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 image ready"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 枚の画像を処理しました"
-          }
-        }
-      }
-    },
-    "batch.selection.count.multiple" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ images selected"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 枚を選択中"
-          }
-        }
-      }
-    },
-    "batch.selection.count.single" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 image selected"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 枚を選択中"
-          }
-        }
-      }
-    },
-    "batch.validation.longEdge.invalid" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter a valid long-edge size."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "有効な長辺サイズを入力してください。"
-          }
-        }
-      }
-    },
-    "batch.validation.shortEdge.invalid" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter a valid short-edge size."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "有効な短辺サイズを入力してください。"
-          }
-        }
-      }
-    },
-    "batch.validation.exact.invalid" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter valid long-edge and short-edge sizes."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "有効な長辺サイズと短辺サイズを入力してください。"
-          }
-        }
-      }
-    },
     "Start with a batch" : {
       "localizations" : {
         "en" : {
@@ -853,42 +971,24 @@
         }
       }
     },
-    "Pick one or more photos. Liet applies the same resize and compression settings to every selected image." : {
+    "Successful outputs are ready even if some images failed. You can save only the new processed files from here." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pick one or more photos. Liet applies the same resize and compression settings to every selected image."
+            "value" : "Successful outputs are ready even if some images failed. You can save only the new processed files from here."
           }
         }
       }
     },
-    "Choose one setting set" : {
+    "Use Files to choose a folder in the Files app. Use Photos to add the processed images to your photo library as new items." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose one setting set"
-          }
-        }
-      }
-    },
-    "Set the long edge once, then pick a quality level. JPEG and HEIC use the quality setting. PNG keeps its format. Originals stay untouched." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Set the long edge once, then pick a quality level. JPEG and HEIC use the quality setting. PNG keeps its format. Originals stay untouched."
-          }
-        }
-      }
-    },
-    "Process everything together" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Process everything together"
+            "value" : "Use Files to choose a folder in the Files app. Use Photos to add the processed images to your photo library as new items."
           }
         }
       }
@@ -899,46 +999,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "When the settings look right, run one batch. Liet creates new files and never overwrites the originals."
-          }
-        }
-      }
-    },
-    "Review the batch result" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Review the batch result"
-          }
-        }
-      }
-    },
-    "Successful outputs are ready even if some images failed. You can save only the new processed files from here." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Successful outputs are ready even if some images failed. You can save only the new processed files from here."
-          }
-        }
-      }
-    },
-    "Pick where the new files go" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pick where the new files go"
-          }
-        }
-      }
-    },
-    "Use Files to choose a folder in the Files app. Use Photos to add the processed images to your photo library as new items." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Use Files to choose a folder in the Files app. Use Photos to add the processed images to your photo library as new items."
           }
         }
       }
