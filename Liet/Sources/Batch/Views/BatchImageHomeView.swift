@@ -31,8 +31,8 @@ struct BatchImageHomeView: View {
         static let containDetail =
             "Contain keeps the whole image in the target canvas. " +
             "Cover Crop fills the canvas by cropping from the center."
-        static let transparencyDetail =
-            "PNG keeps transparent padding. JPEG and HEIC use white padding for Contain."
+        static let containPaddingDetail =
+            "Contain may leave padding when the image and target aspect ratios differ."
         static let compressionTitle = "Compression"
         static let compressionDetail = "PNG keeps its format and ignores the compression quality setting."
         static let processTitle = "Process Images"
@@ -254,7 +254,7 @@ private extension BatchImageHomeView {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                Text(Copy.transparencyDetail)
+                Text(Copy.containPaddingDetail)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

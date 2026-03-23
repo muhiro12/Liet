@@ -70,7 +70,7 @@ struct BatchImageProcessorTests {
     }
 
     @Test
-    func exact_size_contain_preserves_png_transparency() async throws {
+    func exact_size_contain_preserves_png_format_and_source_alpha() async throws {
         let size = CGSize(
             width: 916,
             height: 797
@@ -97,10 +97,10 @@ struct BatchImageProcessorTests {
         )
 
         let processedImage = try #require(outcome.processedImages.first)
-        let topLeft = try BatchImageTestFactory.pixelSample(
+        let transparentContentPixel = try BatchImageTestFactory.pixelSample(
             from: processedImage.outputURL,
-            sampleX: 0,
-            sampleY: 0
+            sampleX: 10,
+            sampleY: 50
         )
         let center = try BatchImageTestFactory.pixelSample(
             from: processedImage.outputURL,
@@ -116,7 +116,7 @@ struct BatchImageProcessorTests {
                 for: processedImage.outputURL
             ) == ImageFileFormat.png.sourceTypeIdentifier
         )
-        #expect(topLeft.isTransparent)
+        #expect(transparentContentPixel.isTransparent)
         #expect(center.isMostlyRed)
     }
 

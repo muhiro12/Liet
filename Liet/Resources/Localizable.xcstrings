@@ -903,13 +903,13 @@
         }
       }
     },
-    "Set the long edge once, then pick a quality level. JPEG and HEIC use the quality setting. PNG keeps its format. Originals stay untouched." : {
+    "Choose Long edge, Short edge, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched." : {
       "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Set the long edge once, then pick a quality level. JPEG and HEIC use the quality setting. PNG keeps its format. Originals stay untouched."
+            "value" : "Choose Long edge, Short edge, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched."
           }
         }
       }

@@ -2,6 +2,14 @@ import Foundation
 import Photos
 
 enum PhotoLibrarySaveService {
+    struct AssetResourceInput: Equatable {
+        let resourceType: PHAssetResourceType
+        let fileURL: URL
+        let originalFilename: String
+    }
+}
+
+extension PhotoLibrarySaveService {
     nonisolated static func save(
         _ images: [ProcessedBatchImage]
     ) async throws {
@@ -17,55 +25,60 @@ enum PhotoLibrarySaveService {
         }
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            let saveState = SaveState()
             PHPhotoLibrary.shared().performChanges({
-                saveState.failedToCreateAsset = !createAssetRequests(for: images)
+                createAssetRequests(for: images)
             }, completionHandler: { success, error in
                 resumeSave(
                     continuation: continuation,
                     success: success,
-                    error: error,
-                    failedToCreateAsset: saveState.failedToCreateAsset
+                    error: error
                 )
             })
+        }
+    }
+
+    nonisolated static func assetResourceInputs(
+        for images: [ProcessedBatchImage]
+    ) -> [AssetResourceInput] {
+        images.map { image in
+            .init(
+                resourceType: .photo,
+                fileURL: image.outputURL,
+                originalFilename: image.outputFilename
+            )
         }
     }
 }
 
 private extension PhotoLibrarySaveService {
-    final class SaveState {
-        var failedToCreateAsset = false
-    }
-
     nonisolated static func createAssetRequests(
         for images: [ProcessedBatchImage]
-    ) -> Bool {
-        for image in images {
-            guard PHAssetChangeRequest.creationRequestForAssetFromImage(
-                atFileURL: image.outputURL
-            ) != nil else {
-                return false
-            }
+    ) {
+        for input in assetResourceInputs(for: images) {
+            let request = PHAssetCreationRequest.forAsset()
+            request.addResource(
+                with: input.resourceType,
+                fileURL: input.fileURL,
+                options: resourceCreationOptions(for: input)
+            )
         }
+    }
 
-        return true
+    nonisolated static func resourceCreationOptions(
+        for input: AssetResourceInput
+    ) -> PHAssetResourceCreationOptions {
+        let options = PHAssetResourceCreationOptions()
+        options.originalFilename = input.originalFilename
+        return options
     }
 
     nonisolated static func resumeSave(
         continuation: CheckedContinuation<Void, Error>,
         success: Bool,
-        error: (any Error)?,
-        failedToCreateAsset: Bool
+        error: (any Error)?
     ) {
         if let error {
             continuation.resume(throwing: error)
-            return
-        }
-
-        if failedToCreateAsset {
-            continuation.resume(
-                throwing: BatchImageServiceError.photoLibrarySaveFailed
-            )
             return
         }
 

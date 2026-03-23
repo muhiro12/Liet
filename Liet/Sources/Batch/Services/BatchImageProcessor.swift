@@ -249,6 +249,7 @@ private extension BatchImageProcessor {
             canvasPixelSize: canvasPixelSize,
             strategy: strategy
         )
+        // PNG output keeps source alpha; lossy formats flatten onto white.
         let backgroundColor: UIColor? = if outputFormat == .png {
             nil
         } else {

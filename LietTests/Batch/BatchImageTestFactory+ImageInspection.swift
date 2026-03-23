@@ -18,11 +18,16 @@ extension BatchImageTestFactory {
         return typeIdentifier
     }
 
+    // swiftlint:disable:next function_body_length
     static func pixelSample(
         from url: URL,
         sampleX: Int,
         sampleY: Int
     ) throws -> PixelSample {
+        let redOffset = 0
+        let greenOffset = 1
+        let blueOffset = 2
+        let alphaOffset = 3
         let bytesPerPixel = 4
         let bitsPerComponent = 8
         guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil),
@@ -69,10 +74,10 @@ extension BatchImageTestFactory {
         let index = (clampedY * width + clampedX) * bytesPerPixel
 
         return .init(
-            red: bytes[index],
-            green: bytes[index + 1],
-            blue: bytes[index + 2],
-            alpha: bytes[index + 3]
+            red: bytes[index + redOffset],
+            green: bytes[index + greenOffset],
+            blue: bytes[index + blueOffset],
+            alpha: bytes[index + alphaOffset]
         )
     }
 }
