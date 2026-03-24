@@ -8,9 +8,10 @@ struct BatchImageHomeView: View {
         static let contentPadding = 20.0
         static let contentSpacing = 24.0
         static let cardSpacing = 16.0
-        static let gridSpacing = 12.0
-        static let thumbnailColumnMinimum = 110.0
+        static let cardPadding = 18.0
+        static let cardCornerRadius = 20.0
         static let controlSpacing = 12.0
+        static let stepBadgePadding = 10.0
     }
 
     private enum ResizeField: Hashable {
@@ -27,26 +28,37 @@ struct BatchImageHomeView: View {
     private let selectImagesTip = SelectImagesTip()
     private let processingSetupTip = ProcessingSetupTip()
     private let runProcessingTip = RunProcessingTip()
-
-    private let columns = [
-        GridItem(.adaptive(minimum: Layout.thumbnailColumnMinimum), spacing: Layout.gridSpacing)
-    ]
-
     var body: some View {
         ScrollView {
             VStack(
                 alignment: .leading,
                 spacing: Layout.contentSpacing
             ) {
-                importSection()
-                settingsSection()
-                actionSection()
+                importStepSection()
+
+                if model.showsOutputSizeStep {
+                    outputSizeStepSection()
+                        .transition(stepTransition)
+                }
+
+                if model.showsExportSetupStep {
+                    exportSetupStepSection()
+                        .transition(stepTransition)
+                }
             }
             .padding(Layout.contentPadding)
         }
         .scrollDismissesKeyboard(.immediately)
         .navigationTitle("Liet")
         .navigationBarTitleDisplayMode(.large)
+        .animation(
+            .snappy(duration: 0.32, extraBounce: 0),
+            value: model.showsOutputSizeStep
+        )
+        .animation(
+            .snappy(duration: 0.32, extraBounce: 0),
+            value: model.showsExportSetupStep
+        )
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Show Tips Again") {
@@ -147,36 +159,44 @@ private extension BatchImageHomeView {
     }
 
     func importSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.cardSpacing
+        stepCard(
+            number: 1,
+            title: "Import"
         ) {
             importHeader()
             selectionButton()
             selectionStatusRow()
             importFeedback()
-            importedImageGrid()
+            reviewSelectionButton()
         }
     }
 
-    func settingsSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.cardSpacing
+    func outputSizeStepSection() -> some View {
+        stepCard(
+            number: 2,
+            title: "Output Size"
         ) {
-            Text("Settings")
-                .font(.title3.weight(.semibold))
-
             resizeSection()
+            TipView(processingSetupTip)
+        }
+    }
 
-            if !model.importedImages.isEmpty {
-                TipView(processingSetupTip)
-            }
-
+    func exportSetupStepSection() -> some View {
+        stepCard(
+            number: 3,
+            title: "Export Setup"
+        ) {
             if model.showsCompressionSection {
                 compressionSection()
             }
+
+            processButton()
+            processDetail()
         }
+    }
+
+    func importStepSection() -> some View {
+        importSection()
     }
 
     func resizeSection() -> some View {
@@ -184,9 +204,6 @@ private extension BatchImageHomeView {
             alignment: .leading,
             spacing: Layout.cardSpacing
         ) {
-            Text("Output size")
-                .font(.subheadline.weight(.medium))
-
             Toggle(
                 "Keep aspect ratio",
                 isOn: keepsAspectRatioBinding
@@ -308,17 +325,6 @@ private extension BatchImageHomeView {
         }
     }
 
-    func actionSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.controlSpacing
-        ) {
-            reviewSelectionButton()
-            processButton()
-            processDetail()
-        }
-    }
-
     @ViewBuilder
     func reviewSelectionButton() -> some View {
         if let reviewSelection,
@@ -388,21 +394,6 @@ private extension BatchImageHomeView {
         }
     }
 
-    @ViewBuilder
-    func importedImageGrid() -> some View {
-        if !model.importedImages.isEmpty {
-            LazyVGrid(
-                columns: columns,
-                alignment: .leading,
-                spacing: Layout.gridSpacing
-            ) {
-                ForEach(model.importedImages) { image in
-                    ImportedBatchImageTile(image: image)
-                }
-            }
-        }
-    }
-
     func compressionSection() -> some View {
         VStack(
             alignment: .leading,
@@ -457,6 +448,69 @@ private extension BatchImageHomeView {
         Text("Processed images are always written as new files and default to the original name with a Liet suffix.")
             .font(.footnote)
             .foregroundStyle(.secondary)
+    }
+
+    func stepCard<Content: View>(
+        number: Int,
+        title: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.cardSpacing
+        ) {
+            stepHeader(
+                number: number,
+                title: title
+            )
+
+            content()
+        }
+        .padding(Layout.cardPadding)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(
+                cornerRadius: Layout.cardCornerRadius,
+                style: .continuous
+            )
+            .fill(Color(uiColor: .secondarySystemBackground))
+        )
+        .overlay {
+            RoundedRectangle(
+                cornerRadius: Layout.cardCornerRadius,
+                style: .continuous
+            )
+            .strokeBorder(
+                Color.primary.opacity(0.08),
+                lineWidth: 1
+            )
+        }
+    }
+
+    func stepHeader(
+        number: Int,
+        title: String
+    ) -> some View {
+        HStack(
+            spacing: Layout.controlSpacing
+        ) {
+            Text("Step \(number)")
+                .font(.caption.weight(.semibold))
+                .padding(.horizontal, Layout.stepBadgePadding)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(Color.accentColor.opacity(0.14))
+                )
+
+            Text(title)
+                .font(.title3.weight(.semibold))
+        }
+    }
+
+    var stepTransition: AnyTransition {
+        .move(edge: .bottom)
+            .combined(with: .opacity)
     }
 
     var referencePixelsTitle: String {

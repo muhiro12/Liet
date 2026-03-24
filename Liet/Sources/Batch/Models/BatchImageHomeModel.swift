@@ -58,6 +58,14 @@ final class BatchImageHomeModel {
 }
 
 extension BatchImageHomeModel {
+    var showsOutputSizeStep: Bool {
+        !importedImages.isEmpty
+    }
+
+    var showsExportSetupStep: Bool {
+        showsOutputSizeStep && settings != nil
+    }
+
     var canProcess: Bool {
         settings != nil &&
             !importedImages.isEmpty &&

@@ -5,10 +5,19 @@ struct ImportedBatchImageTile: View {
         static let cornerRadius = 12.0
         static let textSpacing = 4.0
         static let imageHeight = 96.0
-        static let detailLineLimit = 2
+        static let detailLineLimit = 3
     }
 
     let image: ImportedBatchImage
+    let projectedPixelSize: CGSize?
+
+    init(
+        image: ImportedBatchImage,
+        projectedPixelSize: CGSize? = nil
+    ) {
+        self.image = image
+        self.projectedPixelSize = projectedPixelSize
+    }
 
     var body: some View {
         VStack(
@@ -36,6 +45,23 @@ struct ImportedBatchImageTile: View {
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .lineLimit(Layout.detailLineLimit)
+
+            if let projectedDetailText {
+                Text(projectedDetailText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(Layout.detailLineLimit)
+            }
         }
+    }
+}
+
+private extension ImportedBatchImageTile {
+    var projectedDetailText: String? {
+        guard let projectedPixelSize else {
+            return nil
+        }
+
+        return "Output • \(Int(projectedPixelSize.width))×\(Int(projectedPixelSize.height))"
     }
 }
