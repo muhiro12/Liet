@@ -25,7 +25,7 @@ struct BatchImageHomeModelTests {
             )
         )
 
-        model.setResizeWidthText("1280")
+        model.setReferencePixelsText("1280")
         #expect(model.resultModel == nil)
 
         model.resultModel = .init(
@@ -72,8 +72,17 @@ struct BatchImageHomeModelTests {
 
         #expect(
             model.settings?.resizeMode == .fitWithin(
-                widthPixels: 1_920,
-                heightPixels: 1_080
+                referenceDimension: .width,
+                pixels: 1_920
+            )
+        )
+
+        model.setReferenceDimension(.height)
+        model.setReferencePixelsText("720")
+        #expect(
+            model.settings?.resizeMode == .fitWithin(
+                referenceDimension: .height,
+                pixels: 720
             )
         )
 
@@ -91,23 +100,22 @@ struct BatchImageHomeModelTests {
     }
 
     @Test
-    func aspect_ratio_lock_tracks_previous_ratio_and_persists_settings() {
+    func reference_edge_selection_persists_settings() {
         let settingsStore = BatchImageSettingsStore.inMemory()
         let firstModel: BatchImageHomeModel = .init(
             settingsStore: settingsStore
         )
 
-        firstModel.setResizeWidthText("1280")
+        firstModel.setReferenceDimension(.height)
+        firstModel.setReferencePixelsText("1080")
         firstModel.compression = .high
-
-        #expect(firstModel.resizeHeightText == "720")
 
         let secondModel: BatchImageHomeModel = .init(
             settingsStore: settingsStore
         )
 
-        #expect(secondModel.resizeWidthText == "1280")
-        #expect(secondModel.resizeHeightText == "720")
+        #expect(secondModel.referenceDimension == .height)
+        #expect(secondModel.referencePixelsText == "1080")
         #expect(secondModel.keepsAspectRatio)
         #expect(secondModel.compression == .high)
     }

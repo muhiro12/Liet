@@ -41,6 +41,42 @@ extension BatchImageProcessor {
         return preferredOutputFormat
     }
 
+    nonisolated static func projectedPixelSize(
+        originalPixelSize: CGSize,
+        resizeMode: BatchResizeMode
+    ) -> CGSize {
+        switch resizeMode {
+        case let .fitWithin(
+            referenceDimension,
+            pixels
+        ):
+            fitWithinPixelSize(
+                originalPixelSize: originalPixelSize,
+                referenceDimension: referenceDimension,
+                referencePixels: pixels
+            )
+        case let .exactSize(
+            widthPixels,
+            heightPixels,
+            _
+        ):
+            exactCanvasPixelSize(
+                widthPixels: widthPixels,
+                heightPixels: heightPixels
+            )
+        }
+    }
+
+    nonisolated static func projectedPixelSize(
+        for image: ImportedBatchImage,
+        settings: BatchImageSettings
+    ) -> CGSize {
+        projectedPixelSize(
+            originalPixelSize: image.pixelSize,
+            resizeMode: settings.resizeMode
+        )
+    }
+
     // swiftlint:disable:next function_body_length
     nonisolated static func process(
         images: [ImportedBatchImage],
@@ -187,15 +223,15 @@ private extension BatchImageProcessor {
 
         switch resizeMode {
         case let .fitWithin(
-            widthPixels,
-            heightPixels
+            referenceDimension,
+            pixels
         ):
             return try resizedImage(
                 from: imageSource,
                 targetPixelSize: fitWithinPixelSize(
                     originalPixelSize: originalPixelSize,
-                    targetWidthPixels: widthPixels,
-                    targetHeightPixels: heightPixels
+                    referenceDimension: referenceDimension,
+                    referencePixels: pixels
                 )
             )
         case let .exactSize(
@@ -287,20 +323,25 @@ private extension BatchImageProcessor {
 
     nonisolated static func fitWithinPixelSize(
         originalPixelSize: CGSize,
-        targetWidthPixels: Int,
-        targetHeightPixels: Int
+        referenceDimension: BatchResizeReferenceDimension,
+        referencePixels: Int
     ) -> CGSize {
-        let targetPixelSize = CGSize(
-            width: max(1, targetWidthPixels),
-            height: max(1, targetHeightPixels)
-        )
-        let widthScale = targetPixelSize.width /
-            max(ImageIOImageSupport.minimumPixelDimension, originalPixelSize.width)
-        let heightScale = targetPixelSize.height /
-            max(ImageIOImageSupport.minimumPixelDimension, originalPixelSize.height)
+        let targetPixels = CGFloat(max(1, referencePixels))
+        let referenceLength: CGFloat = switch referenceDimension {
+        case .width:
+            max(
+                ImageIOImageSupport.minimumPixelDimension,
+                originalPixelSize.width
+            )
+        case .height:
+            max(
+                ImageIOImageSupport.minimumPixelDimension,
+                originalPixelSize.height
+            )
+        }
         let scale = min(
             1,
-            min(widthScale, heightScale)
+            targetPixels / referenceLength
         )
 
         return CGSize(
@@ -370,10 +411,7 @@ private extension BatchImageProcessor {
         settings: BatchImageSettings,
         outputFormat: ImageFileFormat
     ) -> Bool {
-        guard case let .fitWithin(
-            widthPixels,
-            heightPixels
-        ) = settings.resizeMode else {
+        guard case .fitWithin = settings.resizeMode else {
             return false
         }
 
@@ -388,10 +426,9 @@ private extension BatchImageProcessor {
             return false
         }
 
-        let targetPixelSize = fitWithinPixelSize(
+        let targetPixelSize = projectedPixelSize(
             originalPixelSize: image.pixelSize,
-            targetWidthPixels: widthPixels,
-            targetHeightPixels: heightPixels
+            resizeMode: settings.resizeMode
         )
 
         return Int(targetPixelSize.width) == Int(image.pixelSize.width) &&

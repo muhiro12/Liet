@@ -17,8 +17,8 @@ struct BatchImageProcessorBehaviorTests {
             images: [importedImage],
             settings: .init(
                 resizeMode: .fitWithin(
-                    widthPixels: 1_920,
-                    heightPixels: 1_080
+                    referenceDimension: .width,
+                    pixels: 1_920
                 ),
                 compression: .off
             ),
@@ -45,8 +45,8 @@ struct BatchImageProcessorBehaviorTests {
             images: [importedImage],
             settings: .init(
                 resizeMode: .fitWithin(
-                    widthPixels: 800,
-                    heightPixels: 800
+                    referenceDimension: .width,
+                    pixels: 800
                 ),
                 compression: .medium
             ),
@@ -90,8 +90,8 @@ struct BatchImageProcessorBehaviorTests {
             images: [validImage, missingImage],
             settings: .init(
                 resizeMode: .fitWithin(
-                    widthPixels: 400,
-                    heightPixels: 400
+                    referenceDimension: .width,
+                    pixels: 400
                 ),
                 compression: .medium
             ),
@@ -115,8 +115,8 @@ struct BatchImageProcessorBehaviorTests {
             images: [importedImage],
             settings: .init(
                 resizeMode: .fitWithin(
-                    widthPixels: 1_920,
-                    heightPixels: 1_080
+                    referenceDimension: .width,
+                    pixels: 1_920
                 ),
                 compression: .off
             ),

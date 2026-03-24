@@ -1,17 +1,26 @@
 import Foundation
 import LietLibrary
 
+enum PersistedBatchResizeMode: String, Codable, Equatable {
+    case aspectRatioPreserved
+    case exactSize
+}
+
 struct PersistedBatchImageSettings: Codable, Equatable {
-    var widthPixels: Int
-    var heightPixels: Int
-    var keepsAspectRatio: Bool
+    var resizeMode: PersistedBatchResizeMode
+    var referenceDimension: BatchResizeReferenceDimension
+    var referencePixels: Int
+    var exactWidthPixels: Int
+    var exactHeightPixels: Int
     var exactResizeStrategy: BatchExactResizeStrategy
     var compression: BatchImageCompression
 
     static let `default`: Self = .init(
-        widthPixels: BatchResizeMode.defaultWidthPixels,
-        heightPixels: BatchResizeMode.defaultHeightPixels,
-        keepsAspectRatio: true,
+        resizeMode: .aspectRatioPreserved,
+        referenceDimension: BatchResizeMode.defaultReferenceDimension,
+        referencePixels: BatchResizeMode.defaultReferencePixels,
+        exactWidthPixels: BatchResizeMode.defaultWidthPixels,
+        exactHeightPixels: BatchResizeMode.defaultHeightPixels,
         exactResizeStrategy: .stretch,
         compression: .off
     )

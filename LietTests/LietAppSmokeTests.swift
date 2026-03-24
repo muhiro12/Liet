@@ -14,8 +14,10 @@ struct LietAppSmokeTests {
 
         #expect(AppGroup.id == "group.com.muhiro12.Liet")
         #expect(BatchImageTipSupport.datastoreGroupIdentifier == AppGroup.id)
-        #expect(model.resizeWidthPixels == 1_920)
-        #expect(model.resizeHeightPixels == 1_080)
+        #expect(model.referenceDimension == .width)
+        #expect(model.referencePixels == 1_920)
+        #expect(model.exactWidthPixels == 1_920)
+        #expect(model.exactHeightPixels == 1_080)
         #expect(model.keepsAspectRatio)
         #expect(model.compression == .off)
         #expect(model.resultModel == nil)

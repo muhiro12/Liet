@@ -2,10 +2,10 @@ import Foundation
 
 /// Resizing modes supported by the batch processor.
 public enum BatchResizeMode: Equatable, Codable, Sendable {
-    /// Fits an image inside the provided bounding box while preserving aspect ratio.
+    /// Resizes an image from a single reference edge while preserving aspect ratio.
     case fitWithin(
-            widthPixels: Int,
-            heightPixels: Int
+            referenceDimension: BatchResizeReferenceDimension,
+            pixels: Int
          )
     /// Renders an image into a fixed canvas using the provided strategy.
     case exactSize(
@@ -18,29 +18,53 @@ public enum BatchResizeMode: Equatable, Codable, Sendable {
     public static let defaultWidthPixels = 1_920
     /// Default output height used by the app.
     public static let defaultHeightPixels = 1_080
+    /// Default reference edge used by the app.
+    public static let defaultReferenceDimension: BatchResizeReferenceDimension = .width
+    /// Default reference pixel value used by the app.
+    public static let defaultReferencePixels = defaultWidthPixels
     /// Default resize mode used by the app.
     public static let `default`: Self = .fitWithin(
-        widthPixels: defaultWidthPixels,
-        heightPixels: defaultHeightPixels
+        referenceDimension: defaultReferenceDimension,
+        pixels: defaultReferencePixels
     )
 }
 
 public extension BatchResizeMode {
-    /// The configured width target for the current mode.
-    var widthPixels: Int {
+    /// The configured reference edge when the current mode preserves aspect ratio.
+    var referenceDimension: BatchResizeReferenceDimension? {
         switch self {
-        case let .fitWithin(widthPixels, _):
-            max(1, widthPixels)
+        case let .fitWithin(referenceDimension, _):
+            referenceDimension
+        case .exactSize:
+            nil
+        }
+    }
+
+    /// The configured reference pixel value when the current mode preserves aspect ratio.
+    var referencePixels: Int? {
+        switch self {
+        case let .fitWithin(_, pixels):
+            max(1, pixels)
+        case .exactSize:
+            nil
+        }
+    }
+
+    /// The configured exact width target.
+    var exactWidthPixels: Int? {
+        switch self {
+        case .fitWithin:
+            nil
         case let .exactSize(widthPixels, _, _):
             max(1, widthPixels)
         }
     }
 
-    /// The configured height target for the current mode.
-    var heightPixels: Int {
+    /// The configured exact height target.
+    var exactHeightPixels: Int? {
         switch self {
-        case let .fitWithin(_, heightPixels):
-            max(1, heightPixels)
+        case .fitWithin:
+            nil
         case let .exactSize(_, heightPixels, _):
             max(1, heightPixels)
         }
@@ -68,12 +92,12 @@ public extension BatchResizeMode {
 
     /// Creates an aspect-ratio-preserving resize mode using app defaults when omitted.
     init(
-        widthPixels: Int = Self.defaultWidthPixels,
-        heightPixels: Int = Self.defaultHeightPixels
+        referenceDimension: BatchResizeReferenceDimension = Self.defaultReferenceDimension,
+        pixels: Int = Self.defaultReferencePixels
     ) {
         self = .fitWithin(
-            widthPixels: widthPixels,
-            heightPixels: heightPixels
+            referenceDimension: referenceDimension,
+            pixels: pixels
         )
     }
 }

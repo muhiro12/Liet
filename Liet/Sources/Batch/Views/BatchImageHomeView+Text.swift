@@ -26,7 +26,7 @@ extension BatchImageHomeView {
     ) -> Text {
         switch alert {
         case .invalidResizeSize:
-            Text("Enter valid width and height values.")
+            Text("Enter a valid reference size or valid exact width and height values.")
         case .importSelectionFailed:
             Text("Couldn't import the selected images.")
         case .processSelectionFailed:

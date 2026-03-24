@@ -14,8 +14,10 @@ struct BatchImageValueTests {
     func settings_default_to_fit_within_and_disable_compression() {
         let settings: BatchImageSettings = .init()
 
-        #expect(settings.widthPixels == 1_920)
-        #expect(settings.heightPixels == 1_080)
+        #expect(settings.referenceDimension == .width)
+        #expect(settings.referencePixels == 1_920)
+        #expect(settings.exactWidthPixels == nil)
+        #expect(settings.exactHeightPixels == nil)
         #expect(settings.exactResizeStrategy == nil)
         #expect(settings.keepsAspectRatio)
         #expect(settings.compression == .off)
@@ -24,11 +26,13 @@ struct BatchImageValueTests {
     @Test
     func resize_modes_expose_expected_dimensions_and_strategy() {
         let fitWithinResizeMode = BatchResizeMode.fitWithin(
-            widthPixels: 320,
-            heightPixels: 180
+            referenceDimension: .height,
+            pixels: 320
         )
-        #expect(fitWithinResizeMode.widthPixels == 320)
-        #expect(fitWithinResizeMode.heightPixels == 180)
+        #expect(fitWithinResizeMode.referenceDimension == .height)
+        #expect(fitWithinResizeMode.referencePixels == 320)
+        #expect(fitWithinResizeMode.exactWidthPixels == nil)
+        #expect(fitWithinResizeMode.exactHeightPixels == nil)
         #expect(fitWithinResizeMode.exactResizeStrategy == nil)
         #expect(fitWithinResizeMode.keepsAspectRatio)
 
@@ -37,8 +41,10 @@ struct BatchImageValueTests {
             heightPixels: 120,
             strategy: .stretch
         )
-        #expect(exactResizeMode.widthPixels == 180)
-        #expect(exactResizeMode.heightPixels == 120)
+        #expect(exactResizeMode.referenceDimension == nil)
+        #expect(exactResizeMode.referencePixels == nil)
+        #expect(exactResizeMode.exactWidthPixels == 180)
+        #expect(exactResizeMode.exactHeightPixels == 120)
         #expect(exactResizeMode.exactResizeStrategy == .stretch)
         #expect(exactResizeMode.keepsAspectRatio == false)
     }

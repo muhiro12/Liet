@@ -14,6 +14,7 @@ struct BatchImageHomeView: View {
     }
 
     private enum ResizeField: Hashable {
+        case referencePixels
         case width
         case height
     }
@@ -112,6 +113,28 @@ private extension BatchImageHomeView {
         )
     }
 
+    var referencePixelsBinding: Binding<String> {
+        Binding(
+            get: {
+                model.referencePixelsText
+            },
+            set: { newValue in
+                model.setReferencePixelsText(newValue)
+            }
+        )
+    }
+
+    var referenceDimensionBinding: Binding<BatchResizeReferenceDimension> {
+        Binding(
+            get: {
+                model.referenceDimension
+            },
+            set: { newValue in
+                model.setReferenceDimension(newValue)
+            }
+        )
+    }
+
     var keepsAspectRatioBinding: Binding<Bool> {
         Binding(
             get: {
@@ -164,32 +187,64 @@ private extension BatchImageHomeView {
             Text("Output size")
                 .font(.subheadline.weight(.medium))
 
-            dimensionInputSection(
-                title: Text("Width (px)"),
-                placeholder: "1920",
-                text: resizeWidthBinding,
-                focusField: .width
-            )
-
-            dimensionInputSection(
-                title: Text("Height (px)"),
-                placeholder: "1080",
-                text: resizeHeightBinding,
-                focusField: .height
-            )
-
             Toggle(
                 "Keep aspect ratio",
                 isOn: keepsAspectRatioBinding
             )
 
             if model.keepsAspectRatio {
-                Text("Images stay within the target box and smaller images keep their original size.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                aspectRatioInputSection()
             } else {
+                dimensionInputSection(
+                    title: Text("Width (px)"),
+                    placeholder: "1920",
+                    text: resizeWidthBinding,
+                    focusField: .width
+                )
+
+                dimensionInputSection(
+                    title: Text("Height (px)"),
+                    placeholder: "1080",
+                    text: resizeHeightBinding,
+                    focusField: .height
+                )
+
                 exactSizeSection()
             }
+        }
+    }
+
+    func aspectRatioInputSection() -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.cardSpacing
+        ) {
+            VStack(
+                alignment: .leading,
+                spacing: Layout.controlSpacing
+            ) {
+                Text("Reference edge")
+                    .font(.subheadline.weight(.medium))
+
+                Picker("Reference edge", selection: referenceDimensionBinding) {
+                    Text("Width")
+                        .tag(BatchResizeReferenceDimension.width)
+                    Text("Height")
+                        .tag(BatchResizeReferenceDimension.height)
+                }
+                .pickerStyle(.segmented)
+            }
+
+            dimensionInputSection(
+                title: Text(referencePixelsTitle),
+                placeholder: referencePixelsPlaceholder,
+                text: referencePixelsBinding,
+                focusField: .referencePixels
+            )
+
+            Text("Each image keeps its aspect ratio. Liet calculates the other edge for every selected image and never upscales smaller images.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
         }
     }
 
@@ -402,5 +457,23 @@ private extension BatchImageHomeView {
         Text("Processed images are always written as new files and default to the original name with a Liet suffix.")
             .font(.footnote)
             .foregroundStyle(.secondary)
+    }
+
+    var referencePixelsTitle: String {
+        switch model.referenceDimension {
+        case .width:
+            "Width (px)"
+        case .height:
+            "Height (px)"
+        }
+    }
+
+    var referencePixelsPlaceholder: String {
+        switch model.referenceDimension {
+        case .width:
+            "1920"
+        case .height:
+            "1080"
+        }
     }
 }

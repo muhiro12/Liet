@@ -18,8 +18,8 @@ struct BatchImageProcessorTests {
             images: [importedImage],
             settings: .init(
                 resizeMode: .fitWithin(
-                    widthPixels: 500,
-                    heightPixels: 500
+                    referenceDimension: .width,
+                    pixels: 500
                 ),
                 compression: .high
             ),
@@ -52,8 +52,8 @@ struct BatchImageProcessorTests {
             images: [importedImage],
             settings: .init(
                 resizeMode: .fitWithin(
-                    widthPixels: 300,
-                    heightPixels: 300
+                    referenceDimension: .width,
+                    pixels: 300
                 ),
                 compression: .low
             ),
@@ -73,6 +73,33 @@ struct BatchImageProcessorTests {
                 for: processedImage.outputURL
             ) == ImageFileFormat.png.sourceTypeIdentifier
         )
+    }
+
+    @Test
+    func height_reference_resizes_from_the_selected_edge() async throws {
+        let importedImage = try BatchImageTestFactory.makeImportedImage(
+            format: .jpeg,
+            size: .init(width: 1_000, height: 2_000),
+            originalFilename: "portrait.jpg",
+            selectionIndex: 1
+        )
+
+        let outcome = await BatchImageProcessor.process(
+            images: [importedImage],
+            settings: .init(
+                resizeMode: .fitWithin(
+                    referenceDimension: .height,
+                    pixels: 500
+                ),
+                compression: .medium
+            ),
+            heicEncoderAvailable: false
+        )
+
+        let processedImage = try #require(outcome.processedImages.first)
+
+        #expect(Int(processedImage.pixelSize.width) == 250)
+        #expect(Int(processedImage.pixelSize.height) == 500)
     }
 
     @Test
@@ -183,8 +210,8 @@ struct BatchImageProcessorTests {
             images: [largeImage],
             settings: .init(
                 resizeMode: .fitWithin(
-                    widthPixels: 300,
-                    heightPixels: 200
+                    referenceDimension: .width,
+                    pixels: 300
                 ),
                 compression: .medium
             ),
@@ -205,8 +232,8 @@ struct BatchImageProcessorTests {
             images: [smallImage],
             settings: .init(
                 resizeMode: .fitWithin(
-                    widthPixels: 320,
-                    heightPixels: 180
+                    referenceDimension: .width,
+                    pixels: 320
                 ),
                 compression: .medium
             ),

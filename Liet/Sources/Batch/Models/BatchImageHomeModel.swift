@@ -7,10 +7,6 @@ import SwiftUI
 @MainActor
 @Observable
 final class BatchImageHomeModel {
-    private enum Metrics {
-        static let minimumAspectRatio = 0.0001
-    }
-
     enum AlertState: Equatable {
         case invalidResizeSize
         case importSelectionFailed
@@ -18,6 +14,8 @@ final class BatchImageHomeModel {
     }
 
     var importedImages: [ImportedBatchImage] = []
+    private(set) var referenceDimension: BatchResizeReferenceDimension
+    private(set) var referencePixelsText: String
     private(set) var resizeWidthText: String
     private(set) var resizeHeightText: String
     private(set) var keepsAspectRatio: Bool
@@ -42,7 +40,6 @@ final class BatchImageHomeModel {
     var resultModel: BatchImageResultModel?
 
     private let settingsStore: BatchImageSettingsStore
-    private var lockedAspectRatio: Double
     private var importSessionID: UUID = .init()
 
     init(
@@ -50,13 +47,13 @@ final class BatchImageHomeModel {
     ) {
         self.settingsStore = settingsStore
         let persistedSettings = settingsStore.load() ?? .default
-        resizeWidthText = "\(persistedSettings.widthPixels)"
-        resizeHeightText = "\(persistedSettings.heightPixels)"
-        keepsAspectRatio = persistedSettings.keepsAspectRatio
+        referenceDimension = persistedSettings.referenceDimension
+        referencePixelsText = "\(persistedSettings.referencePixels)"
+        resizeWidthText = "\(persistedSettings.exactWidthPixels)"
+        resizeHeightText = "\(persistedSettings.exactHeightPixels)"
+        keepsAspectRatio = persistedSettings.resizeMode == .aspectRatioPreserved
         exactResizeStrategy = persistedSettings.exactResizeStrategy
         compression = persistedSettings.compression
-        lockedAspectRatio = Double(persistedSettings.widthPixels) /
-            Double(max(1, persistedSettings.heightPixels))
     }
 }
 
@@ -68,7 +65,16 @@ extension BatchImageHomeModel {
             !isProcessing
     }
 
-    var resizeWidthPixels: Int? {
+    var referencePixels: Int? {
+        guard let value = Int(referencePixelsText),
+              value > 0 else {
+            return nil
+        }
+
+        return value
+    }
+
+    var exactWidthPixels: Int? {
         guard let value = Int(resizeWidthText),
               value > 0 else {
             return nil
@@ -77,7 +83,7 @@ extension BatchImageHomeModel {
         return value
     }
 
-    var resizeHeightPixels: Int? {
+    var exactHeightPixels: Int? {
         guard let value = Int(resizeHeightText),
               value > 0 else {
             return nil
@@ -104,51 +110,57 @@ extension BatchImageHomeModel {
     }
 
     var settings: BatchImageSettings? {
-        guard let resizeWidthPixels,
-              let resizeHeightPixels else {
+        if keepsAspectRatio {
+            guard let referencePixels else {
+                return nil
+            }
+
+            return .init(
+                resizeMode: .fitWithin(
+                    referenceDimension: referenceDimension,
+                    pixels: referencePixels
+                ),
+                compression: compression
+            )
+        }
+
+        guard let exactWidthPixels,
+              let exactHeightPixels else {
             return nil
         }
 
-        let resizeMode: BatchResizeMode = if keepsAspectRatio {
-            .fitWithin(
-                widthPixels: resizeWidthPixels,
-                heightPixels: resizeHeightPixels
-            )
-        } else {
-            .exactSize(
-                widthPixels: resizeWidthPixels,
-                heightPixels: resizeHeightPixels,
-                strategy: exactResizeStrategy
-            )
-        }
-
         return .init(
-            resizeMode: resizeMode,
+            resizeMode: .exactSize(
+                widthPixels: exactWidthPixels,
+                heightPixels: exactHeightPixels,
+                strategy: exactResizeStrategy
+            ),
             compression: compression
         )
+    }
+
+    func setReferenceDimension(
+        _ newValue: BatchResizeReferenceDimension
+    ) {
+        guard referenceDimension != newValue else {
+            return
+        }
+
+        referenceDimension = newValue
+        didUpdateSettings()
+    }
+
+    func setReferencePixelsText(
+        _ newValue: String
+    ) {
+        referencePixelsText = newValue
+        didUpdateSettings()
     }
 
     func setResizeWidthText(
         _ newValue: String
     ) {
         resizeWidthText = newValue
-
-        if keepsAspectRatio,
-           let newWidthPixels = Int(newValue),
-           newWidthPixels > 0 {
-            let adjustedHeight = max(
-                1,
-                Int(
-                    (
-                        Double(newWidthPixels) /
-                            max(lockedAspectRatio, Metrics.minimumAspectRatio)
-                    )
-                    .rounded()
-                )
-            )
-            resizeHeightText = "\(adjustedHeight)"
-        }
-
         didUpdateSettings()
     }
 
@@ -156,23 +168,6 @@ extension BatchImageHomeModel {
         _ newValue: String
     ) {
         resizeHeightText = newValue
-
-        if keepsAspectRatio,
-           let newHeightPixels = Int(newValue),
-           newHeightPixels > 0 {
-            let adjustedWidth = max(
-                1,
-                Int(
-                    (
-                        Double(newHeightPixels) *
-                            max(lockedAspectRatio, Metrics.minimumAspectRatio)
-                    )
-                    .rounded()
-                )
-            )
-            resizeWidthText = "\(adjustedWidth)"
-        }
-
         didUpdateSettings()
     }
 
@@ -184,7 +179,6 @@ extension BatchImageHomeModel {
         }
 
         keepsAspectRatio = newValue
-        updateLockedAspectRatioIfPossible()
         didUpdateSettings()
     }
 
@@ -268,32 +262,49 @@ extension BatchImageHomeModel {
 
 private extension BatchImageHomeModel {
     func didUpdateSettings() {
-        updateLockedAspectRatioIfPossible()
         invalidateProcessedResults()
         persistSettingsIfPossible()
     }
 
-    func updateLockedAspectRatioIfPossible() {
-        guard let resizeWidthPixels,
-              let resizeHeightPixels else {
-            return
+    func persistSettingsIfPossible() {
+        let persistedResizeMode: PersistedBatchResizeMode = keepsAspectRatio
+            ? .aspectRatioPreserved
+            : .exactSize
+        let storedReferencePixels: Int
+
+        if keepsAspectRatio {
+            guard let referencePixels else {
+                return
+            }
+
+            storedReferencePixels = referencePixels
+        } else {
+            storedReferencePixels = referencePixels ?? BatchResizeMode.defaultReferencePixels
         }
 
-        lockedAspectRatio = Double(resizeWidthPixels) /
-            Double(max(1, resizeHeightPixels))
-    }
+        let storedExactWidthPixels: Int
+        let storedExactHeightPixels: Int
 
-    func persistSettingsIfPossible() {
-        guard let resizeWidthPixels,
-              let resizeHeightPixels else {
-            return
+        if keepsAspectRatio {
+            storedExactWidthPixels = exactWidthPixels ?? BatchResizeMode.defaultWidthPixels
+            storedExactHeightPixels = exactHeightPixels ?? BatchResizeMode.defaultHeightPixels
+        } else {
+            guard let exactWidthPixels,
+                  let exactHeightPixels else {
+                return
+            }
+
+            storedExactWidthPixels = exactWidthPixels
+            storedExactHeightPixels = exactHeightPixels
         }
 
         settingsStore.save(
             .init(
-                widthPixels: resizeWidthPixels,
-                heightPixels: resizeHeightPixels,
-                keepsAspectRatio: keepsAspectRatio,
+                resizeMode: persistedResizeMode,
+                referenceDimension: referenceDimension,
+                referencePixels: storedReferencePixels,
+                exactWidthPixels: storedExactWidthPixels,
+                exactHeightPixels: storedExactHeightPixels,
                 exactResizeStrategy: exactResizeStrategy,
                 compression: compression
             )
