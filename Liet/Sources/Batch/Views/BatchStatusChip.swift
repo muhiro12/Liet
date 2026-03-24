@@ -9,9 +9,12 @@ struct BatchStatusChip: View {
     }
 
     private enum Layout {
+        static let accentBackgroundOpacity = 0.14
         static let borderOpacity = 0.14
         static let horizontalPadding = 10.0
+        static let neutralBorderOpacity = 0.08
         static let verticalPadding = 6.0
+        static let warningBackgroundOpacity = 0.16
     }
 
     private let systemImage: String?
@@ -39,7 +42,7 @@ struct BatchStatusChip: View {
     }
 
     var body: some View {
-        chipContent()
+        chipContent
             .font(.caption.weight(.medium))
             .lineLimit(1)
             .fixedSize(horizontal: true, vertical: false)
@@ -57,11 +60,9 @@ struct BatchStatusChip: View {
                     )
             }
     }
-}
 
-private extension BatchStatusChip {
     @ViewBuilder
-    func chipContent() -> some View {
+    private var chipContent: some View {
         if let systemImage {
             Label {
                 text
@@ -73,42 +74,29 @@ private extension BatchStatusChip {
         }
     }
 
-    var backgroundColor: Color {
+    private var backgroundColor: Color {
         switch tone {
         case .accent:
-            Color.accentColor.opacity(0.14)
+            Color.accentColor.opacity(Layout.accentBackgroundOpacity)
         case .neutral:
             Color(uiColor: .secondarySystemFill)
         case .success:
-            Color.green.opacity(0.14)
+            Color.green.opacity(Layout.borderOpacity)
         case .warning:
-            Color.orange.opacity(0.16)
+            Color.orange.opacity(Layout.warningBackgroundOpacity)
         }
     }
 
-    var borderColor: Color {
+    private var borderColor: Color {
         switch tone {
         case .accent:
             Color.accentColor.opacity(Layout.borderOpacity)
         case .neutral:
-            Color.primary.opacity(0.08)
+            Color.primary.opacity(Layout.neutralBorderOpacity)
         case .success:
             Color.green.opacity(Layout.borderOpacity)
         case .warning:
             Color.orange.opacity(Layout.borderOpacity)
         }
-    }
-}
-
-struct BatchToolbarIconButton: View {
-    let systemImage: String
-    let accessibilityLabel: LocalizedStringKey
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Image(systemName: systemImage)
-        }
-        .accessibilityLabel(Text(accessibilityLabel))
     }
 }

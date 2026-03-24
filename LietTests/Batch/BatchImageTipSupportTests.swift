@@ -16,7 +16,7 @@ struct BatchImageTipSupportTests {
     }
 
     @Test
-    func replay_resets_tip_progress_flags() async {
+    func replay_resets_tip_progress_flags() {
         BatchImageTipSupport.resetTips()
 
         BatchImageTipSupport.donateImportSuccess()
