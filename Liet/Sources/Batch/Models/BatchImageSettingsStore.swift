@@ -1,9 +1,10 @@
 import Foundation
 import LietLibrary
+import MHPreferences
+import SwiftUI
 
 struct BatchImageSettingsStore {
     nonisolated static let appGroupIdentifier = AppGroup.id
-    nonisolated static let storageKey = "batch.image.preferences"
 
     private let loadHandler: () -> PersistedBatchImagePreferences?
     private let saveHandler: (PersistedBatchImagePreferences) -> Void
@@ -28,43 +29,27 @@ struct BatchImageSettingsStore {
 }
 
 extension BatchImageSettingsStore {
-    static func live(
-        userDefaults: UserDefaults? = nil
-    ) -> Self {
-        let resolvedUserDefaults: UserDefaults
-
-        if let userDefaults {
-            resolvedUserDefaults = userDefaults
-        } else if let appGroupUserDefaults = UserDefaults(
+    static func live() -> Self {
+        guard let userDefaults = UserDefaults(
             suiteName: appGroupIdentifier
-        ) {
-            resolvedUserDefaults = appGroupUserDefaults
-        } else {
+        ) else {
             preconditionFailure("Failed to resolve App Group user defaults.")
         }
 
+        return appStorage(userDefaults: userDefaults)
+    }
+
+    static func appStorage(
+        userDefaults: UserDefaults
+    ) -> Self {
+        let storageBox = AppStorageBox(userDefaults: userDefaults)
+
         return .init(
             loadHandler: {
-                guard let data = resolvedUserDefaults.data(
-                    forKey: storageKey
-                ) else {
-                    return nil
-                }
-
-                return try? JSONDecoder().decode(
-                    PersistedBatchImagePreferences.self,
-                    from: data
-                )
+                storageBox.loadPreferences()
             },
             saveHandler: { preferences in
-                guard let data = try? JSONEncoder().encode(preferences) else {
-                    return
-                }
-
-                resolvedUserDefaults.set(
-                    data,
-                    forKey: storageKey
-                )
+                storageBox.savePreferences(preferences)
             }
         )
     }
@@ -92,5 +77,73 @@ extension BatchImageSettingsStore {
                 storageBox.value = preferences
             }
         )
+    }
+}
+
+private extension BatchImageSettingsStore {
+    final class AppStorageBox {
+        @AppStorage private var lastUsedSettings: PersistedBatchImageSettings
+        @AppStorage private var userPresetSettingsRawValue: String
+
+        private let userDefaults: UserDefaults
+        private var hasLastUsedSettings: Bool {
+            userDefaults.string(
+                forKey: BatchImageAppStorageKey.lastUsedSettings.preferenceKey.storageKey
+            ) != nil
+        }
+
+        private var hasUserPresetSettings: Bool {
+            userDefaults.string(
+                forKey: BatchImageAppStorageKey.userPresetSettings.preferenceKey.storageKey
+            ) != nil
+        }
+
+        private var hasStoredPreferences: Bool {
+            hasLastUsedSettings || hasUserPresetSettings
+        }
+
+        init(
+            userDefaults: UserDefaults
+        ) {
+            self.userDefaults = userDefaults
+            _lastUsedSettings = AppStorage(
+                BatchImageAppStorageKey.lastUsedSettings,
+                default: .default,
+                store: userDefaults
+            )
+            _userPresetSettingsRawValue = AppStorage(
+                BatchImageAppStorageKey.userPresetSettings,
+                default: "",
+                store: userDefaults
+            )
+        }
+
+        func loadPreferences() -> PersistedBatchImagePreferences? {
+            guard hasStoredPreferences else {
+                return nil
+            }
+
+            return .init(
+                userPresetSettings: hasUserPresetSettings
+                    ? PersistedBatchImageSettings(rawValue: userPresetSettingsRawValue)
+                    : nil,
+                lastUsedSettings: lastUsedSettings
+            )
+        }
+
+        func savePreferences(
+            _ preferences: PersistedBatchImagePreferences
+        ) {
+            lastUsedSettings = preferences.lastUsedSettings
+            guard let userPresetSettings = preferences.userPresetSettings else {
+                userPresetSettingsRawValue = ""
+                userDefaults.removeObject(
+                    forKey: BatchImageAppStorageKey.userPresetSettings.preferenceKey.storageKey
+                )
+                return
+            }
+
+            userPresetSettingsRawValue = userPresetSettings.rawValue
+        }
     }
 }

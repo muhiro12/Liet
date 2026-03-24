@@ -14,14 +14,28 @@ final class BatchImageHomeModel {
         case processSelectionFailed
     }
 
+    enum SettingsSource: String, CaseIterable {
+        case lastUsed
+        case userPreset
+        case custom
+    }
+
     var importedImages: [ImportedBatchImage] = []
     private(set) var referenceDimension: BatchResizeReferenceDimension
     private(set) var referencePixelsText: String
     private(set) var resizeWidthText: String
     private(set) var resizeHeightText: String
     private(set) var keepsAspectRatio: Bool
-    private(set) var defaultSettings: PersistedBatchImageSettings
+    private(set) var userPresetSettings: PersistedBatchImageSettings?
     private(set) var lastUsedSettings: PersistedBatchImageSettings
+    var settingsSource: SettingsSource = .lastUsed {
+        didSet {
+            if !suppressesAutomaticSettingsDidChange,
+               settingsSource != oldValue {
+                didSelectSettingsSource()
+            }
+        }
+    }
     var exactResizeStrategy: BatchExactResizeStrategy = .stretch {
         didSet {
             if !suppressesAutomaticSettingsDidChange,
@@ -53,26 +67,23 @@ final class BatchImageHomeModel {
     ) {
         self.settingsStore = settingsStore
         let persistedPreferences = settingsStore.load() ?? .default
-        let initialSettings = persistedPreferences.defaultSettings
+        let initialSettings = persistedPreferences.lastUsedSettings
         referenceDimension = initialSettings.referenceDimension
         referencePixelsText = "\(initialSettings.referencePixels)"
         resizeWidthText = "\(initialSettings.exactWidthPixels)"
         resizeHeightText = "\(initialSettings.exactHeightPixels)"
         keepsAspectRatio = initialSettings.resizeMode == .aspectRatioPreserved
-        defaultSettings = persistedPreferences.defaultSettings
+        userPresetSettings = persistedPreferences.userPresetSettings
         lastUsedSettings = persistedPreferences.lastUsedSettings
         exactResizeStrategy = initialSettings.exactResizeStrategy
         compression = initialSettings.compression
+        settingsSource = .lastUsed
     }
 }
 
 extension BatchImageHomeModel {
-    var showsOutputSizeStep: Bool {
+    var showsProcessingStep: Bool {
         !importedImages.isEmpty
-    }
-
-    var showsExportSetupStep: Bool {
-        showsOutputSizeStep && settings != nil
     }
 
     var canProcess: Bool {
@@ -82,20 +93,16 @@ extension BatchImageHomeModel {
             !isProcessing
     }
 
-    var canApplyDefaultSettings: Bool {
-        currentPersistedSettings != defaultSettings
-    }
-
-    var canApplyLastUsedSettings: Bool {
-        currentPersistedSettings != lastUsedSettings
-    }
-
-    var canSaveCurrentAsDefault: Bool {
+    var canSaveCurrentAsUserPreset: Bool {
         guard let currentPersistedSettings else {
             return false
         }
 
-        return currentPersistedSettings != defaultSettings
+        return currentPersistedSettings != userPresetSettings
+    }
+
+    var hasUserPresetSettings: Bool {
+        userPresetSettings != nil
     }
 
     var referencePixels: Int? {
@@ -215,20 +222,25 @@ extension BatchImageHomeModel {
         didChangeSettings()
     }
 
-    func applyDefaultSettings() {
-        replaceCurrentSettings(with: defaultSettings)
+    func applyUserPresetSettings() {
+        guard hasUserPresetSettings else {
+            return
+        }
+
+        settingsSource = .userPreset
     }
 
     func applyLastUsedSettings() {
-        replaceCurrentSettings(with: lastUsedSettings)
+        settingsSource = .lastUsed
     }
 
-    func saveCurrentAsDefault() {
+    func saveCurrentAsUserPreset() {
         guard let currentPersistedSettings else {
             return
         }
 
-        defaultSettings = currentPersistedSettings
+        userPresetSettings = currentPersistedSettings
+        setSettingsSourceWithoutApplying(.userPreset)
         savePreferences()
     }
 
@@ -358,13 +370,45 @@ private extension BatchImageHomeModel {
 
     func didChangeSettings() {
         invalidateProcessedResults()
+        setSettingsSourceWithoutApplying(.custom)
+    }
+
+    func didSelectSettingsSource() {
+        switch settingsSource {
+        case .lastUsed:
+            replaceCurrentSettings(with: lastUsedSettings)
+        case .userPreset:
+            guard let userPresetSettings else {
+                setSettingsSourceWithoutApplying(.lastUsed)
+                return
+            }
+
+            replaceCurrentSettings(with: userPresetSettings)
+        case .custom:
+            break
+        }
     }
 
     func persistLastUsedSettings(
         _ settings: PersistedBatchImageSettings
     ) {
         lastUsedSettings = settings
+        if settingsSource == .custom {
+            setSettingsSourceWithoutApplying(.lastUsed)
+        }
         savePreferences()
+    }
+
+    func setSettingsSourceWithoutApplying(
+        _ newValue: SettingsSource
+    ) {
+        guard settingsSource != newValue else {
+            return
+        }
+
+        suppressesAutomaticSettingsDidChange = true
+        settingsSource = newValue
+        suppressesAutomaticSettingsDidChange = false
     }
 
     func replaceCurrentSettings(
@@ -389,7 +433,7 @@ private extension BatchImageHomeModel {
     func savePreferences() {
         settingsStore.save(
             .init(
-                defaultSettings: defaultSettings,
+                userPresetSettings: userPresetSettings,
                 lastUsedSettings: lastUsedSettings
             )
         )

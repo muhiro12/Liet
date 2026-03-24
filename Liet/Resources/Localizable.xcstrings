@@ -178,6 +178,7 @@
       }
     },
     "Apply Default" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -194,6 +195,7 @@
       }
     },
     "Apply Last Used" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -225,6 +227,22 @@
         }
       }
     },
+    "Choose a starting point" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a starting point"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始設定を選ぶ"
+          }
+        }
+      }
+    },
     "Choose multiple photos, then apply one resize and compression setting to all of them." : {
       "localizations" : {
         "en" : {
@@ -241,23 +259,8 @@
         }
       }
     },
-    "Choose one setting set" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose one setting set"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定を1つ選ぶ"
-          }
-        }
-      }
-    },
     "Choose Width, Height, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -481,6 +484,22 @@
         }
       }
     },
+    "Custom" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カスタム"
+          }
+        }
+      }
+    },
     "Done" : {
       "localizations" : {
         "en" : {
@@ -625,6 +644,22 @@
         }
       }
     },
+    "Import" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り込み"
+          }
+        }
+      }
+    },
     "Import one or more photos from the sidebar, then review the selection or process the batch." : {
       "localizations" : {
         "en" : {
@@ -657,6 +692,22 @@
         }
       }
     },
+    "Last Used" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last Used"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前回の設定"
+          }
+        }
+      }
+    },
     "Liet" : {
       "localizations" : {
         "en" : {
@@ -669,6 +720,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Liet"
+          }
+        }
+      }
+    },
+    "Liet starts from your last used settings. User Preset keeps one setup you save manually. Edit any value to switch to Custom." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liet starts from your last used settings. User Preset keeps one setup you save manually. Edit any value to switch to Custom."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liet は前回の設定から始まります。ユーザー設定には手動で保存した 1 つの設定を保持できます。値を編集するとカスタムに切り替わります。"
           }
         }
       }
@@ -765,6 +832,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
+          }
+        }
+      }
+    },
+    "Output Size" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Output Size"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出力サイズ"
           }
         }
       }
@@ -881,6 +964,22 @@
         }
       }
     },
+    "Process" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Process"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理"
+          }
+        }
+      }
+    },
     "Process everything together" : {
       "localizations" : {
         "en" : {
@@ -941,6 +1040,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "処理後の画像は常に新しいファイルとして書き出され、既定では元の名前に Liet のサフィックスが付きます。"
+          }
+        }
+      }
+    },
+    "Processing Settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Processing Settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理設定"
           }
         }
       }
@@ -1025,7 +1140,24 @@
         }
       }
     },
+    "Save as User Preset" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save as User Preset"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー設定として保存"
+          }
+        }
+      }
+    },
     "Save Current as Default" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1037,6 +1169,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "現在の設定をデフォルトに保存"
+          }
+        }
+      }
+    },
+    "Save the current resize and compression settings to your one reusable user preset." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save the current resize and compression settings to your one reusable user preset."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在のリサイズ設定と圧縮設定を、再利用用の 1 つのユーザー設定として保存します。"
           }
         }
       }
@@ -1106,6 +1254,7 @@
       }
     },
     "Saved Settings" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1201,6 +1350,22 @@
         }
       }
     },
+    "Start from Last Used or User Preset, then adjust size and compression. Editing any value switches to Custom." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start from Last Used or User Preset, then adjust size and compression. Editing any value switches to Custom."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前回の設定またはユーザー設定から始めて、サイズと圧縮を調整します。値を編集するとカスタムに切り替わります。"
+          }
+        }
+      }
+    },
     "Start with a batch" : {
       "localizations" : {
         "en" : {
@@ -1217,18 +1382,18 @@
         }
       }
     },
-    "Startup uses your saved default settings. Last used settings update when you process images." : {
+    "Starting Point" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Startup uses your saved default settings. Last used settings update when you process images."
+            "value" : "Starting Point"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "起動時には保存したデフォルト設定を使います。前回の設定は画像処理を実行したときに更新されます。"
+            "value" : "開始設定"
           }
         }
       }
@@ -1309,6 +1474,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "「ファイル」を使うと、ファイルアプリ内のフォルダを選べます。「写真」を使うと、処理後の画像を新しい項目として写真ライブラリに追加できます。"
+          }
+        }
+      }
+    },
+    "User Preset" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "User Preset"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー設定"
           }
         }
       }

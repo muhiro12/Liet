@@ -3,14 +3,14 @@ import TipKit
 
 struct ProcessingSetupTip: Tip {
     var title: Text {
-        Text("Choose one setting set")
+        Text("Choose a starting point")
     }
 
     var message: Text? {
         Text(
             """
-            Choose Width, Height, or Exact size, then pick a quality level. \
-            Exact size can contain or crop. PNG keeps its format. Originals stay untouched.
+            Start from Last Used or User Preset, then adjust size and compression. Editing any \
+            value switches to Custom.
             """
         )
     }

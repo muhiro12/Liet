@@ -14,7 +14,7 @@ struct BatchImageSettingsStoreTests {
     }
 
     @Test
-    func live_store_persists_preferences_in_specified_user_defaults() throws {
+    func app_storage_store_persists_preferences_in_specified_user_defaults() throws {
         let preferencesSuiteName = makeSuiteName("preferences")
         let preferencesDefaults = try #require(
             UserDefaults(suiteName: preferencesSuiteName)
@@ -26,7 +26,7 @@ struct BatchImageSettingsStoreTests {
             )
         }
 
-        let store = BatchImageSettingsStore.live(
+        let store = BatchImageSettingsStore.appStorage(
             userDefaults: preferencesDefaults
         )
 
@@ -36,9 +36,51 @@ struct BatchImageSettingsStoreTests {
 
         #expect(store.load() == preferences)
         #expect(
-            preferencesDefaults.data(
-                forKey: BatchImageSettingsStore.storageKey
+            preferencesDefaults.string(
+                forKey: BatchImageAppStorageKey.lastUsedSettings.rawValue
             ) != nil
+        )
+        #expect(
+            preferencesDefaults.string(
+                forKey: BatchImageAppStorageKey.userPresetSettings.rawValue
+            ) != nil
+        )
+    }
+
+    @Test
+    func app_storage_store_keeps_user_preset_absent_until_saved() throws {
+        let preferencesSuiteName = makeSuiteName("empty-user-preset")
+        let preferencesDefaults = try #require(
+            UserDefaults(suiteName: preferencesSuiteName)
+        )
+
+        defer {
+            preferencesDefaults.removePersistentDomain(
+                forName: preferencesSuiteName
+            )
+        }
+
+        let store = BatchImageSettingsStore.appStorage(
+            userDefaults: preferencesDefaults
+        )
+
+        let preferences = PersistedBatchImagePreferences(
+            userPresetSettings: nil,
+            lastUsedSettings: .default
+        )
+
+        store.save(preferences)
+
+        #expect(store.load() == preferences)
+        #expect(
+            preferencesDefaults.string(
+                forKey: BatchImageAppStorageKey.lastUsedSettings.rawValue
+            ) != nil
+        )
+        #expect(
+            preferencesDefaults.string(
+                forKey: BatchImageAppStorageKey.userPresetSettings.rawValue
+            ) == nil
         )
     }
 }
@@ -52,7 +94,7 @@ private extension BatchImageSettingsStoreTests {
 
     func makePreferences() -> PersistedBatchImagePreferences {
         .init(
-            defaultSettings: .init(
+            userPresetSettings: .init(
                 resizeMode: .aspectRatioPreserved,
                 referenceDimension: .width,
                 referencePixels: Constants.defaultReferencePixels,

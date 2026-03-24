@@ -20,12 +20,16 @@ struct LietAppSmokeTests {
         #expect(model.exactHeightPixels == 1_080)
         #expect(model.keepsAspectRatio)
         #expect(model.compression == .off)
+        #expect(model.settingsSource == .lastUsed)
+        #expect(model.hasUserPresetSettings == false)
+        #expect(model.canSaveCurrentAsUserPreset)
         #expect(model.resultModel == nil)
     }
 
     @Test
-    func batch_image_settings_store_points_to_the_app_group_preferences() {
+    func batch_image_settings_store_points_to_the_app_group_app_storage() {
         #expect(BatchImageSettingsStore.appGroupIdentifier == AppGroup.id)
-        #expect(BatchImageSettingsStore.storageKey == "batch.image.preferences")
+        #expect(BatchImageAppStorageKey.lastUsedSettings.rawValue == "d9K2mQ7x")
+        #expect(BatchImageAppStorageKey.userPresetSettings.rawValue == "P4v8T1nR")
     }
 }

@@ -6,18 +6,19 @@ import TipKit
 
 struct BatchImageHomeView: View {
     private enum Layout {
-        static let animationDuration = 0.32
+        static let cardCornerRadius = 20.0
+        static let cardPadding = 18.0
+        static let cardSpacing = 16.0
         static let contentPadding = 20.0
         static let contentSpacing = 24.0
-        static let cardSpacing = 16.0
-        static let cardPadding = 18.0
-        static let cardCornerRadius = 20.0
         static let controlSpacing = 12.0
-        static let buttonStackSpacing = 10.0
-        static let exportSetupStepNumber = 3
         static let importStepNumber = 1
-        static let noExtraBounce = 0.0
-        static let outputSizeStepNumber = 2
+        static let processingStepNumber = 2
+        static let processStepNumber = 3
+        static let processingSpringBlendDuration = 0.12
+        static let processingSpringDampingFraction = 0.88
+        static let processingSpringResponse = 0.42
+        static let sectionTransitionScale = 0.98
         static let stepBadgeFillOpacity = 0.14
         static let stepBadgePadding = 10.0
         static let stepBadgeVerticalPadding = 6.0
@@ -40,10 +41,12 @@ struct BatchImageHomeView: View {
     @Binding var selectedItems: [PhotosPickerItem]
     let reviewSelection: (() -> Void)?
     @FocusState private var focusedResizeField: ResizeField?
+    @Namespace private var processingMorphNamespace
 
     private let selectImagesTip = SelectImagesTip()
     private let processingSetupTip = ProcessingSetupTip()
     private let runProcessingTip = RunProcessingTip()
+
     var body: some View {
         ScrollView {
             VStack(
@@ -52,14 +55,11 @@ struct BatchImageHomeView: View {
             ) {
                 importStepSection()
 
-                if model.showsOutputSizeStep {
-                    outputSizeStepSection()
-                        .transition(stepTransition)
-                }
-
-                if model.showsExportSetupStep {
-                    exportSetupStepSection()
-                        .transition(stepTransition)
+                if model.showsProcessingStep {
+                    processingStepSection()
+                        .transition(processingStepTransition)
+                    processStepSection()
+                        .transition(processingStepTransition)
                 }
             }
             .padding(Layout.contentPadding)
@@ -68,18 +68,16 @@ struct BatchImageHomeView: View {
         .navigationTitle("Liet")
         .navigationBarTitleDisplayMode(.large)
         .animation(
-            .snappy(
-                duration: Layout.animationDuration,
-                extraBounce: Layout.noExtraBounce
-            ),
-            value: model.showsOutputSizeStep
+            processingAnimation,
+            value: model.importedImages.count
         )
         .animation(
-            .snappy(
-                duration: Layout.animationDuration,
-                extraBounce: Layout.noExtraBounce
-            ),
-            value: model.showsExportSetupStep
+            processingAnimation,
+            value: model.keepsAspectRatio
+        )
+        .animation(
+            processingAnimation,
+            value: model.showsCompressionSection
         )
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -91,7 +89,9 @@ struct BatchImageHomeView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
 
-                Button("Done") { focusedResizeField = nil }
+                Button("Done") {
+                    focusedResizeField = nil
+                }
             }
         }
         .onChange(of: selectedItems) { _, newValue in
@@ -180,7 +180,18 @@ private extension BatchImageHomeView {
         )
     }
 
-    func importSection() -> some View {
+    var settingsSourceBinding: Binding<BatchImageHomeModel.SettingsSource> {
+        Binding(
+            get: {
+                model.settingsSource
+            },
+            set: { newValue in
+                model.settingsSource = newValue
+            }
+        )
+    }
+
+    func importStepSection() -> some View {
         stepCard(
             number: Layout.importStepNumber,
             title: "Import"
@@ -193,33 +204,61 @@ private extension BatchImageHomeView {
         }
     }
 
-    func outputSizeStepSection() -> some View {
+    func processingStepSection() -> some View {
         stepCard(
-            number: Layout.outputSizeStepNumber,
-            title: "Output Size"
+            number: Layout.processingStepNumber,
+            title: "Processing Settings"
         ) {
-            resizeSection()
-            savedSettingsSection()
-            TipView(processingSetupTip)
-        }
-    }
+            settingsSourceSection()
+            outputSizeSection()
 
-    func exportSetupStepSection() -> some View {
-        stepCard(
-            number: Layout.exportSetupStepNumber,
-            title: "Export Setup"
-        ) {
             if model.showsCompressionSection {
                 compressionSection()
+                    .transition(optionalProcessingSectionTransition)
             }
 
-            processButton()
-            processDetail()
+            TipView(processingSetupTip)
+            userPresetSection()
         }
     }
 
-    func importStepSection() -> some View {
-        importSection()
+    func processStepSection() -> some View {
+        stepCard(
+            number: Layout.processStepNumber,
+            title: "Process"
+        ) {
+            processActionSection()
+        }
+    }
+
+    func outputSizeSection() -> some View {
+        settingsSection(title: "Output Size") {
+            resizeSection()
+        }
+    }
+
+    func settingsSourceSection() -> some View {
+        settingsSection(title: "Starting Point") {
+            Picker("Starting Point", selection: settingsSourceBinding) {
+                Text("Last Used")
+                    .tag(BatchImageHomeModel.SettingsSource.lastUsed)
+                Text("User Preset")
+                    .tag(BatchImageHomeModel.SettingsSource.userPreset)
+                    .disabled(!model.hasUserPresetSettings)
+                Text("Custom")
+                    .tag(BatchImageHomeModel.SettingsSource.custom)
+            }
+            .pickerStyle(.segmented)
+
+            Text(
+                """
+                Liet starts from your last used settings. User Preset keeps one setup you save \
+                manually. Edit any value to switch to Custom.
+                """
+            )
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+        }
     }
 
     func resizeSection() -> some View {
@@ -232,26 +271,30 @@ private extension BatchImageHomeView {
                 isOn: keepsAspectRatioBinding
             )
 
+            resizeModeSection()
+        }
+    }
+
+    @ViewBuilder
+    func resizeModeSection() -> some View {
+        ZStack(alignment: .topLeading) {
             if model.keepsAspectRatio {
                 aspectRatioInputSection()
+                    .matchedGeometryEffect(
+                        id: "processing.resize.mode",
+                        in: processingMorphNamespace
+                    )
+                    .transition(resizeModeTransition)
             } else {
-                dimensionInputSection(
-                    title: Text("Width (px)"),
-                    placeholder: "1920",
-                    text: resizeWidthBinding,
-                    focusField: .width
-                )
-
-                dimensionInputSection(
-                    title: Text("Height (px)"),
-                    placeholder: "1080",
-                    text: resizeHeightBinding,
-                    focusField: .height
-                )
-
-                exactSizeSection()
+                exactResizeInputSection()
+                    .matchedGeometryEffect(
+                        id: "processing.resize.mode",
+                        in: processingMorphNamespace
+                    )
+                    .transition(resizeModeTransition)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     func aspectRatioInputSection() -> some View {
@@ -285,6 +328,44 @@ private extension BatchImageHomeView {
             Text(Layout.upscalingHint)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+        }
+    }
+
+    func exactResizeInputSection() -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.cardSpacing
+        ) {
+            dimensionInputSection(
+                title: Text("Width (px)"),
+                placeholder: "1920",
+                text: resizeWidthBinding,
+                focusField: .width
+            )
+
+            dimensionInputSection(
+                title: Text("Height (px)"),
+                placeholder: "1080",
+                text: resizeHeightBinding,
+                focusField: .height
+            )
+
+            exactSizeSection()
+        }
+    }
+
+    func settingsSection<Content: View>(
+        title: LocalizedStringKey,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.controlSpacing
+        ) {
+            Text(title)
+                .font(.subheadline.weight(.medium))
+
+            content()
         }
     }
 
@@ -418,13 +499,7 @@ private extension BatchImageHomeView {
     }
 
     func compressionSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.controlSpacing
-        ) {
-            Text("Compression")
-                .font(.subheadline.weight(.medium))
-
+        settingsSection(title: "Compression") {
             Picker("Compression", selection: $model.compression) {
                 Text("Off")
                     .tag(BatchImageCompression.off)
@@ -445,45 +520,29 @@ private extension BatchImageHomeView {
         }
     }
 
-    func savedSettingsSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.controlSpacing
-        ) {
-            Text("Saved Settings")
-                .font(.subheadline.weight(.medium))
-
+    func userPresetSection() -> some View {
+        settingsSection(title: "User Preset") {
             Text(
-                """
-                Startup uses your saved default settings. Last used settings update \
-                when you process images.
-                """
+                "Save the current resize and compression settings to your one reusable user preset."
             )
             .font(.footnote)
             .foregroundStyle(.secondary)
 
-            VStack(
-                alignment: .leading,
-                spacing: Layout.buttonStackSpacing
-            ) {
-                Button("Apply Default") {
-                    model.applyDefaultSettings()
-                }
-                .buttonStyle(.bordered)
-                .disabled(!model.canApplyDefaultSettings)
-
-                Button("Apply Last Used") {
-                    model.applyLastUsedSettings()
-                }
-                .buttonStyle(.bordered)
-                .disabled(!model.canApplyLastUsedSettings)
-
-                Button("Save Current as Default") {
-                    model.saveCurrentAsDefault()
-                }
-                .buttonStyle(.bordered)
-                .disabled(!model.canSaveCurrentAsDefault)
+            Button("Save as User Preset") {
+                model.saveCurrentAsUserPreset()
             }
+            .buttonStyle(.bordered)
+            .disabled(!model.canSaveCurrentAsUserPreset)
+        }
+    }
+
+    func processActionSection() -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.controlSpacing
+        ) {
+            processButton()
+            processDetail()
         }
     }
 
@@ -517,7 +576,7 @@ private extension BatchImageHomeView {
 
     func stepCard<Content: View>(
         number: Int,
-        title: String,
+        title: LocalizedStringKey,
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(
@@ -554,7 +613,7 @@ private extension BatchImageHomeView {
 
     func stepHeader(
         number: Int,
-        title: String
+        title: LocalizedStringKey
     ) -> some View {
         HStack(
             spacing: Layout.controlSpacing
@@ -573,9 +632,39 @@ private extension BatchImageHomeView {
         }
     }
 
-    var stepTransition: AnyTransition {
-        .move(edge: .bottom)
-            .combined(with: .opacity)
+    var processingAnimation: Animation {
+        .spring(
+            response: Layout.processingSpringResponse,
+            dampingFraction: Layout.processingSpringDampingFraction,
+            blendDuration: Layout.processingSpringBlendDuration
+        )
+    }
+
+    var processingStepTransition: AnyTransition {
+        .opacity.combined(
+            with: .scale(
+                scale: Layout.sectionTransitionScale,
+                anchor: .top
+            )
+        )
+    }
+
+    var optionalProcessingSectionTransition: AnyTransition {
+        .opacity.combined(
+            with: .scale(
+                scale: Layout.sectionTransitionScale,
+                anchor: .top
+            )
+        )
+    }
+
+    var resizeModeTransition: AnyTransition {
+        .opacity.combined(
+            with: .scale(
+                scale: Layout.sectionTransitionScale,
+                anchor: .top
+            )
+        )
     }
 
     var referencePixelsTitle: String {

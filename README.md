@@ -44,8 +44,8 @@ files to either Files or Photos.
 - Fall back to JPEG when the original format is unsupported or when HEIC
   output is unavailable on the current runtime.
 - Save processed results either to the Files app or to the Photos app.
-- Persist saved default settings and last used settings in App Group
-  `UserDefaults`.
+- Persist last used settings plus one manually saved user preset in App Group
+  AppStorage.
 
 ## Current limitations
 

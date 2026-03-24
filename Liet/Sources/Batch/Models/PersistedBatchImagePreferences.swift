@@ -1,9 +1,9 @@
 struct PersistedBatchImagePreferences: Codable, Equatable {
     static let `default`: Self = .init(
-        defaultSettings: .default,
+        userPresetSettings: nil,
         lastUsedSettings: .default
     )
 
-    var defaultSettings: PersistedBatchImageSettings
+    var userPresetSettings: PersistedBatchImageSettings?
     var lastUsedSettings: PersistedBatchImageSettings
 }
