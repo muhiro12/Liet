@@ -1028,18 +1028,18 @@
         }
       }
     },
-    "Processed images are always written as new files and default to the original name with a Liet suffix." : {
+    "Processed images are always written as new files and use the original name with a Liet suffix when available." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Processed images are always written as new files and default to the original name with a Liet suffix."
+            "value" : "Processed images are always written as new files and use the original name with a Liet suffix when available."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "処理後の画像は常に新しいファイルとして書き出され、既定では元の名前に Liet のサフィックスが付きます。"
+            "value" : "処理後の画像は常に新しいファイルとして書き出され、可能な場合は元の名前に Liet のサフィックスが付きます。"
           }
         }
       }

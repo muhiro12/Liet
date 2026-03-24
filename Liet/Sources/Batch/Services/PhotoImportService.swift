@@ -1,13 +1,22 @@
 import CoreTransferable
 import Foundation
+import Photos
 import PhotosUI
 import SwiftUI
 import UniformTypeIdentifiers
 
 enum PhotoImportService {
+    typealias AssetResourceFilenameFetcher = (String) -> [AssetResourceFilenameCandidate]
+    typealias OriginalFilenameResolver = (String?) -> String?
+
     struct Result {
         let importedImages: [ImportedBatchImage]
         let failureCount: Int
+    }
+
+    struct AssetResourceFilenameCandidate: Equatable {
+        let type: PHAssetResourceType
+        let originalFilename: String
     }
 }
 
@@ -53,6 +62,62 @@ extension PhotoImportService {
 }
 
 extension PhotoImportService {
+    nonisolated static func resolvePhotoLibraryOriginalFilename(
+        for itemIdentifier: String?,
+        assetResourceFilenameFetcher: AssetResourceFilenameFetcher = assetResourceFilenameCandidates(for:)
+    ) -> String? {
+        guard let itemIdentifier else {
+            return nil
+        }
+
+        let normalizedItemIdentifier = itemIdentifier
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !normalizedItemIdentifier.isEmpty else {
+            return nil
+        }
+
+        let candidates = assetResourceFilenameFetcher(
+            normalizedItemIdentifier
+        )
+
+        return preferredOriginalFilename(from: candidates)
+    }
+
+    nonisolated static func preferredOriginalFilename(
+        from candidates: [AssetResourceFilenameCandidate]
+    ) -> String? {
+        let preferredPhotoResourceTypes: [PHAssetResourceType] = [
+            .photo,
+            .fullSizePhoto,
+            .alternatePhoto
+        ]
+        let usableCandidates: [AssetResourceFilenameCandidate] = candidates.compactMap { candidate in
+            let normalizedFilename = candidate.originalFilename
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !normalizedFilename.isEmpty,
+                  allowsOriginalFilenameCandidate(candidate.type) else {
+                return nil
+            }
+
+            return AssetResourceFilenameCandidate(
+                type: candidate.type,
+                originalFilename: normalizedFilename
+            )
+        }
+
+        for preferredType in preferredPhotoResourceTypes {
+            if let candidate = usableCandidates.first(where: { candidate in
+                candidate.type == preferredType
+            }) {
+                return candidate.originalFilename
+            }
+        }
+
+        return usableCandidates.first?.originalFilename
+    }
+
     nonisolated static func originalFilename(
         from transferredFileURL: URL?
     ) -> String? {
@@ -70,9 +135,17 @@ extension PhotoImportService {
         supportedTypeIdentifiers: [String],
         selectionIndex: Int,
         into directoryURL: URL,
+        itemIdentifier: String? = nil,
+        originalFilenameResolver: OriginalFilenameResolver = { itemIdentifier in
+            resolvePhotoLibraryOriginalFilename(for: itemIdentifier)
+        },
         loadTransferredFileURL: () async throws -> URL?,
         loadData: () async throws -> Data?
     ) async throws -> ImportedBatchImage {
+        let resolvedOriginalFilename = originalFilenameResolver(
+            itemIdentifier
+        )
+
         do {
             if let transferredFileURL = try await loadTransferredFileURL() {
                 do {
@@ -80,7 +153,8 @@ extension PhotoImportService {
                         from: transferredFileURL,
                         supportedTypeIdentifiers: supportedTypeIdentifiers,
                         selectionIndex: selectionIndex,
-                        into: directoryURL
+                        into: directoryURL,
+                        resolvedOriginalFilename: resolvedOriginalFilename
                     )
                 } catch {
                     logTransferredFileFallback(
@@ -101,6 +175,7 @@ extension PhotoImportService {
             supportedTypeIdentifiers: supportedTypeIdentifiers,
             selectionIndex: selectionIndex,
             into: directoryURL,
+            resolvedOriginalFilename: resolvedOriginalFilename,
             loadData: loadData
         )
     }
@@ -147,6 +222,7 @@ extension PhotoImportService {
             supportedTypeIdentifiers: item.supportedContentTypes.map(\.identifier),
             selectionIndex: selectionIndex,
             into: directoryURL,
+            itemIdentifier: item.itemIdentifier,
             loadTransferredFileURL: {
                 try await item.loadTransferable(
                     type: ImportedPhotoFile.self
@@ -162,6 +238,7 @@ extension PhotoImportService {
         supportedTypeIdentifiers: [String],
         selectionIndex: Int,
         into directoryURL: URL,
+        resolvedOriginalFilename: String? = nil,
         loadData: () async throws -> Data?
     ) async throws -> ImportedBatchImage {
         guard let data = try await loadData() else {
@@ -172,7 +249,8 @@ extension PhotoImportService {
             from: data,
             supportedTypeIdentifiers: supportedTypeIdentifiers,
             selectionIndex: selectionIndex,
-            into: directoryURL
+            into: directoryURL,
+            resolvedOriginalFilename: resolvedOriginalFilename
         )
     }
 
@@ -180,7 +258,8 @@ extension PhotoImportService {
         from data: Data,
         supportedTypeIdentifiers: [String],
         selectionIndex: Int,
-        into directoryURL: URL
+        into directoryURL: URL,
+        resolvedOriginalFilename: String? = nil
     ) throws -> ImportedBatchImage {
         let imageSource = try ImageIOImageSupport.imageSource(data: data)
         let originalFormat = ImageIOImageSupport.detectedFormat(
@@ -199,7 +278,7 @@ extension PhotoImportService {
 
         return .init(
             sourceURL: sourceURL,
-            originalFilename: nil,
+            originalFilename: resolvedOriginalFilename,
             originalFormat: originalFormat,
             pixelSize: try ImageIOImageSupport.pixelSize(from: imageSource),
             previewImage: try ImageIOImageSupport.previewImage(from: sourceURL),
@@ -217,5 +296,42 @@ extension PhotoImportService {
         )
         let fileExtension = format.preferredOutputFormat.filenameExtension
         return "import-\(paddedIndex).\(fileExtension)"
+    }
+
+    nonisolated static func assetResourceFilenameCandidates(
+        for itemIdentifier: String
+    ) -> [AssetResourceFilenameCandidate] {
+        let assets = PHAsset.fetchAssets(
+            withLocalIdentifiers: [itemIdentifier],
+            options: nil
+        )
+
+        guard let asset = assets.firstObject else {
+            return []
+        }
+
+        return PHAssetResource.assetResources(for: asset).map { resource in
+            .init(
+                type: resource.type,
+                originalFilename: resource.originalFilename
+            )
+        }
+    }
+
+    nonisolated static func allowsOriginalFilenameCandidate(
+        _ type: PHAssetResourceType
+    ) -> Bool {
+        switch type {
+        case .video,
+             .audio,
+             .fullSizeVideo,
+             .adjustmentData,
+             .pairedVideo,
+             .fullSizePairedVideo,
+             .adjustmentBasePairedVideo:
+            false
+        default:
+            true
+        }
     }
 }

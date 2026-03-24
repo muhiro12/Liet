@@ -26,7 +26,8 @@ extension PhotoImportService {
         from transferredFileURL: URL,
         supportedTypeIdentifiers: [String],
         selectionIndex: Int,
-        into directoryURL: URL
+        into directoryURL: URL,
+        resolvedOriginalFilename: String?
     ) throws -> ImportedBatchImage {
         let imageSource = try transferredImageSource(
             from: transferredFileURL
@@ -54,9 +55,7 @@ extension PhotoImportService {
 
         return .init(
             sourceURL: sourceURL,
-            originalFilename: originalFilename(
-                from: transferredFileURL
-            ),
+            originalFilename: resolvedOriginalFilename ?? originalFilename(from: transferredFileURL),
             originalFormat: originalFormat,
             pixelSize: pixelSize,
             previewImage: previewImage,

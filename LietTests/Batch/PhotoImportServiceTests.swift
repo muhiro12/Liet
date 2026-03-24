@@ -2,6 +2,7 @@ import CoreGraphics
 import Foundation
 @testable import Liet
 import LietLibrary
+import Photos
 import Testing
 import UIKit
 
@@ -35,7 +36,27 @@ struct PhotoImportServiceTests {
     }
 
     @Test
-    func import_image_falls_back_to_data_when_transferred_file_import_fails() async throws {
+    func preferred_original_filename_prefers_still_image_resources_over_paired_video() {
+        let candidates: [PhotoImportService.AssetResourceFilenameCandidate] = [
+            .init(
+                type: .pairedVideo,
+                originalFilename: "IMG_1234.MOV"
+            ),
+            .init(
+                type: .photo,
+                originalFilename: "IMG_1234.HEIC"
+            )
+        ]
+
+        #expect(
+            PhotoImportService.preferredOriginalFilename(
+                from: candidates
+            ) == "IMG_1234.HEIC"
+        )
+    }
+
+    @Test
+    func import_image_keeps_photo_library_original_filename_when_transferred_file_import_fails() async throws {
         let importDirectory = try makeImportDirectory()
         let image = BatchImageTestFactory.makeUIImage(
             size: Metrics.sourceSize
@@ -54,11 +75,16 @@ struct PhotoImportServiceTests {
             supportedTypeIdentifiers: [ImageFileFormat.jpeg.sourceTypeIdentifier],
             selectionIndex: Metrics.selectionIndex,
             into: importDirectory,
+            itemIdentifier: "asset-id",
+            originalFilenameResolver: { itemIdentifier in
+                #expect(itemIdentifier == "asset-id")
+                return "IMG_1234.HEIC"
+            },
             loadTransferredFileURL: { transferredFileURL },
             loadData: { data }
         )
 
-        #expect(importedImage.originalFilename == nil)
+        #expect(importedImage.originalFilename == "IMG_1234.HEIC")
         #expect(importedImage.originalFormat == .jpeg)
         #expect(importedImage.pixelSize == Metrics.sourceSize)
         #expect(importedImage.selectionIndex == Metrics.selectionIndex)
@@ -70,7 +96,41 @@ struct PhotoImportServiceTests {
     }
 
     @Test
-    func import_image_preserves_original_filename_when_transferred_file_import_succeeds() async throws {
+    func import_image_prefers_photo_library_original_filename_when_transferred_file_import_succeeds() async throws {
+        let importDirectory = try makeImportDirectory()
+        let transferredFileURL = try BatchImageTestFactory.writeImageData(
+            for: BatchImageTestFactory.makeUIImage(
+                size: Metrics.sourceSize
+            ),
+            format: .jpeg,
+            filename: "converted-output.JPG"
+        )
+        var didLoadData = false
+
+        let importedImage = try await PhotoImportService.importImage(
+            supportedTypeIdentifiers: [ImageFileFormat.jpeg.sourceTypeIdentifier],
+            selectionIndex: Metrics.selectionIndex,
+            into: importDirectory,
+            itemIdentifier: "asset-id",
+            originalFilenameResolver: { itemIdentifier in
+                #expect(itemIdentifier == "asset-id")
+                return "IMG_1234.HEIC"
+            },
+            loadTransferredFileURL: { transferredFileURL },
+            loadData: {
+                didLoadData = true
+                return nil
+            }
+        )
+
+        #expect(importedImage.originalFilename == "IMG_1234.HEIC")
+        #expect(importedImage.originalFormat == .jpeg)
+        #expect(importedImage.pixelSize == Metrics.sourceSize)
+        #expect(didLoadData == false)
+    }
+
+    @Test
+    func import_image_uses_transferred_filename_when_photo_library_name_is_unavailable() async throws {
         let importDirectory = try makeImportDirectory()
         let transferredFileURL = try BatchImageTestFactory.writeImageData(
             for: BatchImageTestFactory.makeUIImage(
@@ -79,23 +139,47 @@ struct PhotoImportServiceTests {
             format: .jpeg,
             filename: "IMG_1234.JPG"
         )
-        var didLoadData = false
 
         let importedImage = try await PhotoImportService.importImage(
             supportedTypeIdentifiers: [ImageFileFormat.jpeg.sourceTypeIdentifier],
             selectionIndex: Metrics.selectionIndex,
             into: importDirectory,
+            itemIdentifier: "asset-id",
+            originalFilenameResolver: { _ in nil },
             loadTransferredFileURL: { transferredFileURL },
-            loadData: {
-                didLoadData = true
-                return nil
-            }
+            loadData: { nil }
         )
 
         #expect(importedImage.originalFilename == "IMG_1234.JPG")
-        #expect(importedImage.originalFormat == .jpeg)
-        #expect(importedImage.pixelSize == Metrics.sourceSize)
-        #expect(didLoadData == false)
+    }
+
+    @Test
+    func import_image_leaves_original_filename_nil_when_no_name_source_is_available() async throws {
+        let importDirectory = try makeImportDirectory()
+        let image = BatchImageTestFactory.makeUIImage(
+            size: Metrics.sourceSize
+        )
+        guard let data = image.jpegData(
+            compressionQuality: 1
+        ) else {
+            throw BatchImageTestFactory.Failure.failedToCreateImageData
+        }
+
+        let transferredFileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension(ImageFileFormat.jpeg.filenameExtension)
+
+        let importedImage = try await PhotoImportService.importImage(
+            supportedTypeIdentifiers: [ImageFileFormat.jpeg.sourceTypeIdentifier],
+            selectionIndex: Metrics.selectionIndex,
+            into: importDirectory,
+            itemIdentifier: "asset-id",
+            originalFilenameResolver: { _ in nil },
+            loadTransferredFileURL: { transferredFileURL },
+            loadData: { data }
+        )
+
+        #expect(importedImage.originalFilename == nil)
     }
 
     @Test
@@ -113,11 +197,11 @@ struct PhotoImportServiceTests {
                 loadTransferredFileURL: { transferredFileURL },
                 loadData: { nil }
             )
-            #expect(false)
+            #expect(Bool(false))
         } catch let error as BatchImageServiceError {
             #expect(error == .failedToLoadImageData)
         } catch {
-            #expect(false)
+            #expect(Bool(false))
         }
     }
 

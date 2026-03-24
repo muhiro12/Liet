@@ -569,9 +569,14 @@ private extension BatchImageHomeView {
     }
 
     func processDetail() -> some View {
-        Text("Processed images are always written as new files and default to the original name with a Liet suffix.")
-            .font(.footnote)
-            .foregroundStyle(.secondary)
+        Text(
+            """
+            Processed images are always written as new files and use the original name \
+            with a Liet suffix when available.
+            """
+        )
+        .font(.footnote)
+        .foregroundStyle(.secondary)
     }
 
     func stepCard<Content: View>(
