@@ -24,11 +24,6 @@ struct BatchImageHomeView: View {
         static let stepBadgeVerticalPadding = 6.0
         static let stepBorderLineWidth = 1.0
         static let stepBorderOpacity = 0.08
-        static let upscalingHint =
-            """
-            Each image keeps its aspect ratio. Liet calculates the other edge for every \
-            selected image and never upscales smaller images.
-            """
     }
 
     private enum ResizeField: Hashable {
@@ -46,6 +41,8 @@ struct BatchImageHomeView: View {
     private let selectImagesTip = SelectImagesTip()
     private let processingSetupTip = ProcessingSetupTip()
     private let runProcessingTip = RunProcessingTip()
+    private let resizeMethodTip = ResizeMethodTip()
+    private let userPresetTip = UserPresetTip()
 
     var body: some View {
         ScrollView {
@@ -81,7 +78,10 @@ struct BatchImageHomeView: View {
         )
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Show Tips Again") {
+                BatchToolbarIconButton(
+                    systemImage: "questionmark.circle",
+                    accessibilityLabel: "Show Tips Again"
+                ) {
                     model.replayTips()
                 }
             }
@@ -196,11 +196,9 @@ private extension BatchImageHomeView {
             number: Layout.importStepNumber,
             title: "Import"
         ) {
-            importHeader()
             selectionButton()
             selectionStatusRow()
             importFeedback()
-            reviewSelectionButton()
         }
     }
 
@@ -217,7 +215,6 @@ private extension BatchImageHomeView {
                     .transition(optionalProcessingSectionTransition)
             }
 
-            TipView(processingSetupTip)
             userPresetSection()
         }
     }
@@ -249,15 +246,10 @@ private extension BatchImageHomeView {
                     .tag(BatchImageHomeModel.SettingsSource.custom)
             }
             .pickerStyle(.segmented)
-
-            Text(
-                """
-                Liet starts from your last used settings. User Preset keeps one setup you save \
-                manually. Edit any value to switch to Custom.
-                """
+            .popoverTip(
+                processingSetupTip,
+                arrowEdge: .top
             )
-            .font(.footnote)
-            .foregroundStyle(.secondary)
         }
     }
 
@@ -324,10 +316,6 @@ private extension BatchImageHomeView {
                 text: referencePixelsBinding,
                 focusField: .referencePixels
             )
-
-            Text(Layout.upscalingHint)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
         }
     }
 
@@ -412,43 +400,11 @@ private extension BatchImageHomeView {
                     Text("Method")
                 }
                 .pickerStyle(.segmented)
-
-                Text(
-                    """
-                    Stretch fills the canvas exactly. Contain keeps the whole image inside the canvas. \
-                    Crop fills the canvas by trimming from the center.
-                    """
+                .popoverTip(
+                    resizeMethodTip,
+                    arrowEdge: .top
                 )
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-
-                Text("Contain may leave padding when the image and target aspect ratios differ.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
             }
-        }
-    }
-
-    @ViewBuilder
-    func reviewSelectionButton() -> some View {
-        if let reviewSelection,
-           !model.importedImages.isEmpty {
-            Button("Review Selection") {
-                reviewSelection()
-            }
-            .buttonStyle(.bordered)
-        }
-    }
-
-    func importHeader() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.controlSpacing
-        ) {
-            Text("Select images")
-                .font(.title2.weight(.semibold))
-            Text("Choose multiple photos, then apply one resize and compression setting to all of them.")
-                .foregroundStyle(.secondary)
         }
     }
 
@@ -459,7 +415,7 @@ private extension BatchImageHomeView {
             matching: .images,
             preferredItemEncoding: .current
         ) {
-            Label("Select Photos", systemImage: "photo.on.rectangle.angled")
+            Label("Select", systemImage: "photo.on.rectangle.angled")
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.borderedProminent)
@@ -470,17 +426,34 @@ private extension BatchImageHomeView {
     }
 
     func selectionStatusRow() -> some View {
-        HStack {
+        HStack(
+            spacing: Layout.controlSpacing
+        ) {
             selectedImageCountText(model.importedImages.count)
                 .font(.subheadline.weight(.medium))
 
             Spacer()
 
+            if let reviewSelection,
+               !model.importedImages.isEmpty {
+                Button {
+                    reviewSelection()
+                } label: {
+                    Image(systemName: "eye")
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel(Text("Review Selection"))
+            }
+
             if !model.importedImages.isEmpty {
-                Button("Clear") {
+                Button {
                     selectedItems = []
                     model.clearSelection()
+                } label: {
+                    Image(systemName: "xmark.circle")
                 }
+                .buttonStyle(.bordered)
+                .accessibilityLabel(Text("Clear"))
             }
         }
     }
@@ -492,9 +465,11 @@ private extension BatchImageHomeView {
         }
 
         if let importFailureCount = model.importFailureCount {
-            importFailureText(importFailureCount)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            BatchStatusChip(
+                text: importFailureText(importFailureCount),
+                systemImage: "exclamationmark.triangle.fill",
+                tone: .warning
+            )
         }
     }
 
@@ -513,26 +488,28 @@ private extension BatchImageHomeView {
             .pickerStyle(.segmented)
 
             if model.showsMixedCompressionHint {
-                Text("PNG images keep their format and ignore the compression setting.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                BatchStatusChip(
+                    "PNG keeps original format",
+                    systemImage: "photo",
+                    tone: .neutral
+                )
             }
         }
     }
 
     func userPresetSection() -> some View {
         settingsSection(title: "User Preset") {
-            Text(
-                "Save the current resize and compression settings to your one reusable user preset."
-            )
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-
-            Button("Save as User Preset") {
+            Button {
                 model.saveCurrentAsUserPreset()
+            } label: {
+                Label("Save Preset", systemImage: "bookmark")
             }
             .buttonStyle(.bordered)
             .disabled(!model.canSaveCurrentAsUserPreset)
+            .popoverTip(
+                userPresetTip,
+                arrowEdge: .top
+            )
         }
     }
 
@@ -542,7 +519,6 @@ private extension BatchImageHomeView {
             spacing: Layout.controlSpacing
         ) {
             processButton()
-            processDetail()
         }
     }
 
@@ -556,7 +532,7 @@ private extension BatchImageHomeView {
                 ProgressView()
                     .frame(maxWidth: .infinity)
             } else {
-                Text("Process Images")
+                Label("Process", systemImage: "play.fill")
                     .frame(maxWidth: .infinity)
             }
         }
@@ -566,17 +542,6 @@ private extension BatchImageHomeView {
             runProcessingTip,
             arrowEdge: .top
         )
-    }
-
-    func processDetail() -> some View {
-        Text(
-            """
-            Processed images are always written as new files and use the original name \
-            with a Liet suffix when available.
-            """
-        )
-        .font(.footnote)
-        .foregroundStyle(.secondary)
     }
 
     func stepCard<Content: View>(

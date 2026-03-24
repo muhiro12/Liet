@@ -44,14 +44,20 @@ struct BatchImageResultView: View {
             if let backToSettings,
                horizontalSizeClass == .compact {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Back to Settings") {
+                    BatchToolbarIconButton(
+                        systemImage: "sidebar.leading",
+                        accessibilityLabel: "Back to Settings"
+                    ) {
                         backToSettings()
                     }
                 }
             }
 
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Show Tips Again") {
+                BatchToolbarIconButton(
+                    systemImage: "questionmark.circle",
+                    accessibilityLabel: "Show Tips Again"
+                ) {
                     model.replayTips()
                 }
             }
@@ -94,22 +100,32 @@ private extension BatchImageResultView {
         )
     }
 
+    var hasResultChips: Bool {
+        model.failureCount > 0 ||
+            model.jpegFallbackCount > 0 ||
+            model.ignoredCompressionCount > 0 ||
+            model.saveFeedback != nil
+    }
+
     func summarySection() -> some View {
         VStack(
             alignment: .leading,
             spacing: Layout.controlSpacing
         ) {
-            resultTitleText(model.processedImages.count)
-                .font(.title2.weight(.semibold))
+            resultTitleView()
 
-            resultDetailMessages()
-
-            if let saveFeedback = model.saveFeedback {
-                saveFeedbackText(saveFeedback)
-                    .font(.subheadline.weight(.medium))
+            if hasResultChips {
+                ScrollView(
+                    .horizontal,
+                    showsIndicators: false
+                ) {
+                    HStack(
+                        spacing: Layout.controlSpacing
+                    ) {
+                        resultDetailChips()
+                    }
+                }
             }
-
-            TipView(processedResultsTip)
         }
     }
 
@@ -120,10 +136,6 @@ private extension BatchImageResultView {
         ) {
             Text("Processed images")
                 .font(.title3.weight(.semibold))
-
-            Text("Edit each export name before saving if needed.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
 
             LazyVGrid(
                 columns: columns,
@@ -149,8 +161,11 @@ private extension BatchImageResultView {
             Text("Save")
                 .font(.title3.weight(.semibold))
 
-            Button("Save to Files") {
+            Button {
                 model.beginFileExport()
+            } label: {
+                Label("Files", systemImage: "folder")
+                    .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .popoverTip(
@@ -167,7 +182,7 @@ private extension BatchImageResultView {
                     ProgressView()
                         .frame(maxWidth: .infinity)
                 } else {
-                    Text("Save to Photos")
+                    Label("Photos", systemImage: "photo.on.rectangle")
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -177,24 +192,47 @@ private extension BatchImageResultView {
     }
 
     @ViewBuilder
-    func resultDetailMessages() -> some View {
+    func resultDetailChips() -> some View {
         if model.failureCount > 0 {
-            resultFailureText(model.failureCount)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            BatchStatusChip(
+                text: resultFailureText(model.failureCount),
+                systemImage: "exclamationmark.triangle.fill",
+                tone: .warning
+            )
         }
 
         if model.jpegFallbackCount > 0 {
-            jpegFallbackText(model.jpegFallbackCount)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            BatchStatusChip(
+                text: jpegFallbackText(model.jpegFallbackCount),
+                systemImage: "arrow.triangle.2.circlepath",
+                tone: .warning
+            )
         }
 
         if model.ignoredCompressionCount > 0 {
-            pngCompressionText(model.ignoredCompressionCount)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            BatchStatusChip(
+                text: pngCompressionText(model.ignoredCompressionCount),
+                systemImage: "photo",
+                tone: .neutral
+            )
         }
+
+        if let saveFeedback = model.saveFeedback {
+            BatchStatusChip(
+                text: saveFeedbackText(saveFeedback),
+                systemImage: "checkmark.circle.fill",
+                tone: .success
+            )
+        }
+    }
+
+    func resultTitleView() -> some View {
+        resultTitleText(model.processedImages.count)
+            .font(.title2.weight(.semibold))
+            .popoverTip(
+                processedResultsTip,
+                arrowEdge: .top
+            )
     }
 
     func resultTitleText(
@@ -211,9 +249,9 @@ private extension BatchImageResultView {
         _ count: Int
     ) -> Text {
         if count == 1 {
-            Text("1 image couldn't be processed.")
+            Text("1 failed")
         } else {
-            Text("\(count) images couldn't be processed.")
+            Text("\(count) failed")
         }
     }
 
@@ -221,20 +259,16 @@ private extension BatchImageResultView {
         _ count: Int
     ) -> Text {
         if count == 1 {
-            Text("1 image was exported as JPEG because the original format couldn't be preserved.")
+            Text("1 JPEG fallback")
         } else {
-            Text("\(count) images were exported as JPEG because the original format couldn't be preserved.")
+            Text("\(count) JPEG fallback")
         }
     }
 
     func pngCompressionText(
-        _ count: Int
+        _: Int
     ) -> Text {
-        if count == 1 {
-            Text("PNG ignores the compression quality setting.")
-        } else {
-            Text("PNG images ignore the compression quality setting.")
-        }
+        Text("PNG kept original")
     }
 
     func saveFeedbackText(
@@ -243,15 +277,15 @@ private extension BatchImageResultView {
         switch feedback {
         case let .exportedFiles(count):
             if count == 1 {
-                Text("Exported 1 image to Files.")
+                Text("1 saved to Files")
             } else {
-                Text("Exported \(count) images to Files.")
+                Text("\(count) saved to Files")
             }
         case let .savedToPhotos(count):
             if count == 1 {
-                Text("Saved 1 image to Photos.")
+                Text("1 saved to Photos")
             } else {
-                Text("Saved \(count) images to Photos.")
+                Text("\(count) saved to Photos")
             }
         }
     }

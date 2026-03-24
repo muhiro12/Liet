@@ -1,5 +1,6 @@
 import LietLibrary
 import SwiftUI
+import TipKit
 
 struct BatchImageImportedPreviewView: View {
     private enum Layout {
@@ -16,6 +17,7 @@ struct BatchImageImportedPreviewView: View {
     let importedImages: [ImportedBatchImage]
     let settings: BatchImageSettings?
     let backToSettings: (() -> Void)?
+    private let selectionPreviewTip = SelectionPreviewTip()
 
     private let columns = [
         GridItem(
@@ -53,9 +55,21 @@ struct BatchImageImportedPreviewView: View {
             if let backToSettings,
                horizontalSizeClass == .compact {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Back to Settings") {
+                    BatchToolbarIconButton(
+                        systemImage: "sidebar.leading",
+                        accessibilityLabel: "Back to Settings"
+                    ) {
                         backToSettings()
                     }
+                }
+            }
+
+            ToolbarItem(placement: .topBarTrailing) {
+                BatchToolbarIconButton(
+                    systemImage: "questionmark.circle",
+                    accessibilityLabel: "Show Tips Again"
+                ) {
+                    BatchImageTipSupport.resetTips()
                 }
             }
         }
@@ -71,12 +85,12 @@ private extension BatchImageImportedPreviewView {
         }
     }
 
-    var headerDetailText: String {
-        if let settings {
-            return outputSummaryText(settings)
+    var summaryText: String? {
+        guard let settings else {
+            return nil
         }
 
-        return "Choose an output size in the sidebar to preview each processed image size."
+        return outputSummaryText(settings)
     }
 
     func header() -> some View {
@@ -84,11 +98,30 @@ private extension BatchImageImportedPreviewView {
             alignment: .leading,
             spacing: Layout.headerSpacing
         ) {
-            Text(selectionTitle)
-                .font(.title2.weight(.semibold))
+            titleView()
 
-            Text(headerDetailText)
-                .foregroundStyle(.secondary)
+            if let summaryText {
+                BatchStatusChip(
+                    text: Text(summaryText),
+                    systemImage: "arrow.up.left.and.arrow.down.right",
+                    tone: .accent
+                )
+            }
+        }
+    }
+
+    @ViewBuilder
+    func titleView() -> some View {
+        let title = Text(selectionTitle)
+            .font(.title2.weight(.semibold))
+
+        if settings == nil {
+            title.popoverTip(
+                selectionPreviewTip,
+                arrowEdge: .top
+            )
+        } else {
+            title
         }
     }
 
@@ -107,34 +140,34 @@ private extension BatchImageImportedPreviewView {
 
     func outputSummaryText(
         _ settings: BatchImageSettings
-    ) -> String {
+    ) -> String? {
         if let referenceDimension = settings.referenceDimension,
            let referencePixels = settings.referencePixels {
             let referenceLabel = switch referenceDimension {
             case .width:
-                "Width"
+                String(localized: "Width")
             case .height:
-                "Height"
+                String(localized: "Height")
             }
 
-            return "\(referenceLabel) \(referencePixels) px with aspect ratio preserved."
+            return "\(referenceLabel) \(referencePixels) px • \(String(localized: "Keep ratio"))"
         }
 
         guard let exactWidthPixels = settings.exactWidthPixels,
               let exactHeightPixels = settings.exactHeightPixels,
               let exactResizeStrategy = settings.exactResizeStrategy else {
-            return "Review the imported images before running the batch."
+            return nil
         }
 
         let strategyLabel = switch exactResizeStrategy {
         case .stretch:
-            "Stretch"
+            String(localized: "Stretch")
         case .contain:
-            "Contain"
+            String(localized: "Contain")
         case .coverCrop:
-            "Crop"
+            String(localized: "Crop")
         }
 
-        return "Exact \(exactWidthPixels)×\(exactHeightPixels) using \(strategyLabel)."
+        return "\(exactWidthPixels)×\(exactHeightPixels) • \(strategyLabel)"
     }
 }

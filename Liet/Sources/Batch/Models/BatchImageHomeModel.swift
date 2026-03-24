@@ -40,6 +40,10 @@ final class BatchImageHomeModel {
         didSet {
             if !suppressesAutomaticSettingsDidChange,
                exactResizeStrategy != oldValue {
+                if !keepsAspectRatio {
+                    BatchImageTipSupport.markExactResizeMethodConfigured()
+                }
+
                 didChangeSettings()
             }
         }
@@ -242,6 +246,7 @@ extension BatchImageHomeModel {
         userPresetSettings = currentPersistedSettings
         setSettingsSourceWithoutApplying(.userPreset)
         savePreferences()
+        BatchImageTipSupport.markUserPresetSaved()
     }
 
     func importPhotos(

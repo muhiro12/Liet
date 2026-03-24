@@ -9,13 +9,7 @@ struct BatchImageEmptyDetailView: View {
     var body: some View {
         ContentUnavailableView(
             "Select images to start",
-            systemImage: "photo.on.rectangle.angled",
-            description: Text(
-                """
-                Import one or more photos from the sidebar, then review the selection \
-                or process the batch.
-                """
-            )
+            systemImage: "photo.on.rectangle.angled"
         )
         .navigationTitle("Preview")
         .navigationBarTitleDisplayMode(.inline)
@@ -23,7 +17,10 @@ struct BatchImageEmptyDetailView: View {
             if let backToSettings,
                horizontalSizeClass == .compact {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Back to Settings") {
+                    BatchToolbarIconButton(
+                        systemImage: "sidebar.leading",
+                        accessibilityLabel: "Back to Settings"
+                    ) {
                         backToSettings()
                     }
                 }

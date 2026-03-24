@@ -15,6 +15,8 @@ enum BatchImageTipSupport {
         let processCompleted: Bool
         let saveToFilesCompleted: Bool
         let saveToPhotosCompleted: Bool
+        let exactResizeMethodConfigured: Bool
+        let userPresetSaved: Bool
     }
 
     nonisolated static let datastoreGroupIdentifier = AppGroup.id
@@ -55,6 +57,8 @@ extension BatchImageTipSupport {
         RunProcessingTip.hasCompletedProcessStep = false
         SaveDestinationTip.hasSavedToFiles = false
         SaveDestinationTip.hasSavedToPhotos = false
+        ResizeMethodTip.hasConfiguredExactResizeMethod = false
+        UserPresetTip.hasSavedUserPreset = false
     }
 
     static func donateImportSuccess() {
@@ -77,6 +81,14 @@ extension BatchImageTipSupport {
         didSaveToPhotos.sendDonation()
     }
 
+    static func markExactResizeMethodConfigured() {
+        ResizeMethodTip.hasConfiguredExactResizeMethod = true
+    }
+
+    static func markUserPresetSaved() {
+        UserPresetTip.hasSavedUserPreset = true
+    }
+
     nonisolated static func donationSnapshot() -> DonationSnapshot {
         .init(
             importCount: didImportImages.donations.count,
@@ -91,7 +103,9 @@ extension BatchImageTipSupport {
             importCompleted: SelectImagesTip.hasCompletedImportStep,
             processCompleted: RunProcessingTip.hasCompletedProcessStep,
             saveToFilesCompleted: SaveDestinationTip.hasSavedToFiles,
-            saveToPhotosCompleted: SaveDestinationTip.hasSavedToPhotos
+            saveToPhotosCompleted: SaveDestinationTip.hasSavedToPhotos,
+            exactResizeMethodConfigured: ResizeMethodTip.hasConfiguredExactResizeMethod,
+            userPresetSaved: UserPresetTip.hasSavedUserPreset
         )
     }
 }

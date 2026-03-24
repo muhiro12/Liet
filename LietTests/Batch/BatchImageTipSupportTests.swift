@@ -19,16 +19,20 @@ struct BatchImageTipSupportTests {
     func replay_resets_tip_progress_flags() async {
         BatchImageTipSupport.resetTips()
 
-        await BatchImageTipSupport.donateImportSuccess()
-        await BatchImageTipSupport.donateProcessSuccess()
-        await BatchImageTipSupport.donateSaveToFilesSuccess()
-        await BatchImageTipSupport.donateSaveToPhotosSuccess()
+        BatchImageTipSupport.donateImportSuccess()
+        BatchImageTipSupport.donateProcessSuccess()
+        BatchImageTipSupport.donateSaveToFilesSuccess()
+        BatchImageTipSupport.donateSaveToPhotosSuccess()
+        BatchImageTipSupport.markExactResizeMethodConfigured()
+        BatchImageTipSupport.markUserPresetSaved()
 
         let progressedSnapshot = BatchImageTipSupport.progressSnapshot()
         #expect(progressedSnapshot.importCompleted)
         #expect(progressedSnapshot.processCompleted)
         #expect(progressedSnapshot.saveToFilesCompleted)
         #expect(progressedSnapshot.saveToPhotosCompleted)
+        #expect(progressedSnapshot.exactResizeMethodConfigured)
+        #expect(progressedSnapshot.userPresetSaved)
 
         BatchImageTipSupport.resetTips()
 
@@ -37,6 +41,8 @@ struct BatchImageTipSupportTests {
         #expect(resetSnapshot.processCompleted == false)
         #expect(resetSnapshot.saveToFilesCompleted == false)
         #expect(resetSnapshot.saveToPhotosCompleted == false)
+        #expect(resetSnapshot.exactResizeMethodConfigured == false)
+        #expect(resetSnapshot.userPresetSaved == false)
     }
 
     @Test
