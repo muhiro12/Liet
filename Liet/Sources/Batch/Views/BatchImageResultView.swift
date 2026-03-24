@@ -13,7 +13,8 @@ struct BatchImageResultView: View {
     @Bindable var model: BatchImageResultModel
     let backToSettings: (() -> Void)?
 
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
 
     private let processedResultsTip = ProcessedResultsTip()
     private let saveDestinationTip = SaveDestinationTip()

@@ -4,6 +4,7 @@ import Foundation
 import LietLibrary
 import Testing
 
+// swiftlint:disable:next type_body_length
 struct BatchImageProcessorTests {
     @Test
     func jpeg_input_stays_jpeg_and_resizes_with_aspect_ratio() async throws {

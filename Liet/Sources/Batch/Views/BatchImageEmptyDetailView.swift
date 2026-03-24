@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct BatchImageEmptyDetailView: View {
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
 
     let backToSettings: (() -> Void)?
 
@@ -9,7 +10,12 @@ struct BatchImageEmptyDetailView: View {
         ContentUnavailableView(
             "Select images to start",
             systemImage: "photo.on.rectangle.angled",
-            description: Text("Import one or more photos from the sidebar, then review the selection or process the batch.")
+            description: Text(
+                """
+                Import one or more photos from the sidebar, then review the selection \
+                or process the batch.
+                """
+            )
         )
         .navigationTitle("Preview")
         .navigationBarTitleDisplayMode(.inline)

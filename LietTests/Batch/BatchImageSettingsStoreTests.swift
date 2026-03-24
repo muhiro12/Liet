@@ -4,10 +4,19 @@ import LietLibrary
 import Testing
 
 struct BatchImageSettingsStoreTests {
+    private enum Constants {
+        static let defaultExactHeight = 180
+        static let defaultExactWidth = 180
+        static let defaultReferencePixels = 180
+        static let lastUsedExactHeight = 180
+        static let lastUsedExactWidth = 320
+        static let lastUsedReferencePixels = 512
+    }
+
     @Test
     func live_store_removes_legacy_standard_key_and_persists_preferences() throws {
-        let preferencesSuiteName = "BatchImageSettingsStoreTests.preferences.\(UUID().uuidString)"
-        let legacySuiteName = "BatchImageSettingsStoreTests.legacy.\(UUID().uuidString)"
+        let preferencesSuiteName = makeSuiteName("preferences")
+        let legacySuiteName = makeSuiteName("legacy")
         let preferencesDefaults = try #require(
             UserDefaults(suiteName: preferencesSuiteName)
         )
@@ -40,26 +49,7 @@ struct BatchImageSettingsStoreTests {
             ) == nil
         )
 
-        let preferences: PersistedBatchImagePreferences = .init(
-            defaultSettings: .init(
-                resizeMode: .aspectRatioPreserved,
-                referenceDimension: .width,
-                referencePixels: 180,
-                exactWidthPixels: 180,
-                exactHeightPixels: 180,
-                exactResizeStrategy: .stretch,
-                compression: .off
-            ),
-            lastUsedSettings: .init(
-                resizeMode: .exactSize,
-                referenceDimension: .height,
-                referencePixels: 512,
-                exactWidthPixels: 320,
-                exactHeightPixels: 180,
-                exactResizeStrategy: .coverCrop,
-                compression: .medium
-            )
-        )
+        let preferences = makePreferences()
 
         store.save(preferences)
 
@@ -68,6 +58,37 @@ struct BatchImageSettingsStoreTests {
             preferencesDefaults.data(
                 forKey: BatchImageSettingsStore.storageKey
             ) != nil
+        )
+    }
+}
+
+private extension BatchImageSettingsStoreTests {
+    func makeSuiteName(
+        _ suffix: String
+    ) -> String {
+        "BatchImageSettingsStoreTests.\(suffix).\(UUID().uuidString)"
+    }
+
+    func makePreferences() -> PersistedBatchImagePreferences {
+        .init(
+            defaultSettings: .init(
+                resizeMode: .aspectRatioPreserved,
+                referenceDimension: .width,
+                referencePixels: Constants.defaultReferencePixels,
+                exactWidthPixels: Constants.defaultExactWidth,
+                exactHeightPixels: Constants.defaultExactHeight,
+                exactResizeStrategy: .stretch,
+                compression: .off
+            ),
+            lastUsedSettings: .init(
+                resizeMode: .exactSize,
+                referenceDimension: .height,
+                referencePixels: Constants.lastUsedReferencePixels,
+                exactWidthPixels: Constants.lastUsedExactWidth,
+                exactHeightPixels: Constants.lastUsedExactHeight,
+                exactResizeStrategy: .coverCrop,
+                compression: .medium
+            )
         )
     }
 }

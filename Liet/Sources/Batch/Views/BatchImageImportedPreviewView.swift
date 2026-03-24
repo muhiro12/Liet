@@ -6,10 +6,12 @@ struct BatchImageImportedPreviewView: View {
         static let contentPadding = 20.0
         static let contentSpacing = 24.0
         static let gridSpacing = 12.0
+        static let headerSpacing = 8.0
         static let thumbnailColumnMinimum = 130.0
     }
 
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
 
     let importedImages: [ImportedBatchImage]
     let settings: BatchImageSettings?
@@ -61,19 +63,6 @@ struct BatchImageImportedPreviewView: View {
 }
 
 private extension BatchImageImportedPreviewView {
-    func header() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: 8
-        ) {
-            Text(selectionTitle)
-                .font(.title2.weight(.semibold))
-
-            Text(headerDetailText)
-                .foregroundStyle(.secondary)
-        }
-    }
-
     var selectionTitle: String {
         if importedImages.count == 1 {
             "1 image selected"
@@ -88,6 +77,19 @@ private extension BatchImageImportedPreviewView {
         }
 
         return "Choose an output size in the sidebar to preview each processed image size."
+    }
+
+    func header() -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.headerSpacing
+        ) {
+            Text(selectionTitle)
+                .font(.title2.weight(.semibold))
+
+            Text(headerDetailText)
+                .foregroundStyle(.secondary)
+        }
     }
 
     func projectedPixelSize(

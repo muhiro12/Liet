@@ -1,0 +1,196 @@
+import LietLibrary
+import SwiftUI
+import UIKit
+
+#Preview("iPhone Imported") {
+    ContentView(
+        model: .previewImported(),
+        preferredCompactColumn: .detail
+    )
+}
+
+#Preview("iPhone Result") {
+    ContentView(
+        model: .previewProcessed(),
+        preferredCompactColumn: .detail
+    )
+}
+
+#Preview(
+    "iPad Imported",
+    traits: .fixedLayout(
+        width: ContentViewPreviewFactory.iPadPreviewWidth,
+        height: ContentViewPreviewFactory.iPadPreviewHeight
+    )
+) {
+    ContentView(
+        model: .previewImported()
+    )
+}
+
+#Preview(
+    "iPad Result",
+    traits: .fixedLayout(
+        width: ContentViewPreviewFactory.iPadPreviewWidth,
+        height: ContentViewPreviewFactory.iPadPreviewHeight
+    )
+) {
+    ContentView(
+        model: .previewProcessed()
+    )
+}
+
+private extension BatchImageHomeModel {
+    static func previewImported() -> BatchImageHomeModel {
+        let model: BatchImageHomeModel = .init(
+            settingsStore: .inMemory()
+        )
+        model.importedImages = ContentViewPreviewFactory.importedImages
+        model.setReferencePixelsText("1080")
+        return model
+    }
+
+    static func previewProcessed() -> BatchImageHomeModel {
+        let model = previewImported()
+        model.resultModel = .init(
+            outcome: .init(
+                processedImages: ContentViewPreviewFactory.processedImages,
+                failureCount: 0,
+                jpegFallbackCount: 0,
+                ignoredCompressionCount: 0
+            )
+        )
+        return model
+    }
+}
+
+private enum ContentViewPreviewFactory {
+    static let iPadPreviewWidth = 1_194.0
+    static let iPadPreviewHeight = 834.0
+    static let landscapeWidth = 1_600.0
+    static let landscapeHeight = 900.0
+    static let portraitWidth = 900.0
+    static let portraitHeight = 1_600.0
+    static let outputLandscapeWidth = 1_080.0
+    static let outputLandscapeHeight = 608.0
+    static let outputPortraitWidth = 1_080.0
+    static let outputPortraitHeight = 1_920.0
+
+    private static let temporaryDirectory = FileManager.default.temporaryDirectory
+
+    static let importedImages: [ImportedBatchImage] = [
+        makeImportedImage(
+            filename: "preview-landscape.jpg",
+            format: .jpeg,
+            size: .init(
+                width: landscapeWidth,
+                height: landscapeHeight
+            ),
+            selectionIndex: 1,
+            color: .systemTeal
+        ),
+        makeImportedImage(
+            filename: "preview-portrait.png",
+            format: .png,
+            size: .init(
+                width: portraitWidth,
+                height: portraitHeight
+            ),
+            selectionIndex: 2,
+            color: .systemOrange
+        )
+    ]
+
+    static let processedImages: [ProcessedBatchImage] = [
+        makeProcessedImage(
+            filename: "preview-landscape-Liet.jpg",
+            format: .jpeg,
+            originalFormat: .jpeg,
+            size: .init(
+                width: outputLandscapeWidth,
+                height: outputLandscapeHeight
+            ),
+            color: .systemTeal
+        ),
+        makeProcessedImage(
+            filename: "preview-portrait-Liet.png",
+            format: .png,
+            originalFormat: .png,
+            size: .init(
+                width: outputPortraitWidth,
+                height: outputPortraitHeight
+            ),
+            color: .systemOrange
+        )
+    ]
+
+    static func makeImportedImage(
+        filename: String,
+        format: ImageFileFormat,
+        size: CGSize,
+        selectionIndex: Int,
+        color: UIColor
+    ) -> ImportedBatchImage {
+        let url = temporaryDirectory.appendingPathComponent(filename)
+        let previewImage = makePreviewImage(
+            size: size,
+            color: color
+        )
+
+        return .init(
+            sourceURL: url,
+            originalFilename: filename,
+            originalFormat: format,
+            pixelSize: size,
+            previewImage: previewImage,
+            selectionIndex: selectionIndex
+        )
+    }
+
+    static func makeProcessedImage(
+        filename: String,
+        format: ImageFileFormat,
+        originalFormat: ImageFileFormat,
+        size: CGSize,
+        color: UIColor
+    ) -> ProcessedBatchImage {
+        let url = temporaryDirectory.appendingPathComponent(filename)
+        let previewImage = makePreviewImage(
+            size: size,
+            color: color
+        )
+
+        return .init(
+            sourceID: .init(),
+            outputURL: url,
+            outputFilename: filename,
+            outputFormat: format,
+            originalFormat: originalFormat,
+            pixelSize: size,
+            previewImage: previewImage,
+            usedJPEGFallback: false,
+            ignoredCompressionSetting: false
+        )
+    }
+
+    static func makePreviewImage(
+        size: CGSize,
+        color: UIColor
+    ) -> UIImage {
+        let format = UIGraphicsImageRendererFormat.default()
+        format.opaque = true
+
+        return UIGraphicsImageRenderer(
+            size: size,
+            format: format
+        ).image { context in
+            color.setFill()
+            context.fill(
+                CGRect(
+                    origin: .zero,
+                    size: size
+                )
+            )
+        }
+    }
+}

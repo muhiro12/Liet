@@ -1,41 +1,6 @@
 import Foundation
 import LietLibrary
 
-enum PersistedBatchResizeMode: String, Codable, Equatable {
-    case aspectRatioPreserved
-    case exactSize
-}
-
-struct PersistedBatchImageSettings: Codable, Equatable {
-    var resizeMode: PersistedBatchResizeMode
-    var referenceDimension: BatchResizeReferenceDimension
-    var referencePixels: Int
-    var exactWidthPixels: Int
-    var exactHeightPixels: Int
-    var exactResizeStrategy: BatchExactResizeStrategy
-    var compression: BatchImageCompression
-
-    static let `default`: Self = .init(
-        resizeMode: .aspectRatioPreserved,
-        referenceDimension: BatchResizeMode.defaultReferenceDimension,
-        referencePixels: BatchResizeMode.defaultReferencePixels,
-        exactWidthPixels: BatchResizeMode.defaultWidthPixels,
-        exactHeightPixels: BatchResizeMode.defaultHeightPixels,
-        exactResizeStrategy: .stretch,
-        compression: .off
-    )
-}
-
-struct PersistedBatchImagePreferences: Codable, Equatable {
-    var defaultSettings: PersistedBatchImageSettings
-    var lastUsedSettings: PersistedBatchImageSettings
-
-    static let `default`: Self = .init(
-        defaultSettings: .default,
-        lastUsedSettings: .default
-    )
-}
-
 struct BatchImageSettingsStore {
     nonisolated static let appGroupIdentifier = AppGroup.id
     nonisolated static let storageKey = "batch.image.preferences"

@@ -9,15 +9,7 @@ struct ImportedBatchImageTile: View {
     }
 
     let image: ImportedBatchImage
-    let projectedPixelSize: CGSize?
-
-    init(
-        image: ImportedBatchImage,
-        projectedPixelSize: CGSize? = nil
-    ) {
-        self.image = image
-        self.projectedPixelSize = projectedPixelSize
-    }
+    var projectedPixelSize: CGSize?
 
     var body: some View {
         VStack(

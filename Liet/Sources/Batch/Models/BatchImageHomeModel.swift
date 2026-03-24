@@ -1,3 +1,4 @@
+// swiftlint:disable file_length
 import Foundation
 import LietLibrary
 import Observation
@@ -416,3 +417,4 @@ private extension BatchImageHomeModel {
         return outputFormat.supportsLossyCompressionQuality
     }
 }
+// swiftlint:enable file_length

@@ -1,3 +1,4 @@
+// swiftlint:disable file_length type_contents_order
 import LietLibrary
 import PhotosUI
 import SwiftUI
@@ -5,6 +6,9 @@ import TipKit
 
 struct BatchImageHomeView: View {
     private enum Layout {
+        static let animationDuration = 0.32
+        static let containedPaddingWarning =
+            "Contain may leave padding when the image and target aspect ratios differ."
         static let contentPadding = 20.0
         static let contentSpacing = 24.0
         static let cardSpacing = 16.0
@@ -12,7 +16,20 @@ struct BatchImageHomeView: View {
         static let cardCornerRadius = 20.0
         static let controlSpacing = 12.0
         static let buttonStackSpacing = 10.0
+        static let exportSetupStepNumber = 3
+        static let importStepNumber = 1
+        static let noExtraBounce = 0.0
+        static let outputSizeStepNumber = 2
+        static let stepBadgeFillOpacity = 0.14
         static let stepBadgePadding = 10.0
+        static let stepBadgeVerticalPadding = 6.0
+        static let stepBorderLineWidth = 1.0
+        static let stepBorderOpacity = 0.08
+        static let upscalingHint =
+            """
+            Each image keeps its aspect ratio. Liet calculates the other edge for every \
+            selected image and never upscales smaller images.
+            """
     }
 
     private enum ResizeField: Hashable {
@@ -53,11 +70,17 @@ struct BatchImageHomeView: View {
         .navigationTitle("Liet")
         .navigationBarTitleDisplayMode(.large)
         .animation(
-            .snappy(duration: 0.32, extraBounce: 0),
+            .snappy(
+                duration: Layout.animationDuration,
+                extraBounce: Layout.noExtraBounce
+            ),
             value: model.showsOutputSizeStep
         )
         .animation(
-            .snappy(duration: 0.32, extraBounce: 0),
+            .snappy(
+                duration: Layout.animationDuration,
+                extraBounce: Layout.noExtraBounce
+            ),
             value: model.showsExportSetupStep
         )
         .toolbar {
@@ -161,7 +184,7 @@ private extension BatchImageHomeView {
 
     func importSection() -> some View {
         stepCard(
-            number: 1,
+            number: Layout.importStepNumber,
             title: "Import"
         ) {
             importHeader()
@@ -174,7 +197,7 @@ private extension BatchImageHomeView {
 
     func outputSizeStepSection() -> some View {
         stepCard(
-            number: 2,
+            number: Layout.outputSizeStepNumber,
             title: "Output Size"
         ) {
             resizeSection()
@@ -185,7 +208,7 @@ private extension BatchImageHomeView {
 
     func exportSetupStepSection() -> some View {
         stepCard(
-            number: 3,
+            number: Layout.exportSetupStepNumber,
             title: "Export Setup"
         ) {
             if model.showsCompressionSection {
@@ -261,7 +284,7 @@ private extension BatchImageHomeView {
                 focusField: .referencePixels
             )
 
-            Text("Each image keeps its aspect ratio. Liet calculates the other edge for every selected image and never upscales smaller images.")
+            Text(Layout.upscalingHint)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -320,7 +343,7 @@ private extension BatchImageHomeView {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
 
-                Text("Contain may leave padding when the image and target aspect ratios differ.")
+                Text(Layout.containedPaddingWarning)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -432,9 +455,14 @@ private extension BatchImageHomeView {
             Text("Saved Settings")
                 .font(.subheadline.weight(.medium))
 
-            Text("Startup uses your saved default settings. Last used settings update automatically whenever the current setup is valid.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            Text(
+                """
+                Startup uses your saved default settings. Last used settings update \
+                automatically whenever the current setup is valid.
+                """
+            )
+            .font(.footnote)
+            .foregroundStyle(.secondary)
 
             VStack(
                 alignment: .leading,
@@ -520,8 +548,8 @@ private extension BatchImageHomeView {
                 style: .continuous
             )
             .strokeBorder(
-                Color.primary.opacity(0.08),
-                lineWidth: 1
+                Color.primary.opacity(Layout.stepBorderOpacity),
+                lineWidth: Layout.stepBorderLineWidth
             )
         }
     }
@@ -536,10 +564,10 @@ private extension BatchImageHomeView {
             Text("Step \(number)")
                 .font(.caption.weight(.semibold))
                 .padding(.horizontal, Layout.stepBadgePadding)
-                .padding(.vertical, 6)
+                .padding(.vertical, Layout.stepBadgeVerticalPadding)
                 .background(
                     Capsule(style: .continuous)
-                        .fill(Color.accentColor.opacity(0.14))
+                        .fill(Color.accentColor.opacity(Layout.stepBadgeFillOpacity))
                 )
 
             Text(title)
@@ -570,3 +598,4 @@ private extension BatchImageHomeView {
         }
     }
 }
+// swiftlint:enable file_length type_contents_order
