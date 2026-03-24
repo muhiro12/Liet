@@ -456,7 +456,7 @@ private extension BatchImageHomeView {
             Text(
                 """
                 Startup uses your saved default settings. Last used settings update \
-                automatically whenever the current setup is valid.
+                when you process images.
                 """
             )
             .font(.footnote)

@@ -4,7 +4,6 @@ import LietLibrary
 struct BatchImageSettingsStore {
     nonisolated static let appGroupIdentifier = AppGroup.id
     nonisolated static let storageKey = "batch.image.preferences"
-    nonisolated static let legacyStorageKey = "batch.image.settings"
 
     private let loadHandler: () -> PersistedBatchImagePreferences?
     private let saveHandler: (PersistedBatchImagePreferences) -> Void
@@ -30,8 +29,7 @@ struct BatchImageSettingsStore {
 
 extension BatchImageSettingsStore {
     static func live(
-        userDefaults: UserDefaults? = nil,
-        legacyUserDefaults: UserDefaults = .standard
+        userDefaults: UserDefaults? = nil
     ) -> Self {
         let resolvedUserDefaults: UserDefaults
 
@@ -44,8 +42,6 @@ extension BatchImageSettingsStore {
         } else {
             preconditionFailure("Failed to resolve App Group user defaults.")
         }
-
-        legacyUserDefaults.removeObject(forKey: legacyStorageKey)
 
         return .init(
             loadHandler: {

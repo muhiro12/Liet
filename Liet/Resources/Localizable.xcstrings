@@ -1217,18 +1217,18 @@
         }
       }
     },
-    "Startup uses your saved default settings. Last used settings update automatically whenever the current setup is valid." : {
+    "Startup uses your saved default settings. Last used settings update when you process images." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Startup uses your saved default settings. Last used settings update automatically whenever the current setup is valid."
+            "value" : "Startup uses your saved default settings. Last used settings update when you process images."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "起動時には保存したデフォルト設定を使います。現在の設定が有効なときは、前回の設定が自動で更新されます。"
+            "value" : "起動時には保存したデフォルト設定を使います。前回の設定は画像処理を実行したときに更新されます。"
           }
         }
       }

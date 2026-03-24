@@ -44,11 +44,11 @@ files to either Files or Photos.
 - Fall back to JPEG when the original format is unsupported or when HEIC
   output is unavailable on the current runtime.
 - Save processed results either to the Files app or to the Photos app.
+- Persist saved default settings and last used settings in App Group
+  `UserDefaults`.
 
 ## Current limitations
 
-- Settings are session-only. The app does not persist preferences with
-  `UserDefaults` yet.
 - The MVP does not preserve detailed metadata such as EXIF payloads.
 - There is no per-image customization, editing UI, background processing, or
   overwrite flow.

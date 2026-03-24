@@ -24,17 +24,17 @@ final class BatchImageHomeModel {
     private(set) var lastUsedSettings: PersistedBatchImageSettings
     var exactResizeStrategy: BatchExactResizeStrategy = .stretch {
         didSet {
-            if !suppressesAutomaticPersistence,
+            if !suppressesAutomaticSettingsDidChange,
                exactResizeStrategy != oldValue {
-                didUpdateSettings()
+                didChangeSettings()
             }
         }
     }
     var compression: BatchImageCompression = .off {
         didSet {
-            if !suppressesAutomaticPersistence,
+            if !suppressesAutomaticSettingsDidChange,
                compression != oldValue {
-                didUpdateSettings()
+                didChangeSettings()
             }
         }
     }
@@ -46,7 +46,7 @@ final class BatchImageHomeModel {
 
     private let settingsStore: BatchImageSettingsStore
     private var importSessionID: UUID = .init()
-    private var suppressesAutomaticPersistence = false
+    private var suppressesAutomaticSettingsDidChange = false
 
     init(
         settingsStore: BatchImageSettingsStore = .live()
@@ -180,28 +180,28 @@ extension BatchImageHomeModel {
         }
 
         referenceDimension = newValue
-        didUpdateSettings()
+        didChangeSettings()
     }
 
     func setReferencePixelsText(
         _ newValue: String
     ) {
         referencePixelsText = newValue
-        didUpdateSettings()
+        didChangeSettings()
     }
 
     func setResizeWidthText(
         _ newValue: String
     ) {
         resizeWidthText = newValue
-        didUpdateSettings()
+        didChangeSettings()
     }
 
     func setResizeHeightText(
         _ newValue: String
     ) {
         resizeHeightText = newValue
-        didUpdateSettings()
+        didChangeSettings()
     }
 
     func setKeepsAspectRatio(
@@ -212,21 +212,15 @@ extension BatchImageHomeModel {
         }
 
         keepsAspectRatio = newValue
-        didUpdateSettings()
+        didChangeSettings()
     }
 
     func applyDefaultSettings() {
-        replaceCurrentSettings(
-            with: defaultSettings,
-            persistAsLastUsed: true
-        )
+        replaceCurrentSettings(with: defaultSettings)
     }
 
     func applyLastUsedSettings() {
-        replaceCurrentSettings(
-            with: lastUsedSettings,
-            persistAsLastUsed: true
-        )
+        replaceCurrentSettings(with: lastUsedSettings)
     }
 
     func saveCurrentAsDefault() {
@@ -288,11 +282,13 @@ extension BatchImageHomeModel {
     }
 
     func processImages() {
-        guard let settings else {
+        guard let settings,
+              let currentPersistedSettings else {
             activeAlert = .invalidResizeSize
             return
         }
 
+        persistLastUsedSettings(currentPersistedSettings)
         activeAlert = nil
         isProcessing = true
         let outcome = BatchImageProcessor.process(
@@ -360,27 +356,23 @@ private extension BatchImageHomeModel {
         )
     }
 
-    func didUpdateSettings() {
+    func didChangeSettings() {
         invalidateProcessedResults()
-        persistSettingsIfPossible()
     }
 
-    func persistSettingsIfPossible() {
-        guard let currentPersistedSettings else {
-            return
-        }
-
-        lastUsedSettings = currentPersistedSettings
+    func persistLastUsedSettings(
+        _ settings: PersistedBatchImageSettings
+    ) {
+        lastUsedSettings = settings
         savePreferences()
     }
 
     func replaceCurrentSettings(
-        with settings: PersistedBatchImageSettings,
-        persistAsLastUsed: Bool
+        with settings: PersistedBatchImageSettings
     ) {
-        suppressesAutomaticPersistence = true
+        suppressesAutomaticSettingsDidChange = true
         defer {
-            suppressesAutomaticPersistence = false
+            suppressesAutomaticSettingsDidChange = false
         }
 
         referenceDimension = settings.referenceDimension
@@ -392,10 +384,6 @@ private extension BatchImageHomeModel {
         compression = settings.compression
 
         invalidateProcessedResults()
-
-        if persistAsLastUsed {
-            persistSettingsIfPossible()
-        }
     }
 
     func savePreferences() {

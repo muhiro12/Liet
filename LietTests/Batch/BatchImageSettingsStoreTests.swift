@@ -14,39 +14,20 @@ struct BatchImageSettingsStoreTests {
     }
 
     @Test
-    func live_store_removes_legacy_standard_key_and_persists_preferences() throws {
+    func live_store_persists_preferences_in_specified_user_defaults() throws {
         let preferencesSuiteName = makeSuiteName("preferences")
-        let legacySuiteName = makeSuiteName("legacy")
         let preferencesDefaults = try #require(
             UserDefaults(suiteName: preferencesSuiteName)
-        )
-        let legacyDefaults = try #require(
-            UserDefaults(suiteName: legacySuiteName)
         )
 
         defer {
             preferencesDefaults.removePersistentDomain(
                 forName: preferencesSuiteName
             )
-            legacyDefaults.removePersistentDomain(
-                forName: legacySuiteName
-            )
         }
 
-        legacyDefaults.set(
-            Data("legacy".utf8),
-            forKey: BatchImageSettingsStore.legacyStorageKey
-        )
-
         let store = BatchImageSettingsStore.live(
-            userDefaults: preferencesDefaults,
-            legacyUserDefaults: legacyDefaults
-        )
-
-        #expect(
-            legacyDefaults.object(
-                forKey: BatchImageSettingsStore.legacyStorageKey
-            ) == nil
+            userDefaults: preferencesDefaults
         )
 
         let preferences = makePreferences()
