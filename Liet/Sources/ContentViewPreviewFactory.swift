@@ -40,30 +40,6 @@ import UIKit
     )
 }
 
-private extension BatchImageHomeModel {
-    static func previewImported() -> BatchImageHomeModel {
-        let model: BatchImageHomeModel = .init(
-            settingsStore: .inMemory()
-        )
-        model.importedImages = ContentViewPreviewFactory.importedImages
-        model.setReferencePixelsText("1080")
-        return model
-    }
-
-    static func previewProcessed() -> BatchImageHomeModel {
-        let model = previewImported()
-        model.resultModel = .init(
-            outcome: .init(
-                processedImages: ContentViewPreviewFactory.processedImages,
-                failureCount: 0,
-                jpegFallbackCount: 0,
-                ignoredCompressionCount: 0
-            )
-        )
-        return model
-    }
-}
-
 private enum ContentViewPreviewFactory {
     static let iPadPreviewWidth = 1_194.0
     static let iPadPreviewHeight = 834.0
@@ -75,6 +51,8 @@ private enum ContentViewPreviewFactory {
     static let outputLandscapeHeight = 608.0
     static let outputPortraitWidth = 1_080.0
     static let outputPortraitHeight = 1_920.0
+    static let firstSelectionIndex = 1
+    static let secondSelectionIndex = 2
 
     private static let temporaryDirectory = FileManager.default.temporaryDirectory
 
@@ -86,7 +64,7 @@ private enum ContentViewPreviewFactory {
                 width: landscapeWidth,
                 height: landscapeHeight
             ),
-            selectionIndex: 1,
+            selectionIndex: firstSelectionIndex,
             color: .systemTeal
         ),
         makeImportedImage(
@@ -96,7 +74,7 @@ private enum ContentViewPreviewFactory {
                 width: portraitWidth,
                 height: portraitHeight
             ),
-            selectionIndex: 2,
+            selectionIndex: secondSelectionIndex,
             color: .systemOrange
         )
     ]
@@ -192,5 +170,29 @@ private enum ContentViewPreviewFactory {
                 )
             )
         }
+    }
+}
+
+private extension BatchImageHomeModel {
+    static func previewImported() -> BatchImageHomeModel {
+        let model: BatchImageHomeModel = .init(
+            settingsStore: .inMemory()
+        )
+        model.importedImages = ContentViewPreviewFactory.importedImages
+        model.setReferencePixelsText("1080")
+        return model
+    }
+
+    static func previewProcessed() -> BatchImageHomeModel {
+        let model = previewImported()
+        model.resultModel = .init(
+            outcome: .init(
+                processedImages: ContentViewPreviewFactory.processedImages,
+                failureCount: 0,
+                jpegFallbackCount: 0,
+                ignoredCompressionCount: 0
+            )
+        )
+        return model
     }
 }

@@ -7,8 +7,6 @@ import TipKit
 struct BatchImageHomeView: View {
     private enum Layout {
         static let animationDuration = 0.32
-        static let containedPaddingWarning =
-            "Contain may leave padding when the image and target aspect ratios differ."
         static let contentPadding = 20.0
         static let contentSpacing = 24.0
         static let cardSpacing = 16.0
@@ -343,7 +341,7 @@ private extension BatchImageHomeView {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
 
-                Text(Layout.containedPaddingWarning)
+                Text("Contain may leave padding when the image and target aspect ratios differ.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

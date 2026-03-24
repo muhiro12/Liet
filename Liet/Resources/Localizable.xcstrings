@@ -177,18 +177,50 @@
         }
       }
     },
-    "Choose Long edge, Short edge, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched." : {
+    "Apply Default" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose Long edge, Short edge, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched."
+            "value" : "Apply Default"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "長辺、短辺、または指定サイズを選び、品質レベルを設定します。指定サイズでは全体表示または中央クロップを選べます。PNG は形式を維持し、元の画像は変更されません。"
+            "value" : "デフォルトを適用"
+          }
+        }
+      }
+    },
+    "Apply Last Used" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apply Last Used"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前回の設定を適用"
+          }
+        }
+      }
+    },
+    "Back to Settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back to Settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定に戻る"
           }
         }
       }
@@ -221,6 +253,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "設定を1つ選ぶ"
+          }
+        }
+      }
+    },
+    "Choose Width, Height, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose Width, Height, or Exact size, then pick a quality level. Exact size can contain or crop. PNG keeps its format. Originals stay untouched."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "幅、高さ、または指定サイズを選び、品質レベルを設定します。指定サイズでは全体表示または中央クロップを選べます。PNG は形式を維持し、元の画像は変更されません。"
           }
         }
       }
@@ -465,18 +513,18 @@
         }
       }
     },
-    "Enter valid width and height values." : {
+    "Enter a valid reference size or valid exact width and height values." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enter valid width and height values."
+            "value" : "Enter a valid reference size or valid exact width and height values."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有効な幅と高さを入力してください。"
+            "value" : "有効な基準サイズ、または有効な幅と高さを入力してください。"
           }
         }
       }
@@ -529,6 +577,22 @@
         }
       }
     },
+    "Height" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Height"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高さ"
+          }
+        }
+      }
+    },
     "Height (px)" : {
       "localizations" : {
         "en" : {
@@ -561,18 +625,18 @@
         }
       }
     },
-    "Images stay within the target box and smaller images keep their original size." : {
+    "Import one or more photos from the sidebar, then review the selection or process the batch." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Images stay within the target box and smaller images keep their original size."
+            "value" : "Import one or more photos from the sidebar, then review the selection or process the batch."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "画像は目標サイズ内に収まり、小さい画像は元のサイズを維持します。"
+            "value" : "サイドバーから 1 枚以上の写真を読み込み、選択内容を確認するか一括処理を実行してください。"
           }
         }
       }
@@ -705,22 +769,6 @@
         }
       }
     },
-    "Output size" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Output size"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "出力サイズ"
-          }
-        }
-      }
-    },
     "Photo Library access is required to save images." : {
       "localizations" : {
         "en" : {
@@ -817,6 +865,22 @@
         }
       }
     },
+    "Preview" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preview"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレビュー"
+          }
+        }
+      }
+    },
     "Process everything together" : {
       "localizations" : {
         "en" : {
@@ -881,6 +945,22 @@
         }
       }
     },
+    "Reference edge" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reference edge"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "基準辺"
+          }
+        }
+      }
+    },
     "Results" : {
       "localizations" : {
         "en" : {
@@ -893,6 +973,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "結果"
+          }
+        }
+      }
+    },
+    "Review Selection" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review Selection"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択内容を確認"
           }
         }
       }
@@ -925,6 +1021,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "保存"
+          }
+        }
+      }
+    },
+    "Save Current as Default" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save Current as Default"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在の設定をデフォルトに保存"
           }
         }
       }
@@ -993,6 +1105,22 @@
         }
       }
     },
+    "Saved Settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved Settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存済み設定"
+          }
+        }
+      }
+    },
     "Select images" : {
       "localizations" : {
         "en" : {
@@ -1005,6 +1133,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "画像を選択"
+          }
+        }
+      }
+    },
+    "Select images to start" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select images to start"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像を選択して開始"
           }
         }
       }
@@ -1025,18 +1169,18 @@
         }
       }
     },
-    "Settings" : {
+    "Selection" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Settings"
+            "value" : "Selection"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "設定"
+            "value" : "選択内容"
           }
         }
       }
@@ -1069,6 +1213,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一括処理を始める"
+          }
+        }
+      }
+    },
+    "Startup uses your saved default settings. Last used settings update automatically whenever the current setup is valid." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Startup uses your saved default settings. Last used settings update automatically whenever the current setup is valid."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "起動時には保存したデフォルト設定を使います。現在の設定が有効なときは、前回の設定が自動で更新されます。"
+          }
+        }
+      }
+    },
+    "Step %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ステップ %lld"
           }
         }
       }
@@ -1149,6 +1325,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "設定を確認したら、一括処理を実行してください。Liet は新しいファイルを作成し、元の画像を上書きしません。"
+          }
+        }
+      }
+    },
+    "Width" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Width"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "幅"
           }
         }
       }
