@@ -19,16 +19,20 @@ final class BatchImageHomeModel {
     private(set) var resizeWidthText: String
     private(set) var resizeHeightText: String
     private(set) var keepsAspectRatio: Bool
+    private(set) var defaultSettings: PersistedBatchImageSettings
+    private(set) var lastUsedSettings: PersistedBatchImageSettings
     var exactResizeStrategy: BatchExactResizeStrategy = .stretch {
         didSet {
-            if exactResizeStrategy != oldValue {
+            if !suppressesAutomaticPersistence,
+               exactResizeStrategy != oldValue {
                 didUpdateSettings()
             }
         }
     }
     var compression: BatchImageCompression = .off {
         didSet {
-            if compression != oldValue {
+            if !suppressesAutomaticPersistence,
+               compression != oldValue {
                 didUpdateSettings()
             }
         }
@@ -41,19 +45,23 @@ final class BatchImageHomeModel {
 
     private let settingsStore: BatchImageSettingsStore
     private var importSessionID: UUID = .init()
+    private var suppressesAutomaticPersistence = false
 
     init(
         settingsStore: BatchImageSettingsStore = .live()
     ) {
         self.settingsStore = settingsStore
-        let persistedSettings = settingsStore.load() ?? .default
-        referenceDimension = persistedSettings.referenceDimension
-        referencePixelsText = "\(persistedSettings.referencePixels)"
-        resizeWidthText = "\(persistedSettings.exactWidthPixels)"
-        resizeHeightText = "\(persistedSettings.exactHeightPixels)"
-        keepsAspectRatio = persistedSettings.resizeMode == .aspectRatioPreserved
-        exactResizeStrategy = persistedSettings.exactResizeStrategy
-        compression = persistedSettings.compression
+        let persistedPreferences = settingsStore.load() ?? .default
+        let initialSettings = persistedPreferences.defaultSettings
+        referenceDimension = initialSettings.referenceDimension
+        referencePixelsText = "\(initialSettings.referencePixels)"
+        resizeWidthText = "\(initialSettings.exactWidthPixels)"
+        resizeHeightText = "\(initialSettings.exactHeightPixels)"
+        keepsAspectRatio = initialSettings.resizeMode == .aspectRatioPreserved
+        defaultSettings = persistedPreferences.defaultSettings
+        lastUsedSettings = persistedPreferences.lastUsedSettings
+        exactResizeStrategy = initialSettings.exactResizeStrategy
+        compression = initialSettings.compression
     }
 }
 
@@ -71,6 +79,22 @@ extension BatchImageHomeModel {
             !importedImages.isEmpty &&
             !isImporting &&
             !isProcessing
+    }
+
+    var canApplyDefaultSettings: Bool {
+        currentPersistedSettings != defaultSettings
+    }
+
+    var canApplyLastUsedSettings: Bool {
+        currentPersistedSettings != lastUsedSettings
+    }
+
+    var canSaveCurrentAsDefault: Bool {
+        guard let currentPersistedSettings else {
+            return false
+        }
+
+        return currentPersistedSettings != defaultSettings
     }
 
     var referencePixels: Int? {
@@ -190,6 +214,29 @@ extension BatchImageHomeModel {
         didUpdateSettings()
     }
 
+    func applyDefaultSettings() {
+        replaceCurrentSettings(
+            with: defaultSettings,
+            persistAsLastUsed: true
+        )
+    }
+
+    func applyLastUsedSettings() {
+        replaceCurrentSettings(
+            with: lastUsedSettings,
+            persistAsLastUsed: true
+        )
+    }
+
+    func saveCurrentAsDefault() {
+        guard let currentPersistedSettings else {
+            return
+        }
+
+        defaultSettings = currentPersistedSettings
+        savePreferences()
+    }
+
     func importPhotos(
         from items: [PhotosPickerItem]
     ) async {
@@ -269,12 +316,7 @@ extension BatchImageHomeModel {
 }
 
 private extension BatchImageHomeModel {
-    func didUpdateSettings() {
-        invalidateProcessedResults()
-        persistSettingsIfPossible()
-    }
-
-    func persistSettingsIfPossible() {
+    var currentPersistedSettings: PersistedBatchImageSettings? {
         let persistedResizeMode: PersistedBatchResizeMode = keepsAspectRatio
             ? .aspectRatioPreserved
             : .exactSize
@@ -282,7 +324,7 @@ private extension BatchImageHomeModel {
 
         if keepsAspectRatio {
             guard let referencePixels else {
-                return
+                return nil
             }
 
             storedReferencePixels = referencePixels
@@ -299,22 +341,67 @@ private extension BatchImageHomeModel {
         } else {
             guard let exactWidthPixels,
                   let exactHeightPixels else {
-                return
+                return nil
             }
 
             storedExactWidthPixels = exactWidthPixels
             storedExactHeightPixels = exactHeightPixels
         }
 
+        return .init(
+            resizeMode: persistedResizeMode,
+            referenceDimension: referenceDimension,
+            referencePixels: storedReferencePixels,
+            exactWidthPixels: storedExactWidthPixels,
+            exactHeightPixels: storedExactHeightPixels,
+            exactResizeStrategy: exactResizeStrategy,
+            compression: compression
+        )
+    }
+
+    func didUpdateSettings() {
+        invalidateProcessedResults()
+        persistSettingsIfPossible()
+    }
+
+    func persistSettingsIfPossible() {
+        guard let currentPersistedSettings else {
+            return
+        }
+
+        lastUsedSettings = currentPersistedSettings
+        savePreferences()
+    }
+
+    func replaceCurrentSettings(
+        with settings: PersistedBatchImageSettings,
+        persistAsLastUsed: Bool
+    ) {
+        suppressesAutomaticPersistence = true
+        defer {
+            suppressesAutomaticPersistence = false
+        }
+
+        referenceDimension = settings.referenceDimension
+        referencePixelsText = "\(settings.referencePixels)"
+        resizeWidthText = "\(settings.exactWidthPixels)"
+        resizeHeightText = "\(settings.exactHeightPixels)"
+        keepsAspectRatio = settings.resizeMode == .aspectRatioPreserved
+        exactResizeStrategy = settings.exactResizeStrategy
+        compression = settings.compression
+
+        invalidateProcessedResults()
+
+        if persistAsLastUsed {
+            persistSettingsIfPossible()
+        }
+    }
+
+    func savePreferences() {
         settingsStore.save(
             .init(
-                resizeMode: persistedResizeMode,
-                referenceDimension: referenceDimension,
-                referencePixels: storedReferencePixels,
-                exactWidthPixels: storedExactWidthPixels,
-                exactHeightPixels: storedExactHeightPixels,
-                exactResizeStrategy: exactResizeStrategy,
-                compression: compression
+                defaultSettings: defaultSettings,
+                lastUsedSettings: lastUsedSettings
             )
         )
     }

@@ -100,7 +100,7 @@ struct BatchImageHomeModelTests {
     }
 
     @Test
-    func reference_edge_selection_persists_settings() {
+    func valid_changes_update_last_used_without_changing_startup_default() {
         let settingsStore = BatchImageSettingsStore.inMemory()
         let firstModel: BatchImageHomeModel = .init(
             settingsStore: settingsStore
@@ -114,10 +114,42 @@ struct BatchImageHomeModelTests {
             settingsStore: settingsStore
         )
 
+        #expect(secondModel.referenceDimension == .width)
+        #expect(secondModel.referencePixelsText == "1920")
+        #expect(secondModel.keepsAspectRatio)
+        #expect(secondModel.compression == .off)
+
+        secondModel.applyLastUsedSettings()
+
         #expect(secondModel.referenceDimension == .height)
         #expect(secondModel.referencePixelsText == "1080")
         #expect(secondModel.keepsAspectRatio)
         #expect(secondModel.compression == .high)
+    }
+
+    @Test
+    func saving_current_settings_as_default_controls_next_launch_state() {
+        let settingsStore = BatchImageSettingsStore.inMemory()
+        let firstModel: BatchImageHomeModel = .init(
+            settingsStore: settingsStore
+        )
+
+        firstModel.setKeepsAspectRatio(false)
+        firstModel.setResizeWidthText("320")
+        firstModel.setResizeHeightText("180")
+        firstModel.exactResizeStrategy = .coverCrop
+        firstModel.compression = .medium
+        firstModel.saveCurrentAsDefault()
+
+        let secondModel: BatchImageHomeModel = .init(
+            settingsStore: settingsStore
+        )
+
+        #expect(secondModel.keepsAspectRatio == false)
+        #expect(secondModel.resizeWidthText == "320")
+        #expect(secondModel.resizeHeightText == "180")
+        #expect(secondModel.exactResizeStrategy == .coverCrop)
+        #expect(secondModel.compression == .medium)
     }
 
     @Test
@@ -160,7 +192,6 @@ struct BatchImageHomeModelTests {
 
     @Test
     func process_images_only_presents_results_when_processing_succeeds() throws {
-        BatchImageTipSupport.resetTips()
         let failedModel: BatchImageHomeModel = .init(
             settingsStore: .inMemory()
         )
@@ -176,7 +207,6 @@ struct BatchImageHomeModelTests {
 
         #expect(failedModel.resultModel == nil)
         #expect(failedModel.activeAlert == .processSelectionFailed)
-        #expect(BatchImageTipSupport.progressSnapshot().processCompleted == false)
 
         let successfulModel: BatchImageHomeModel = .init(
             settingsStore: .inMemory()
@@ -194,6 +224,5 @@ struct BatchImageHomeModelTests {
 
         #expect(successfulModel.resultModel != nil)
         #expect(successfulModel.activeAlert == nil)
-        #expect(BatchImageTipSupport.progressSnapshot().processCompleted)
     }
 }

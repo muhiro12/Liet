@@ -22,4 +22,11 @@ struct LietAppSmokeTests {
         #expect(model.compression == .off)
         #expect(model.resultModel == nil)
     }
+
+    @Test
+    func batch_image_settings_store_points_to_the_app_group_preferences() {
+        #expect(BatchImageSettingsStore.appGroupIdentifier == AppGroup.id)
+        #expect(BatchImageSettingsStore.storageKey == "batch.image.preferences")
+        #expect(BatchImageSettingsStore.legacyStorageKey == "batch.image.settings")
+    }
 }

@@ -11,6 +11,7 @@ struct BatchImageHomeView: View {
         static let cardPadding = 18.0
         static let cardCornerRadius = 20.0
         static let controlSpacing = 12.0
+        static let buttonStackSpacing = 10.0
         static let stepBadgePadding = 10.0
     }
 
@@ -177,6 +178,7 @@ private extension BatchImageHomeView {
             title: "Output Size"
         ) {
             resizeSection()
+            savedSettingsSection()
             TipView(processingSetupTip)
         }
     }
@@ -418,6 +420,43 @@ private extension BatchImageHomeView {
                 Text("PNG images keep their format and ignore the compression setting.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    func savedSettingsSection() -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.controlSpacing
+        ) {
+            Text("Saved Settings")
+                .font(.subheadline.weight(.medium))
+
+            Text("Startup uses your saved default settings. Last used settings update automatically whenever the current setup is valid.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            VStack(
+                alignment: .leading,
+                spacing: Layout.buttonStackSpacing
+            ) {
+                Button("Apply Default") {
+                    model.applyDefaultSettings()
+                }
+                .buttonStyle(.bordered)
+                .disabled(!model.canApplyDefaultSettings)
+
+                Button("Apply Last Used") {
+                    model.applyLastUsedSettings()
+                }
+                .buttonStyle(.bordered)
+                .disabled(!model.canApplyLastUsedSettings)
+
+                Button("Save Current as Default") {
+                    model.saveCurrentAsDefault()
+                }
+                .buttonStyle(.bordered)
+                .disabled(!model.canSaveCurrentAsDefault)
             }
         }
     }

@@ -26,52 +26,81 @@ struct PersistedBatchImageSettings: Codable, Equatable {
     )
 }
 
-struct BatchImageSettingsStore {
-    private static let storageKey = "batch.image.settings"
+struct PersistedBatchImagePreferences: Codable, Equatable {
+    var defaultSettings: PersistedBatchImageSettings
+    var lastUsedSettings: PersistedBatchImageSettings
 
-    private let loadHandler: () -> PersistedBatchImageSettings?
-    private let saveHandler: (PersistedBatchImageSettings) -> Void
+    static let `default`: Self = .init(
+        defaultSettings: .default,
+        lastUsedSettings: .default
+    )
+}
+
+struct BatchImageSettingsStore {
+    nonisolated static let appGroupIdentifier = AppGroup.id
+    nonisolated static let storageKey = "batch.image.preferences"
+    nonisolated static let legacyStorageKey = "batch.image.settings"
+
+    private let loadHandler: () -> PersistedBatchImagePreferences?
+    private let saveHandler: (PersistedBatchImagePreferences) -> Void
 
     init(
-        loadHandler: @escaping () -> PersistedBatchImageSettings?,
-        saveHandler: @escaping (PersistedBatchImageSettings) -> Void
+        loadHandler: @escaping () -> PersistedBatchImagePreferences?,
+        saveHandler: @escaping (PersistedBatchImagePreferences) -> Void
     ) {
         self.loadHandler = loadHandler
         self.saveHandler = saveHandler
     }
 
-    func load() -> PersistedBatchImageSettings? {
+    func load() -> PersistedBatchImagePreferences? {
         loadHandler()
     }
 
     func save(
-        _ settings: PersistedBatchImageSettings
+        _ preferences: PersistedBatchImagePreferences
     ) {
-        saveHandler(settings)
+        saveHandler(preferences)
     }
 }
 
 extension BatchImageSettingsStore {
     static func live(
-        userDefaults: UserDefaults = .standard
+        userDefaults: UserDefaults? = nil,
+        legacyUserDefaults: UserDefaults = .standard
     ) -> Self {
-        .init(
+        let resolvedUserDefaults: UserDefaults
+
+        if let userDefaults {
+            resolvedUserDefaults = userDefaults
+        } else if let appGroupUserDefaults = UserDefaults(
+            suiteName: appGroupIdentifier
+        ) {
+            resolvedUserDefaults = appGroupUserDefaults
+        } else {
+            preconditionFailure("Failed to resolve App Group user defaults.")
+        }
+
+        legacyUserDefaults.removeObject(forKey: legacyStorageKey)
+
+        return .init(
             loadHandler: {
-                guard let data = userDefaults.data(forKey: storageKey) else {
+                guard let data = resolvedUserDefaults.data(
+                    forKey: storageKey
+                ) else {
                     return nil
                 }
 
                 return try? JSONDecoder().decode(
-                    PersistedBatchImageSettings.self,
+                    PersistedBatchImagePreferences.self,
                     from: data
                 )
             },
-            saveHandler: { settings in
-                guard let data = try? JSONEncoder().encode(settings) else {
+            saveHandler: { preferences in
+                guard let data = try? JSONEncoder().encode(preferences) else {
                     return
                 }
 
-                userDefaults.set(
+                resolvedUserDefaults.set(
                     data,
                     forKey: storageKey
                 )
@@ -80,13 +109,13 @@ extension BatchImageSettingsStore {
     }
 
     static func inMemory(
-        initialValue: PersistedBatchImageSettings? = nil
+        initialValue: PersistedBatchImagePreferences? = nil
     ) -> Self {
         final class StorageBox {
-            var value: PersistedBatchImageSettings?
+            var value: PersistedBatchImagePreferences?
 
             init(
-                value: PersistedBatchImageSettings?
+                value: PersistedBatchImagePreferences?
             ) {
                 self.value = value
             }
@@ -98,8 +127,8 @@ extension BatchImageSettingsStore {
             loadHandler: {
                 storageBox.value
             },
-            saveHandler: { settings in
-                storageBox.value = settings
+            saveHandler: { preferences in
+                storageBox.value = preferences
             }
         )
     }
