@@ -11,6 +11,9 @@ struct BatchImageResultView: View {
     }
 
     @Bindable var model: BatchImageResultModel
+    let backToSettings: (() -> Void)?
+
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private let processedResultsTip = ProcessedResultsTip()
     private let saveDestinationTip = SaveDestinationTip()
@@ -37,6 +40,15 @@ struct BatchImageResultView: View {
         .navigationTitle("Results")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            if let backToSettings,
+               horizontalSizeClass == .compact {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Back to Settings") {
+                        backToSettings()
+                    }
+                }
+            }
+
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Show Tips Again") {
                     model.replayTips()

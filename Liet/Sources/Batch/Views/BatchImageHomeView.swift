@@ -20,6 +20,7 @@ struct BatchImageHomeView: View {
 
     @Bindable var model: BatchImageHomeModel
     @Binding var selectedItems: [PhotosPickerItem]
+    let reviewSelection: (() -> Void)?
     @FocusState private var focusedResizeField: ResizeField?
 
     private let selectImagesTip = SelectImagesTip()
@@ -257,8 +258,20 @@ private extension BatchImageHomeView {
             alignment: .leading,
             spacing: Layout.controlSpacing
         ) {
+            reviewSelectionButton()
             processButton()
             processDetail()
+        }
+    }
+
+    @ViewBuilder
+    func reviewSelectionButton() -> some View {
+        if let reviewSelection,
+           !model.importedImages.isEmpty {
+            Button("Review Selection") {
+                reviewSelection()
+            }
+            .buttonStyle(.bordered)
         }
     }
 
