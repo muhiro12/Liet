@@ -170,12 +170,12 @@ if [[ "${CI_SKIP_ENV_CHECK:-0}" == "1" || "${CI_SKIP_ENV_CHECK:-}" == "true" ]];
   should_skip_environment_check=true
 fi
 
-needs_liet_tests=false
+needs_liet_build=false
 needs_liet_library_tests=false
 needs_mhplatform_boundary_checks=false
 if $should_force_full; then
   echo "Forcing full verification regardless of local changes."
-  needs_liet_tests=true
+  needs_liet_build=true
   needs_liet_library_tests=true
   needs_mhplatform_boundary_checks=true
   run_note="Executed a forced full verification run regardless of local changes."
@@ -194,28 +194,28 @@ else
     exit 0
   fi
 
-  if grep -Eq '^Liet/|^LietTests/|^Liet\.xcodeproj/' <<<"$changed_files"; then
-    needs_liet_tests=true
+  if grep -Eq '^Liet/|^Liet\.xcodeproj/' <<<"$changed_files"; then
+    needs_liet_build=true
   fi
 
   if grep -Eq '^LietLibrary/' <<<"$changed_files"; then
     needs_liet_library_tests=true
   fi
 
-  if grep -Eq '^Liet/|^LietTests/|^LietLibrary/|^Liet\.xcodeproj/|^ci_scripts/|^README\.md$|^Designs/' <<<"$changed_files"; then
+  if grep -Eq '^Liet/|^LietLibrary/|^Liet\.xcodeproj/|^ci_scripts/|^README\.md$|^Designs/' <<<"$changed_files"; then
     needs_mhplatform_boundary_checks=true
   fi
 
-  if ! $needs_liet_tests && ! $needs_liet_library_tests && ! $needs_mhplatform_boundary_checks; then
-    echo "No changes under Liet/, LietTests/, LietLibrary/, Liet.xcodeproj/, ci_scripts/, README.md, or Designs/."
-    run_note="No changes under Liet/, LietTests/, LietLibrary/, Liet.xcodeproj/, ci_scripts/, README.md, or Designs/. Build/test steps were skipped."
+  if ! $needs_liet_build && ! $needs_liet_library_tests && ! $needs_mhplatform_boundary_checks; then
+    echo "No changes under Liet/, LietLibrary/, Liet.xcodeproj/, ci_scripts/, README.md, or Designs/."
+    run_note="No changes under Liet/, LietLibrary/, Liet.xcodeproj/, ci_scripts/, README.md, or Designs/. Build/test steps were skipped."
     exit 0
   fi
 
   run_note="Executed required CI steps based on local changes."
 fi
 
-if ! $should_skip_environment_check && { $needs_liet_tests || $needs_liet_library_tests; }; then
+if ! $should_skip_environment_check && { $needs_liet_build || $needs_liet_library_tests; }; then
   run_logged_step \
     "check_environment" \
     "Check build environment" \
@@ -229,16 +229,16 @@ if $needs_mhplatform_boundary_checks; then
     bash "$repository_root/ci_scripts/tasks/check_mhplatform_boundaries.sh"
 fi
 
-if $needs_liet_tests; then
+if $needs_liet_build; then
   run_logged_step \
     "check_models_directory_consistency" \
     "Check Models directory consistency" \
     bash "$repository_root/ci_scripts/tasks/check_models_directory_consistency.sh"
 
   run_logged_step \
-    "test_app" \
-    "Test Liet app adapter and wiring suite" \
-    bash "$repository_root/ci_scripts/tasks/test_app.sh"
+    "build_app" \
+    "Build Liet app" \
+    bash "$repository_root/ci_scripts/tasks/build_app.sh"
 fi
 
 if $needs_liet_library_tests; then

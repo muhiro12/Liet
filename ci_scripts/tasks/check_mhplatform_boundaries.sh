@@ -177,9 +177,8 @@ if [[ -z "$liet_target_block" ]] || ! grep -q --fixed-strings 'SwiftUtilities' <
   record_failure "Liet must keep the SwiftUtilities package dependency."
 fi
 
-target_block=$(extract_native_target_block 'LietTests')
-if [[ -n "$target_block" ]] && grep -q --fixed-strings 'MHPlatform' <<<"$target_block"; then
-  record_failure "LietTests must not depend on the umbrella MHPlatform product."
+if rg -q --fixed-strings 'PBXNativeTarget "LietTests"' "$project_file"; then
+  record_failure "Liet.xcodeproj must not declare the removed LietTests target."
 fi
 
 umbrella_import_matches=$(
@@ -214,7 +213,6 @@ legacy_runtime_core_references=$(
     'MHAppRuntimeCore' \
     Liet \
     LietLibrary \
-    LietTests \
     README.md \
     Designs \
     -g '*.swift' \

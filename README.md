@@ -12,8 +12,6 @@ files to either Files or Photos.
 
 - **Liet** - the iOS app target that owns the SwiftUI flow and Apple-framework
   adapters for photo import, image processing, file export, and photo saving.
-- **LietTests** - the app test target that verifies Apple-framework adapters,
-  app wiring, and root smoke coverage.
 - **LietLibrary** - the shared library target that owns reusable batch-image
   settings, persistence state, import naming policy, processing planners, and
   output naming.
@@ -94,8 +92,8 @@ post-clone CI setup.
   repository state and still writes CI run artifacts.
 - `bash ci_scripts/tasks/test_shared_library.sh` runs the primary logic test
   surface in `LietLibraryTests`.
-- `bash ci_scripts/tasks/test_app.sh` runs the smaller app-only adapter and
-  wiring suite in `LietTests`.
+- `bash ci_scripts/tasks/build_app.sh` builds the app target when app-side
+  changes need a compile check.
 
 SwiftLint is resolved from the `SimplyDanny/SwiftLintPlugins` package declared
 in `Liet.xcodeproj`. The repository scripts do not require a separately
@@ -125,10 +123,10 @@ If you only need library tests:
 bash ci_scripts/tasks/test_shared_library.sh
 ```
 
-If you only need app adapter and wiring tests:
+If you only need an app compile check:
 
 ```sh
-bash ci_scripts/tasks/test_app.sh
+bash ci_scripts/tasks/build_app.sh
 ```
 
 ## CI artifact layout

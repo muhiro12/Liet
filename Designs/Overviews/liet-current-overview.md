@@ -14,9 +14,6 @@ remain in the app target.
 - `Liet`
   Primary product surface for the two-screen SwiftUI flow, photo import,
   image processing, Files export, and Photos saving.
-- `LietTests`
-  App verification surface for Apple-framework adapters, AppStorage wiring,
-  TipKit integration, and root smoke wiring.
 - `LietLibrary`
   Shared domain layer for batch settings, persisted preferences state, import
   filename policy, processing planners, and processed file naming.
@@ -53,6 +50,8 @@ remain in the app target.
   filename resolution, import filename selection, and processing decisions.
 - App-side adapter isolation for `PhotosUI`, `PhotoKit`, `ImageIO`, `TipKit`,
   `AppStorage`, and file export APIs.
+- Logic verification concentrated in `LietLibraryTests`, while the app target
+  is validated by build-only CI checks.
 - Partial-success batch processing so one failed image does not block the
   successful outputs.
 - Repo-managed verification shells under `ci_scripts/tasks`.

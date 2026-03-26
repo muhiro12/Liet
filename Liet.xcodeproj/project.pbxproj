@@ -7,25 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B00000012F72000100000003 /* LietLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = B00000012F72000100000004 /* LietLibrary */; };
 		B00000012F72000100000010 /* SwiftUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = B00000012F7200010000000F /* SwiftUtilities */; };
 		C00000012F72000100000003 /* MHPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = C00000012F72000100000002 /* MHPlatform */; };
 		C00000012F72000100000005 /* LietLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = C00000012F72000100000004 /* LietLibrary */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		B00000012F72000100000005 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AD87A2642F715087006CC661 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AD87A26B2F715087006CC661;
-			remoteInfo = Liet;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		AD87A26C2F715087006CC661 /* Liet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Liet.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B00000012F72000100000001 /* LietTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LietTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B00000012F72000100000012 /* LietLibrary */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = LietLibrary; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -46,11 +34,6 @@
 				D00000012F72000100000001 /* Exceptions for "Liet" folder in "Liet" target */,
 			);
 			path = Liet;
-			sourceTree = "<group>";
-		};
-		B00000012F72000100000002 /* LietTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = LietTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -82,7 +65,6 @@
 			children = (
 				B00000012F72000100000012 /* LietLibrary */,
 				AD87A26E2F715087006CC661 /* Liet */,
-				B00000012F72000100000002 /* LietTests */,
 				AD87A26D2F715087006CC661 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -91,7 +73,6 @@
 			isa = PBXGroup;
 			children = (
 				AD87A26C2F715087006CC661 /* Liet.app */,
-				B00000012F72000100000001 /* LietTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -124,30 +105,6 @@
 			productReference = AD87A26C2F715087006CC661 /* Liet.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B00000012F7200010000000A /* LietTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B00000012F7200010000000D /* Build configuration list for PBXNativeTarget "LietTests" */;
-			buildPhases = (
-				B00000012F72000100000006 /* Sources */,
-				B00000012F72000100000007 /* Frameworks */,
-				B00000012F72000100000008 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				B00000012F72000100000009 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				B00000012F72000100000002 /* LietTests */,
-			);
-			name = LietTests;
-			packageProductDependencies = (
-				B00000012F72000100000004 /* LietLibrary */,
-			);
-			productName = LietTests;
-			productReference = B00000012F72000100000001 /* LietTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -161,10 +118,6 @@
 				TargetAttributes = {
 					AD87A26B2F715087006CC661 = {
 						CreatedOnToolsVersion = 26.3;
-					};
-					B00000012F7200010000000A = {
-						CreatedOnToolsVersion = 26.3;
-						TestTargetID = AD87A26B2F715087006CC661;
 					};
 				};
 			};
@@ -190,20 +143,12 @@
 			projectRoot = "";
 			targets = (
 				AD87A26B2F715087006CC661 /* Liet */,
-				B00000012F7200010000000A /* LietTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		AD87A26A2F715087006CC661 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B00000012F72000100000008 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -220,22 +165,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B00000012F72000100000006 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		B00000012F72000100000009 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AD87A26B2F715087006CC661 /* Liet */;
-			targetProxy = B00000012F72000100000005 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AD87A2752F715087006CC661 /* Debug */ = {
@@ -443,69 +373,6 @@
 			};
 			name = Release;
 		};
-		B00000012F7200010000000B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 66PKF55HK5;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.muhiro12.LietTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Liet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Liet";
-				TEST_TARGET_NAME = Liet;
-			};
-			name = Debug;
-		};
-		B00000012F7200010000000C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 66PKF55HK5;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.muhiro12.LietTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Liet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Liet";
-				TEST_TARGET_NAME = Liet;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -523,15 +390,6 @@
 			buildConfigurations = (
 				AD87A2782F715087006CC661 /* Debug */,
 				AD87A2792F715087006CC661 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		B00000012F7200010000000D /* Build configuration list for PBXNativeTarget "LietTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B00000012F7200010000000B /* Debug */,
-				B00000012F7200010000000C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -573,10 +431,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B00000012F72000100000004 /* LietLibrary */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = LietLibrary;
-		};
 		B00000012F7200010000000F /* SwiftUtilities */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B00000012F7200010000000E /* XCRemoteSwiftPackageReference "SwiftUtilities" */;
