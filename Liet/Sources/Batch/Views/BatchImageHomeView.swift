@@ -26,16 +26,9 @@ struct BatchImageHomeView: View {
         static let stepBorderOpacity = 0.08
     }
 
-    private enum ResizeField: Hashable {
-        case referencePixels
-        case width
-        case height
-    }
-
     @Bindable var model: BatchImageHomeModel
     @Binding var selectedItems: [PhotosPickerItem]
     let reviewSelection: (() -> Void)?
-    @FocusState private var focusedResizeField: ResizeField?
     @Namespace private var processingMorphNamespace
 
     private let selectImagesTip = SelectImagesTip()
@@ -61,7 +54,7 @@ struct BatchImageHomeView: View {
             }
             .padding(Layout.contentPadding)
         }
-        .scrollDismissesKeyboard(.immediately)
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Liet")
         .navigationBarTitleDisplayMode(.large)
         .animation(
@@ -83,14 +76,6 @@ struct BatchImageHomeView: View {
                     accessibilityLabel: "Show Tips Again"
                 ) {
                     model.replayTips()
-                }
-            }
-
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-
-                Button("Done") {
-                    focusedResizeField = nil
                 }
             }
         }
@@ -313,8 +298,7 @@ private extension BatchImageHomeView {
             dimensionInputSection(
                 title: Text(referencePixelsTitle),
                 placeholder: referencePixelsPlaceholder,
-                text: referencePixelsBinding,
-                focusField: .referencePixels
+                text: referencePixelsBinding
             )
         }
     }
@@ -327,15 +311,13 @@ private extension BatchImageHomeView {
             dimensionInputSection(
                 title: Text("Width (px)"),
                 placeholder: "1920",
-                text: resizeWidthBinding,
-                focusField: .width
+                text: resizeWidthBinding
             )
 
             dimensionInputSection(
                 title: Text("Height (px)"),
                 placeholder: "1080",
-                text: resizeHeightBinding,
-                focusField: .height
+                text: resizeHeightBinding
             )
 
             exactSizeSection()
@@ -360,8 +342,7 @@ private extension BatchImageHomeView {
     private func dimensionInputSection(
         title: Text,
         placeholder: String,
-        text: Binding<String>,
-        focusField: ResizeField
+        text: Binding<String>
     ) -> some View {
         VStack(
             alignment: .leading,
@@ -371,7 +352,6 @@ private extension BatchImageHomeView {
                 .font(.subheadline.weight(.medium))
 
             TextField(placeholder, text: text)
-                .focused($focusedResizeField, equals: focusField)
                 .keyboardType(.numberPad)
                 .textFieldStyle(.roundedBorder)
         }

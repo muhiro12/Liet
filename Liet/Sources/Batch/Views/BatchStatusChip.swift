@@ -21,26 +21,6 @@ struct BatchStatusChip: View {
     private let text: Text
     private let tone: Tone
 
-    init(
-        _ title: LocalizedStringKey,
-        systemImage: String? = nil,
-        tone: Tone = .neutral
-    ) {
-        self.systemImage = systemImage
-        self.text = Text(title)
-        self.tone = tone
-    }
-
-    init(
-        text: Text,
-        systemImage: String? = nil,
-        tone: Tone = .neutral
-    ) {
-        self.systemImage = systemImage
-        self.text = text
-        self.tone = tone
-    }
-
     var body: some View {
         chipContent
             .font(.caption.weight(.medium))
@@ -61,13 +41,13 @@ struct BatchStatusChip: View {
             }
     }
 
-    @ViewBuilder
-    private var chipContent: some View {
+    @ViewBuilder private var chipContent: some View {
         if let systemImage {
             Label {
                 text
             } icon: {
                 Image(systemName: systemImage)
+                    .accessibilityHidden(true)
             }
         } else {
             text
@@ -98,5 +78,27 @@ struct BatchStatusChip: View {
         case .warning:
             Color.orange.opacity(Layout.borderOpacity)
         }
+    }
+}
+
+extension BatchStatusChip {
+    init(
+        _ title: LocalizedStringKey,
+        systemImage: String? = nil,
+        tone: Tone = .neutral
+    ) {
+        self.systemImage = systemImage
+        self.text = Text(title)
+        self.tone = tone
+    }
+
+    init(
+        text: Text,
+        systemImage: String? = nil,
+        tone: Tone = .neutral
+    ) {
+        self.systemImage = systemImage
+        self.text = text
+        self.tone = tone
     }
 }

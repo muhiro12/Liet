@@ -38,6 +38,7 @@ struct BatchImageResultView: View {
             }
             .padding(Layout.contentPadding)
         }
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Results")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
