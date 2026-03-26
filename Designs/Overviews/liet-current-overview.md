@@ -1,20 +1,28 @@
 # Liet Current Product and Architecture Overview
 
-Current as of March 23, 2026.
+Current as of March 26, 2026.
 
 ## Purpose
 
 Liet is currently an iPhone batch image pre-processing product.
-The implementation keeps reusable batch-image settings and format rules in
-`LietLibrary`, while Apple-framework adapters and UI remain in the app target.
+The implementation keeps reusable batch-image state, naming rules, and
+processing planners in `LietLibrary`, while Apple-framework adapters and UI
+remain in the app target.
 
 ## Product Surface Summary
 
-| Surface | Current role | Key responsibilities |
-| --- | --- | --- |
-| `Liet` | Primary product surface | Two-screen SwiftUI flow, photo import, image processing, Files export, Photos saving |
-| `LietTests` | App verification surface | Verify the processing pipeline, success and failure handling, and root wiring |
-| `LietLibrary` | Shared domain layer | Batch settings, compression levels, supported output formats, processed file naming |
+- `Liet`
+  Primary product surface for the two-screen SwiftUI flow, photo import,
+  image processing, Files export, and Photos saving.
+- `LietTests`
+  App verification surface for Apple-framework adapters, AppStorage wiring,
+  TipKit integration, and root smoke wiring.
+- `LietLibrary`
+  Shared domain layer for batch settings, persisted preferences state, import
+  filename policy, processing planners, and processed file naming.
+- `LietLibraryTests`
+  Primary logic verification surface for platform-neutral batch-image
+  mutations, planning rules, persistence values, and naming behavior.
 
 ## Current Platform Package Posture
 
@@ -41,8 +49,10 @@ The implementation keeps reusable batch-image settings and format rules in
 ## Current Engineering Features
 
 - Local-package-based shared library integration through `LietLibrary`.
-- App-side adapter isolation for `PhotosUI`, `PhotoKit`, `ImageIO`, and file
-  export APIs.
+- Shared-library-owned pure state and planners for batch-image preferences,
+  filename resolution, import filename selection, and processing decisions.
+- App-side adapter isolation for `PhotosUI`, `PhotoKit`, `ImageIO`, `TipKit`,
+  `AppStorage`, and file export APIs.
 - Partial-success batch processing so one failed image does not block the
   successful outputs.
 - Repo-managed verification shells under `ci_scripts/tasks`.

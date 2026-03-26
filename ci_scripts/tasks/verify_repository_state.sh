@@ -237,7 +237,7 @@ if $needs_liet_tests; then
 
   run_logged_step \
     "test_app" \
-    "Test Liet scheme" \
+    "Test Liet app adapter and wiring suite" \
     bash "$repository_root/ci_scripts/tasks/test_app.sh"
 fi
 

@@ -16,4 +16,5 @@ ci_xcodebuild_run \
   "TestResults_Liet" \
   -only-testing:"LietTests" \
   -parallel-testing-enabled NO
-echo "Finished Liet tests. Result bundle: $CI_XCODEBUILD_LAST_RESULT_BUNDLE_PATH"
+
+echo "Finished Liet app adapter/wiring tests. Result bundle: $CI_XCODEBUILD_LAST_RESULT_BUNDLE_PATH"

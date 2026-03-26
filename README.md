@@ -12,17 +12,20 @@ files to either Files or Photos.
 
 - **Liet** - the iOS app target that owns the SwiftUI flow and Apple-framework
   adapters for photo import, image processing, file export, and photo saving.
-- **LietTests** - the app test target covering the MVP processing pipeline and
-  root wiring.
+- **LietTests** - the app test target that verifies Apple-framework adapters,
+  app wiring, and root smoke coverage.
 - **LietLibrary** - the shared library target that owns reusable batch-image
-  settings, format rules, and output naming.
+  settings, persistence state, import naming policy, processing planners, and
+  output naming.
+- **LietLibraryTests** - the primary logic verification surface for
+  platform-neutral batch-image behavior.
 
 ## Architecture and technologies
 
-- **Shared-library-first** - reusable batch-image value types live in
-  `LietLibrary` before they spread across app surfaces.
-- **App-side adapters** - `PhotosUI`, `PhotoKit`, `ImageIO`, `UIKit`, and
-  `fileExporter` stay in `Liet`.
+- **Shared-library-first** - reusable batch-image value types and pure rules
+  live in `LietLibrary` before they spread across app surfaces.
+- **App-side adapters** - `PhotosUI`, `PhotoKit`, `ImageIO`, `UIKit`,
+  `TipKit`, `AppStorage`, and `fileExporter` stay in `Liet`.
 - **Platform package posture** - `Liet` adopts the `MHPlatform` umbrella,
   while `LietLibrary` adopts `MHPlatformCore`.
 - **Utility package posture** - both the app target and shared library adopt
@@ -89,6 +92,10 @@ post-clone CI setup.
   verification gate for Git `pre-commit` and manual final rechecks.
 - `bash ci_scripts/tasks/verify_repository_state.sh` checks the current
   repository state and still writes CI run artifacts.
+- `bash ci_scripts/tasks/test_shared_library.sh` runs the primary logic test
+  surface in `LietLibraryTests`.
+- `bash ci_scripts/tasks/test_app.sh` runs the smaller app-only adapter and
+  wiring suite in `LietTests`.
 
 SwiftLint is resolved from the `SimplyDanny/SwiftLintPlugins` package declared
 in `Liet.xcodeproj`. The repository scripts do not require a separately
@@ -118,7 +125,7 @@ If you only need library tests:
 bash ci_scripts/tasks/test_shared_library.sh
 ```
 
-If you only need app tests:
+If you only need app adapter and wiring tests:
 
 ```sh
 bash ci_scripts/tasks/test_app.sh

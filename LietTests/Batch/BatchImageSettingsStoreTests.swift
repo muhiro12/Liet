@@ -29,7 +29,6 @@ struct BatchImageSettingsStoreTests {
         let store = BatchImageSettingsStore.appStorage(
             userDefaults: preferencesDefaults
         )
-
         let preferences = makePreferences()
 
         store.save(preferences)
@@ -63,7 +62,6 @@ struct BatchImageSettingsStoreTests {
         let store = BatchImageSettingsStore.appStorage(
             userDefaults: preferencesDefaults
         )
-
         let preferences = PersistedBatchImagePreferences(
             userPresetSettings: nil,
             lastUsedSettings: .default
@@ -82,25 +80,6 @@ struct BatchImageSettingsStoreTests {
                 forKey: BatchImageAppStorageKey.userPresetSettings.rawValue
             ) == nil
         )
-    }
-
-    @Test
-    func persisted_batch_image_settings_round_trip_through_raw_value() throws {
-        let settings = PersistedBatchImageSettings(
-            resizeMode: .exactSize,
-            referenceDimension: .height,
-            referencePixels: Constants.lastUsedReferencePixels,
-            exactWidthPixels: Constants.lastUsedExactWidth,
-            exactHeightPixels: Constants.lastUsedExactHeight,
-            exactResizeStrategy: .coverCrop,
-            compression: .medium
-        )
-
-        let restoredSettings = try #require(
-            PersistedBatchImageSettings(rawValue: settings.rawValue)
-        )
-
-        #expect(restoredSettings == settings)
     }
 }
 

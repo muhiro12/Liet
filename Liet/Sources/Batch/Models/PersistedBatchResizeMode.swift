@@ -1,6 +1,3 @@
-import Foundation
+import LietLibrary
 
-enum PersistedBatchResizeMode: String, Codable, Equatable {
-    case aspectRatioPreserved = "aspect_ratio_preserved"
-    case exactSize = "exact_size"
-}
+typealias PersistedBatchResizeMode = LietLibrary.PersistedBatchResizeMode

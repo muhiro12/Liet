@@ -1,9 +1,3 @@
-struct PersistedBatchImagePreferences: Codable, Equatable {
-    static let `default`: Self = .init(
-        userPresetSettings: nil,
-        lastUsedSettings: .default
-    )
+import LietLibrary
 
-    var userPresetSettings: PersistedBatchImageSettings?
-    var lastUsedSettings: PersistedBatchImageSettings
-}
+typealias PersistedBatchImagePreferences = LietLibrary.PersistedBatchImagePreferences

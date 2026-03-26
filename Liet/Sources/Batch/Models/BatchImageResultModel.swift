@@ -1,4 +1,5 @@
 import Foundation
+import LietLibrary
 import Observation
 import Photos
 
@@ -16,7 +17,7 @@ final class BatchImageResultModel: Identifiable {
     let jpegFallbackCount: Int
     let ignoredCompressionCount: Int
 
-    private var customFilenameStems: [UUID: String] = [:]
+    private var filenamePlanner: BatchImageFilenamePlanner = .init()
     var isExportingFiles = false
     var isSavingToPhotos = false
     var saveFeedback: SaveFeedback?
@@ -34,13 +35,12 @@ final class BatchImageResultModel: Identifiable {
 
 extension BatchImageResultModel {
     var exportItems: [ProcessedImageExportItem] {
-        var usedFilenames: Set<String> = []
+        let resolvedFilenames = filenamePlanner.resolvedFilenames(
+            for: processedImages.map(filenamePlannerItem(for:))
+        )
 
         return processedImages.map { image in
-            let filename = resolvedFilename(
-                for: image,
-                existingFilenames: &usedFilenames
-            )
+            let filename = resolvedFilenames[image.id] ?? image.outputFilename
 
             return .init(
                 id: image.id,
@@ -91,36 +91,28 @@ extension BatchImageResultModel {
     func editableFilenameStem(
         for image: ProcessedBatchImage
     ) -> String {
-        customFilenameStems[image.id] ?? image.defaultOutputStem
+        filenamePlanner.editableFilenameStem(
+            for: filenamePlannerItem(for: image)
+        )
     }
 
     func setEditableFilenameStem(
         _ filenameStem: String,
         for image: ProcessedBatchImage
     ) {
-        customFilenameStems[image.id] = normalizedFilenameStem(
+        filenamePlanner.setEditableFilenameStem(
             filenameStem,
-            for: image
+            for: filenamePlannerItem(for: image)
         )
     }
 
     func resolvedFilename(
         for image: ProcessedBatchImage
     ) -> String {
-        var usedFilenames: Set<String> = []
-
-        for currentImage in processedImages {
-            let filename = resolvedFilename(
-                for: currentImage,
-                existingFilenames: &usedFilenames
-            )
-
-            if currentImage.id == image.id {
-                return filename
-            }
-        }
-
-        return image.outputFilename
+        filenamePlanner.resolvedFilename(
+            for: filenamePlannerItem(for: image),
+            within: processedImages.map(filenamePlannerItem(for:))
+        )
     }
 
     func saveToPhotos() async {
@@ -158,45 +150,13 @@ private extension BatchImageResultModel {
         }
     }
 
-    func resolvedFilename(
-        for image: ProcessedBatchImage,
-        existingFilenames: inout Set<String>
-    ) -> String {
-        let candidateStem = normalizedResolvedStem(for: image)
-        let filename = ProcessedImageNaming.makeFilename(
-            stem: candidateStem,
-            outputFormat: image.outputFormat,
-            existingFilenames: existingFilenames
+    func filenamePlannerItem(
+        for image: ProcessedBatchImage
+    ) -> BatchImageFilenamePlanner.Item {
+        .init(
+            id: image.id,
+            defaultStem: image.defaultOutputStem,
+            outputFormat: image.outputFormat
         )
-        existingFilenames.insert(filename)
-        return filename
-    }
-
-    func normalizedResolvedStem(
-        for image: ProcessedBatchImage
-    ) -> String {
-        let customStem = customFilenameStems[image.id]?
-            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-
-        if customStem.isEmpty {
-            return image.defaultOutputStem
-        }
-
-        return customStem
-    }
-
-    func normalizedFilenameStem(
-        _ filenameStem: String,
-        for image: ProcessedBatchImage
-    ) -> String {
-        let trimmedStem = filenameStem
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        let filenameExtension = ".\(image.outputFilenameExtension)"
-
-        if trimmedStem.lowercased().hasSuffix(filenameExtension.lowercased()) {
-            return String(trimmedStem.dropLast(filenameExtension.count))
-        }
-
-        return trimmedStem
     }
 }

@@ -1,22 +1,18 @@
 import CoreTransferable
 import Foundation
+import LietLibrary
 import Photos
 import PhotosUI
 import SwiftUI
 import UniformTypeIdentifiers
 
 enum PhotoImportService {
-    typealias AssetResourceFilenameFetcher = (String) -> [AssetResourceFilenameCandidate]
+    typealias AssetResourceFilenameFetcher = (String) -> [BatchImageImportFilenameCandidate]
     typealias OriginalFilenameResolver = (String?) -> String?
 
     struct Result {
         let importedImages: [ImportedBatchImage]
         let failureCount: Int
-    }
-
-    struct AssetResourceFilenameCandidate: Equatable {
-        let type: PHAssetResourceType
-        let originalFilename: String
     }
 }
 
@@ -81,54 +77,17 @@ extension PhotoImportService {
             normalizedItemIdentifier
         )
 
-        return preferredOriginalFilename(from: candidates)
-    }
-
-    nonisolated static func preferredOriginalFilename(
-        from candidates: [AssetResourceFilenameCandidate]
-    ) -> String? {
-        let preferredPhotoResourceTypes: [PHAssetResourceType] = [
-            .photo,
-            .fullSizePhoto,
-            .alternatePhoto
-        ]
-        let usableCandidates: [AssetResourceFilenameCandidate] = candidates.compactMap { candidate in
-            let normalizedFilename = candidate.originalFilename
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !normalizedFilename.isEmpty,
-                  allowsOriginalFilenameCandidate(candidate.type) else {
-                return nil
-            }
-
-            return AssetResourceFilenameCandidate(
-                type: candidate.type,
-                originalFilename: normalizedFilename
-            )
-        }
-
-        for preferredType in preferredPhotoResourceTypes {
-            if let candidate = usableCandidates.first(where: { candidate in
-                candidate.type == preferredType
-            }) {
-                return candidate.originalFilename
-            }
-        }
-
-        return usableCandidates.first?.originalFilename
+        return BatchImageImportFilenamePolicy.preferredOriginalFilename(
+            from: candidates
+        )
     }
 
     nonisolated static func originalFilename(
         from transferredFileURL: URL?
     ) -> String? {
-        guard let transferredFileURL else {
-            return nil
-        }
-
-        let filename = transferredFileURL.lastPathComponent
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        return filename.isEmpty ? nil : filename
+        BatchImageImportFilenamePolicy.originalFilename(
+            fromTransferredFilename: transferredFileURL?.lastPathComponent
+        )
     }
 
     nonisolated static func importImage(
@@ -300,7 +259,7 @@ extension PhotoImportService {
 
     nonisolated static func assetResourceFilenameCandidates(
         for itemIdentifier: String
-    ) -> [AssetResourceFilenameCandidate] {
+    ) -> [BatchImageImportFilenameCandidate] {
         let assets = PHAsset.fetchAssets(
             withLocalIdentifiers: [itemIdentifier],
             options: nil
@@ -312,26 +271,30 @@ extension PhotoImportService {
 
         return PHAssetResource.assetResources(for: asset).map { resource in
             .init(
-                type: resource.type,
+                resourceKind: importResourceKind(resource.type),
                 originalFilename: resource.originalFilename
             )
         }
     }
 
-    nonisolated static func allowsOriginalFilenameCandidate(
+    nonisolated static func importResourceKind(
         _ type: PHAssetResourceType
-    ) -> Bool {
-        switch type {
-        case .video,
-             .audio,
-             .fullSizeVideo,
-             .adjustmentData,
-             .pairedVideo,
-             .fullSizePairedVideo,
-             .adjustmentBasePairedVideo:
-            false
-        default:
-            true
-        }
+    ) -> BatchImageImportResourceKind {
+        importResourceKinds[type] ?? .other
     }
+}
+
+private extension PhotoImportService {
+    nonisolated static let importResourceKinds: [PHAssetResourceType: BatchImageImportResourceKind] = [
+        .photo: .photo,
+        .fullSizePhoto: .fullSizePhoto,
+        .alternatePhoto: .alternatePhoto,
+        .pairedVideo: .pairedVideo,
+        .video: .video,
+        .audio: .audio,
+        .fullSizeVideo: .fullSizeVideo,
+        .adjustmentData: .adjustmentData,
+        .fullSizePairedVideo: .fullSizePairedVideo,
+        .adjustmentBasePairedVideo: .adjustmentBasePairedVideo
+    ]
 }

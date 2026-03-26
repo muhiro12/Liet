@@ -31,40 +31,20 @@ extension BatchImageProcessor {
         for originalFormat: ImageFileFormat,
         heicEncoderAvailable: Bool = Self.heicEncoderAvailable
     ) -> ImageFileFormat {
-        let preferredOutputFormat = originalFormat.preferredOutputFormat
-
-        if preferredOutputFormat == .heic,
-           !heicEncoderAvailable {
-            return .jpeg
-        }
-
-        return preferredOutputFormat
+        BatchImageProcessingPlanner.resolvedOutputFormat(
+            for: originalFormat,
+            heicEncoderAvailable: heicEncoderAvailable
+        )
     }
 
     nonisolated static func projectedPixelSize(
         originalPixelSize: CGSize,
         resizeMode: BatchResizeMode
     ) -> CGSize {
-        switch resizeMode {
-        case let .fitWithin(
-            referenceDimension,
-            pixels
-        ):
-            fitWithinPixelSize(
-                originalPixelSize: originalPixelSize,
-                referenceDimension: referenceDimension,
-                referencePixels: pixels
-            )
-        case let .exactSize(
-            widthPixels,
-            heightPixels,
-            _
-        ):
-            exactCanvasPixelSize(
-                widthPixels: widthPixels,
-                heightPixels: heightPixels
-            )
-        }
+        BatchImageProcessingPlanner.projectedPixelSize(
+            originalPixelSize: originalPixelSize,
+            resizeMode: resizeMode
+        )
     }
 
     nonisolated static func projectedPixelSize(
@@ -119,36 +99,30 @@ extension BatchImageProcessor {
 
         for image in images {
             do {
-                let outputFormat = resolvedOutputFormat(
-                    for: image.originalFormat,
-                    heicEncoderAvailable: heicEncoderAvailable
+                let plan = BatchImageProcessingPlanner.makePlan(
+                    for: .init(
+                        originalFilename: image.originalFilename,
+                        originalFormat: image.originalFormat,
+                        originalPixelSize: image.pixelSize,
+                        selectionIndex: image.selectionIndex
+                    ),
+                    settings: settings,
+                    heicEncoderAvailable: heicEncoderAvailable,
+                    existingFilenames: usedFilenames
                 )
-                let usedJPEGFallback = image.originalFormat.requiresOutputFallback ||
-                    (image.originalFormat == .heic && outputFormat == .jpeg)
-                let ignoredCompressionSetting = outputFormat == .png
-
-                if usedJPEGFallback {
+                if plan.usedJPEGFallback {
                     jpegFallbackCount += 1
                 }
 
-                if ignoredCompressionSetting {
+                if plan.ignoredCompressionSetting {
                     ignoredCompressionCount += 1
                 }
-
-                let outputFilename = ProcessedImageNaming.makeFilename(
-                    originalFilename: image.originalFilename,
-                    fallbackIndex: image.selectionIndex,
-                    outputFormat: outputFormat,
-                    existingFilenames: usedFilenames
+                usedFilenames.insert(plan.outputFilename)
+                let outputURL = outputDirectory.appendingPathComponent(
+                    plan.outputFilename
                 )
-                usedFilenames.insert(outputFilename)
-                let outputURL = outputDirectory.appendingPathComponent(outputFilename)
 
-                if shouldCopyOriginalImage(
-                    image: image,
-                    settings: settings,
-                    outputFormat: outputFormat
-                ) {
+                if plan.shouldCopyOriginal {
                     try FileManager.default.copyItem(
                         at: image.sourceURL,
                         to: outputURL
@@ -157,24 +131,24 @@ extension BatchImageProcessor {
                         .init(
                             sourceID: image.id,
                             outputURL: outputURL,
-                            outputFilename: outputFilename,
-                            outputFormat: outputFormat,
+                            outputFilename: plan.outputFilename,
+                            outputFormat: plan.outputFormat,
                             originalFormat: image.originalFormat,
                             pixelSize: image.pixelSize,
                             previewImage: image.previewImage,
-                            usedJPEGFallback: usedJPEGFallback,
-                            ignoredCompressionSetting: ignoredCompressionSetting
+                            usedJPEGFallback: plan.usedJPEGFallback,
+                            ignoredCompressionSetting: plan.ignoredCompressionSetting
                         )
                     )
                 } else {
                     let renderedOutput = try renderedImage(
                         from: image.sourceURL,
                         resizeMode: settings.resizeMode,
-                        outputFormat: outputFormat
+                        outputFormat: plan.outputFormat
                     )
                     try writeImage(
                         renderedOutput.cgImage,
-                        format: outputFormat,
+                        format: plan.outputFormat,
                         compression: settings.compression,
                         outputURL: outputURL
                     )
@@ -183,13 +157,13 @@ extension BatchImageProcessor {
                         .init(
                             sourceID: image.id,
                             outputURL: outputURL,
-                            outputFilename: outputFilename,
-                            outputFormat: outputFormat,
+                            outputFilename: plan.outputFilename,
+                            outputFormat: plan.outputFormat,
                             originalFormat: image.originalFormat,
                             pixelSize: renderedOutput.pixelSize,
                             previewImage: previewImage,
-                            usedJPEGFallback: usedJPEGFallback,
-                            ignoredCompressionSetting: ignoredCompressionSetting
+                            usedJPEGFallback: plan.usedJPEGFallback,
+                            ignoredCompressionSetting: plan.ignoredCompressionSetting
                         )
                     )
                 }

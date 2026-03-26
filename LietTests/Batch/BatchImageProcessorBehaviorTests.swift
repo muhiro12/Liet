@@ -5,75 +5,7 @@ import Testing
 
 struct BatchImageProcessorBehaviorTests {
     @Test
-    func small_images_are_not_upscaled() async throws {
-        let importedImage = try BatchImageTestFactory.makeImportedImage(
-            format: .jpeg,
-            size: .init(width: 200, height: 100),
-            originalFilename: "tiny.jpg",
-            selectionIndex: 1
-        )
-
-        let outcome = await BatchImageProcessor.process(
-            images: [importedImage],
-            settings: .init(
-                resizeMode: .fitWithin(
-                    referenceDimension: .width,
-                    pixels: 1_920
-                ),
-                compression: .off
-            ),
-            heicEncoderAvailable: false
-        )
-
-        let processedImage = try #require(outcome.processedImages.first)
-
-        #expect(outcome.failureCount == 0)
-        #expect(Int(processedImage.pixelSize.width) == 200)
-        #expect(Int(processedImage.pixelSize.height) == 100)
-    }
-
-    @Test
-    func heic_format_falls_back_to_jpeg_when_encoder_is_unavailable() async throws {
-        let importedImage = try BatchImageTestFactory.makeImportedImage(
-            format: .heic,
-            size: .init(width: 1_600, height: 900),
-            originalFilename: "capture.heic",
-            selectionIndex: 1
-        )
-
-        let outcome = await BatchImageProcessor.process(
-            images: [importedImage],
-            settings: .init(
-                resizeMode: .fitWithin(
-                    referenceDimension: .width,
-                    pixels: 800
-                ),
-                compression: .medium
-            ),
-            heicEncoderAvailable: false
-        )
-
-        let processedImage = try #require(outcome.processedImages.first)
-
-        #expect(
-            BatchImageProcessor.resolvedOutputFormat(
-                for: .heic,
-                heicEncoderAvailable: true
-            ) == .heic
-        )
-        #expect(
-            BatchImageProcessor.resolvedOutputFormat(
-                for: .heic,
-                heicEncoderAvailable: false
-            ) == .jpeg
-        )
-        #expect(outcome.jpegFallbackCount == 1)
-        #expect(processedImage.outputFormat == .jpeg)
-        #expect(processedImage.usedJPEGFallback)
-    }
-
-    @Test
-    func partial_failures_keep_successful_outputs() async throws {
+    func partial_failures_keep_successful_outputs() throws {
         let validImage = try BatchImageTestFactory.makeImportedImage(
             format: .jpeg,
             size: .init(width: 1_000, height: 500),
@@ -86,7 +18,7 @@ struct BatchImageProcessorBehaviorTests {
             selectionIndex: 2
         )
 
-        let outcome = await BatchImageProcessor.process(
+        let outcome = BatchImageProcessor.process(
             images: [validImage, missingImage],
             settings: .init(
                 resizeMode: .fitWithin(
@@ -103,7 +35,7 @@ struct BatchImageProcessorBehaviorTests {
     }
 
     @Test
-    func no_compression_reuses_original_file_when_resize_is_not_needed() async throws {
+    func no_compression_copies_the_original_file_when_processing_is_skipped() throws {
         let importedImage = try BatchImageTestFactory.makeImportedImage(
             format: .jpeg,
             size: .init(width: 320, height: 180),
@@ -111,7 +43,7 @@ struct BatchImageProcessorBehaviorTests {
             selectionIndex: 1
         )
 
-        let outcome = await BatchImageProcessor.process(
+        let outcome = BatchImageProcessor.process(
             images: [importedImage],
             settings: .init(
                 resizeMode: .fitWithin(

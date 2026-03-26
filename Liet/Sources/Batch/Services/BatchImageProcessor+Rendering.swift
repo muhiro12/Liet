@@ -122,33 +122,10 @@ extension BatchImageProcessor {
         referenceDimension: BatchResizeReferenceDimension,
         referencePixels: Int
     ) -> CGSize {
-        let targetPixels = CGFloat(max(1, referencePixels))
-        let referenceLength: CGFloat = switch referenceDimension {
-        case .width:
-            max(
-                ImageIOImageSupport.minimumPixelDimension,
-                originalPixelSize.width
-            )
-        case .height:
-            max(
-                ImageIOImageSupport.minimumPixelDimension,
-                originalPixelSize.height
-            )
-        }
-        let scale = min(
-            1,
-            targetPixels / referenceLength
-        )
-
-        return CGSize(
-            width: max(
-                ImageIOImageSupport.minimumPixelDimension,
-                ceil(originalPixelSize.width * scale)
-            ),
-            height: max(
-                ImageIOImageSupport.minimumPixelDimension,
-                ceil(originalPixelSize.height * scale)
-            )
+        BatchImageProcessingPlanner.fitWithinPixelSize(
+            originalPixelSize: originalPixelSize,
+            referenceDimension: referenceDimension,
+            referencePixels: referencePixels
         )
     }
 
@@ -156,9 +133,9 @@ extension BatchImageProcessor {
         widthPixels: Int,
         heightPixels: Int
     ) -> CGSize {
-        .init(
-            width: CGFloat(max(1, widthPixels)),
-            height: CGFloat(max(1, heightPixels))
+        BatchImageProcessingPlanner.exactCanvasPixelSize(
+            widthPixels: widthPixels,
+            heightPixels: heightPixels
         )
     }
 
@@ -207,27 +184,15 @@ extension BatchImageProcessor {
         settings: BatchImageSettings,
         outputFormat: ImageFileFormat
     ) -> Bool {
-        guard case .fitWithin = settings.resizeMode else {
-            return false
-        }
-
-        guard outputFormat == image.originalFormat else {
-            return false
-        }
-
-        let preservesSourceData = settings.compression == .off ||
-            !outputFormat.supportsLossyCompressionQuality
-
-        guard preservesSourceData else {
-            return false
-        }
-
-        let targetPixelSize = projectedPixelSize(
+        BatchImageProcessingPlanner.shouldCopyOriginal(
+            originalFormat: image.originalFormat,
             originalPixelSize: image.pixelSize,
-            resizeMode: settings.resizeMode
+            settings: settings,
+            outputFormat: outputFormat,
+            targetPixelSize: projectedPixelSize(
+                originalPixelSize: image.pixelSize,
+                resizeMode: settings.resizeMode
+            )
         )
-
-        return Int(targetPixelSize.width) == Int(image.pixelSize.width) &&
-            Int(targetPixelSize.height) == Int(image.pixelSize.height)
     }
 }
