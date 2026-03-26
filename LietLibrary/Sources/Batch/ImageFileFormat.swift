@@ -31,13 +31,13 @@ public extension ImageFileFormat {
     var filenameExtension: String {
         switch self {
         case .jpeg:
-            "jpg"
+            "jpeg"
         case .png:
             "png"
         case .heic:
             "heic"
         case .other:
-            "jpg"
+            "jpeg"
         }
     }
 

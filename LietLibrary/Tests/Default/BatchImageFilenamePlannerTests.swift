@@ -15,14 +15,14 @@ struct BatchImageFilenamePlannerTests {
             planner.resolvedFilename(
                 for: firstItem,
                 within: [firstItem, secondItem]
-            ) == "first-Liet.jpg"
+            ) == "first-Liet.jpeg"
         )
         #expect(planner.editableFilenameStem(for: secondItem) == "shared")
         #expect(
             planner.resolvedFilename(
                 for: secondItem,
                 within: [firstItem, secondItem]
-            ) == "shared.jpg"
+            ) == "shared.jpeg"
         )
     }
 
@@ -39,8 +39,27 @@ struct BatchImageFilenamePlannerTests {
             for: [firstItem, secondItem]
         )
 
-        #expect(resolvedFilenames[firstItem.id] == "shared.jpg")
-        #expect(resolvedFilenames[secondItem.id] == "shared-2.jpg")
+        #expect(resolvedFilenames[firstItem.id] == "shared.jpeg")
+        #expect(resolvedFilenames[secondItem.id] == "shared-2.jpeg")
+    }
+
+    @Test
+    func custom_stems_strip_trailing_image_extensions_before_deduplication() {
+        let firstItem = makeItem(defaultStem: "first-Liet")
+        let secondItem = makeItem(defaultStem: "second-Liet")
+        var planner: BatchImageFilenamePlanner = .init()
+
+        planner.setEditableFilenameStem("shared.png", for: firstItem)
+        planner.setEditableFilenameStem("shared.jpg", for: secondItem)
+
+        let resolvedFilenames = planner.resolvedFilenames(
+            for: [firstItem, secondItem]
+        )
+
+        #expect(planner.editableFilenameStem(for: firstItem) == "shared")
+        #expect(planner.editableFilenameStem(for: secondItem) == "shared")
+        #expect(resolvedFilenames[firstItem.id] == "shared.jpeg")
+        #expect(resolvedFilenames[secondItem.id] == "shared-2.jpeg")
     }
 }
 

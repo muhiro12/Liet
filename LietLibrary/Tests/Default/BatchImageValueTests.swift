@@ -77,9 +77,25 @@ struct BatchImageValueTests {
             fallbackIndex: 3,
             outputFormat: .jpeg
         )
+        let normalizedStemFilename = ProcessedImageNaming.makeFilename(
+            stem: "receipt.png",
+            outputFormat: .jpeg
+        )
+        let duplicatedExtensionFilename = ProcessedImageNaming.makeFilename(
+            originalFilename: "receipt.png.jpeg",
+            fallbackIndex: 2,
+            outputFormat: .jpeg
+        )
+        let dottedStemFilename = ProcessedImageNaming.makeFilename(
+            stem: "report.v2",
+            outputFormat: .jpeg
+        )
 
         #expect(firstFilename == "receipt-Liet.png")
         #expect(secondFilename == "receipt-Liet-2.png")
-        #expect(fallbackFilename == "image-003-Liet.jpg")
+        #expect(fallbackFilename == "image-003-Liet.jpeg")
+        #expect(normalizedStemFilename == "receipt.jpeg")
+        #expect(duplicatedExtensionFilename == "receipt-Liet.jpeg")
+        #expect(dottedStemFilename == "report.v2.jpeg")
     }
 }

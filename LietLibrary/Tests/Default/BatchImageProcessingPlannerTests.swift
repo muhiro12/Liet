@@ -137,7 +137,7 @@ struct BatchImageProcessingPlannerTests {
         )
 
         #expect(heicPlan.outputFormat == .jpeg)
-        #expect(heicPlan.outputFilename == "capture-Liet.jpg")
+        #expect(heicPlan.outputFilename == "capture-Liet.jpeg")
         #expect(Int(heicPlan.outputPixelSize.width) == 800)
         #expect(Int(heicPlan.outputPixelSize.height) == 450)
         #expect(heicPlan.usedJPEGFallback)

@@ -46,7 +46,30 @@ public enum ProcessedImageNaming {
     }
 }
 
+extension ProcessedImageNaming {
+    static func normalizedFilenameStem(
+        from stem: String
+    ) -> String {
+        let trimmedStem = stem
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmedStem.isEmpty else {
+            return ""
+        }
+
+        return strippedTrailingImageExtensions(from: trimmedStem)
+    }
+}
+
 private extension ProcessedImageNaming {
+    static let removableImageExtensions: Set<String> = [
+        "heic",
+        "heif",
+        "jpeg",
+        "jpg",
+        "png"
+    ]
+
     static func resolvedBaseName(
         originalFilename: String?,
         fallbackIndex: Int
@@ -54,12 +77,13 @@ private extension ProcessedImageNaming {
         if let originalFilename,
            !originalFilename.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             let baseName = URL(fileURLWithPath: originalFilename)
-                .deletingPathExtension()
                 .lastPathComponent
-                .trimmingCharacters(in: .whitespacesAndNewlines)
+            let normalizedBaseName = normalizedFilenameStem(
+                from: baseName
+            )
 
-            if !baseName.isEmpty {
-                return baseName
+            if !normalizedBaseName.isEmpty {
+                return normalizedBaseName
             }
         }
 
@@ -72,14 +96,44 @@ private extension ProcessedImageNaming {
     static func normalizedStem(
         from stem: String
     ) -> String {
-        let trimmedStem = stem
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedStem = normalizedFilenameStem(
+            from: stem
+        )
 
-        if trimmedStem.isEmpty {
+        if normalizedStem.isEmpty {
             return appSuffix
         }
 
-        return trimmedStem
+        return normalizedStem
+    }
+
+    static func strippedTrailingImageExtensions(
+        from stem: String
+    ) -> String {
+        var candidate = stem
+
+        while true {
+            guard let extensionSeparator = candidate.lastIndex(of: ".") else {
+                return candidate
+            }
+            let extensionStart = candidate.index(after: extensionSeparator)
+            let pathExtension = candidate[extensionStart...].lowercased()
+
+            guard removableImageExtensions.contains(pathExtension),
+                  !pathExtension.isEmpty else {
+                return candidate
+            }
+
+            let nextCandidate = String(
+                candidate[..<extensionSeparator]
+            )
+
+            guard nextCandidate != candidate else {
+                return candidate
+            }
+
+            candidate = nextCandidate
+        }
     }
 
     static func numberedCandidate(

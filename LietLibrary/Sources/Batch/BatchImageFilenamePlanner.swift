@@ -47,8 +47,7 @@ public extension BatchImageFilenamePlanner {
         for item: Item
     ) {
         customFilenameStems[item.id] = normalizedFilenameStem(
-            filenameStem,
-            for: item
+            filenameStem
         )
     }
 
@@ -88,8 +87,9 @@ private extension BatchImageFilenamePlanner {
     func normalizedResolvedStem(
         for item: Item
     ) -> String {
-        let customStem = customFilenameStems[item.id]?
-            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let customStem = normalizedFilenameStem(
+            customFilenameStems[item.id] ?? ""
+        )
 
         if customStem.isEmpty {
             return item.defaultStem
@@ -99,17 +99,10 @@ private extension BatchImageFilenamePlanner {
     }
 
     func normalizedFilenameStem(
-        _ filenameStem: String,
-        for item: Item
+        _ filenameStem: String
     ) -> String {
-        let trimmedStem = filenameStem
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        let filenameExtension = ".\(item.outputFormat.filenameExtension)"
-
-        if trimmedStem.lowercased().hasSuffix(filenameExtension.lowercased()) {
-            return String(trimmedStem.dropLast(filenameExtension.count))
-        }
-
-        return trimmedStem
+        ProcessedImageNaming.normalizedFilenameStem(
+            from: filenameStem
+        )
     }
 }
