@@ -129,6 +129,38 @@
         }
       }
     },
+    "1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1"
+          }
+        }
+      }
+    },
+    "001" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "001"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "001"
+          }
+        }
+      }
+    },
     "1 failed" : {
       "localizations" : {
         "en" : {
@@ -257,6 +289,22 @@
         }
       }
     },
+    "Background Removal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background Removal"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景除去"
+          }
+        }
+      }
+    },
     "Choose a starting point" : {
       "localizations" : {
         "en" : {
@@ -305,6 +353,38 @@
         }
       }
     },
+    "Close Preview" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close Preview"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレビューを閉じる"
+          }
+        }
+      }
+    },
+    "Close this viewer and try again." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close this viewer and try again."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このビューアを閉じてもう一度お試しください。"
+          }
+        }
+      }
+    },
     "Compression" : {
       "localizations" : {
         "en" : {
@@ -333,6 +413,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "全体表示"
+          }
+        }
+      }
+    },
+    "Couldn't create the ZIP archive." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't create the ZIP archive."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZIP アーカイブを作成できませんでした。"
           }
         }
       }
@@ -401,6 +497,22 @@
         }
       }
     },
+    "Couldn't load the image preview." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't load the image preview."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像プレビューを読み込めませんでした。"
+          }
+        }
+      }
+    },
     "Couldn't process the selected images." : {
       "localizations" : {
         "en" : {
@@ -429,6 +541,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選択した画像の一部を読み取れませんでした。"
+          }
+        }
+      }
+    },
+    "Couldn't remove the background from one of the images." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't remove the background from one of the images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "いずれかの画像の背景を除去できませんでした。"
           }
         }
       }
@@ -497,34 +625,82 @@
         }
       }
     },
-    "Done" : {
+    "Custom prefix" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Done"
+            "value" : "Custom prefix"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "完了"
+            "value" : "カスタム接頭辞"
           }
         }
       }
     },
-    "Enter a valid reference size or valid exact width and height values." : {
+    "Edge expand / contract" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enter a valid reference size or valid exact width and height values."
+            "value" : "Edge expand / contract"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有効な基準サイズ、または有効な幅と高さを入力してください。"
+            "value" : "縁の拡張 / 縮小"
+          }
+        }
+      }
+    },
+    "Edge smoothing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edge smoothing"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "縁の滑らかさ"
+          }
+        }
+      }
+    },
+    "Enter a custom prefix to enable processing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter a custom prefix to enable processing"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理を有効にするにはカスタム接頭辞を入力してください"
+          }
+        }
+      }
+    },
+    "Enter valid output size and file naming values." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter valid output size and file naming values."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効な出力サイズとファイル名設定を入力してください。"
           }
         }
       }
@@ -545,7 +721,56 @@
         }
       }
     },
+    "Export as ZIP" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export as ZIP"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZIP として書き出す"
+          }
+        }
+      }
+    },
+    "Exports PNG with transparency" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exports PNG with transparency"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過付き PNG として書き出します"
+          }
+        }
+      }
+    },
+    "File Naming" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File Naming"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイル命名"
+          }
+        }
+      }
+    },
     "Files" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -605,6 +830,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "高"
+          }
+        }
+      }
+    },
+    "IMG" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IMG"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IMG"
           }
         }
       }
@@ -785,6 +1026,22 @@
         }
       }
     },
+    "Numbering" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numbering"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連番"
+          }
+        }
+      }
+    },
     "Off" : {
       "localizations" : {
         "en" : {
@@ -913,18 +1170,18 @@
         }
       }
     },
-    "PNG kept original" : {
+    "PNG output ignored compression" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PNG kept original"
+            "value" : "PNG output ignored compression"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PNG は元の形式を維持"
+            "value" : "PNG 出力では圧縮設定を無視"
           }
         }
       }
@@ -941,6 +1198,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "プレビュー"
+          }
+        }
+      }
+    },
+    "Preview %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preview %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレビュー %@"
           }
         }
       }
@@ -973,6 +1246,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "まとめて処理する"
+          }
+        }
+      }
+    },
+    "Processed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Processed"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Processed"
           }
         }
       }
@@ -1021,6 +1310,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "基準辺"
+          }
+        }
+      }
+    },
+    "Remove background" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove background"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景を除去"
           }
         }
       }
@@ -1133,22 +1438,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "現在のサイズと圧縮設定を保存して、次回の開始点にできます。"
-          }
-        }
-      }
-    },
-    "Select" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選択"
           }
         }
       }
@@ -1281,6 +1570,22 @@
         }
       }
     },
+    "Strength" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strength"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "強さ"
+          }
+        }
+      }
+    },
     "Stretch" : {
       "localizations" : {
         "en" : {
@@ -1325,6 +1630,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一部の画像が失敗しても、成功した出力は保存できます。ここから新しく処理したファイルだけを保存できます。"
+          }
+        }
+      }
+    },
+    "Template" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Template"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テンプレート"
+          }
+        }
+      }
+    },
+    "Transparent PNG output ignores compression" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transparent PNG output ignores compression"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過 PNG 出力では圧縮設定を無視"
           }
         }
       }
@@ -1421,6 +1758,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "幅 (px)"
+          }
+        }
+      }
+    },
+    "ZIP saved to Files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZIP saved to Files"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZIP をファイルに保存"
           }
         }
       }
