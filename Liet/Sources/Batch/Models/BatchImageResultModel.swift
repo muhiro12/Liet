@@ -6,7 +6,13 @@ import Photos
 @MainActor
 @Observable
 final class BatchImageResultModel: Identifiable {
+    enum FileExportMode: Equatable {
+        case files
+        case zipArchive
+    }
+
     enum SaveFeedback: Equatable {
+        case exportedArchive
         case exportedFiles(count: Int)
         case savedToPhotos(count: Int)
     }
@@ -18,6 +24,8 @@ final class BatchImageResultModel: Identifiable {
     let ignoredCompressionCount: Int
 
     private var filenamePlanner: BatchImageFilenamePlanner = .init()
+    var fileExportMode: FileExportMode = .files
+    var isExportingArchive = false
     var isExportingFiles = false
     var isSavingToPhotos = false
     var saveFeedback: SaveFeedback?
@@ -34,6 +42,19 @@ final class BatchImageResultModel: Identifiable {
 }
 
 extension BatchImageResultModel {
+    var exportArchiveDocument: ProcessedImageArchiveExportDocument {
+        .init(
+            exportItems: exportItems,
+            filename: exportArchiveFilename
+        )
+    }
+
+    var exportArchiveFilenameStem: String {
+        URL(fileURLWithPath: exportArchiveFilename)
+            .deletingPathExtension()
+            .lastPathComponent
+    }
+
     var exportItems: [ProcessedImageExportItem] {
         let resolvedFilenames = filenamePlanner.resolvedFilenames(
             for: processedImages.map(filenamePlannerItem(for:))
@@ -60,7 +81,11 @@ extension BatchImageResultModel {
     func beginFileExport() {
         saveFeedback = nil
         activeError = nil
-        isExportingFiles = true
+        if fileExportMode == .zipArchive {
+            isExportingArchive = true
+        } else {
+            isExportingFiles = true
+        }
     }
 
     func handleFileExportCompletion(
@@ -84,7 +109,24 @@ extension BatchImageResultModel {
         }
     }
 
+    func handleArchiveExportCompletion(
+        _ result: Result<URL, any Error>
+    ) {
+        isExportingArchive = false
+
+        switch result {
+        case .success:
+            saveFeedback = .exportedArchive
+            Task {
+                BatchImageTipSupport.donateSaveToFilesSuccess()
+            }
+        case let .failure(error):
+            activeError = error
+        }
+    }
+
     func handleFileExportCancellation() {
+        isExportingArchive = false
         isExportingFiles = false
     }
 
@@ -140,6 +182,10 @@ extension BatchImageResultModel {
 }
 
 private extension BatchImageResultModel {
+    var exportArchiveFilename: String {
+        "Liet-Processed-Images.zip"
+    }
+
     var photoLibraryInputs: [PhotoLibrarySaveService.AssetResourceInput] {
         exportItems.map { exportItem in
             .init(

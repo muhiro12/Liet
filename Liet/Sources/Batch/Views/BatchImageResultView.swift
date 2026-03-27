@@ -1,5 +1,6 @@
 import SwiftUI
 import TipKit
+import UniformTypeIdentifiers
 
 struct BatchImageResultView: View {
     private enum Layout {
@@ -19,7 +20,6 @@ struct BatchImageResultView: View {
     @State private var activePreviewItem: BatchImagePreviewItem?
 
     private let processedResultsTip = ProcessedResultsTip()
-    private let saveDestinationTip = SaveDestinationTip()
 
     private let columns = [
         GridItem(
@@ -36,7 +36,10 @@ struct BatchImageResultView: View {
             ) {
                 summarySection()
                 previewsSection()
-                saveSection()
+                BatchImageResultSaveSectionView(
+                    model: model,
+                    controlSpacing: Layout.controlSpacing
+                )
             }
             .padding(Layout.contentPadding)
         }
@@ -68,11 +71,21 @@ struct BatchImageResultView: View {
         .fileExporter(
             isPresented: $model.isExportingFiles,
             documents: model.exportDocuments,
-            contentTypes: BatchImageProcessor.exportContentTypes
+            contentTypes: BatchImageProcessor.exportContentTypes,
+            onCompletion: { result in
+                model.handleFileExportCompletion(result)
+            },
+            onCancellation: {
+                model.handleFileExportCancellation()
+            }
+        )
+        .fileExporter(
+            isPresented: $model.isExportingArchive,
+            document: model.exportArchiveDocument,
+            contentType: .zip,
+            defaultFilename: model.exportArchiveFilenameStem
         ) { result in
-            model.handleFileExportCompletion(result)
-        } onCancellation: {
-            model.handleFileExportCancellation()
+            model.handleArchiveExportCompletion(result)
         }
         .alert(
             "Error",
@@ -167,44 +180,6 @@ private extension BatchImageResultView {
         }
     }
 
-    func saveSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.controlSpacing
-        ) {
-            Text("Save")
-                .font(.title3.weight(.semibold))
-
-            Button {
-                model.beginFileExport()
-            } label: {
-                Label("Files", systemImage: "folder")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-            .popoverTip(
-                saveDestinationTip,
-                arrowEdge: .top
-            )
-
-            Button {
-                Task {
-                    await model.saveToPhotos()
-                }
-            } label: {
-                if model.isSavingToPhotos {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                } else {
-                    Label("Photos", systemImage: "photo.on.rectangle")
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            .buttonStyle(.bordered)
-            .disabled(model.isSavingToPhotos)
-        }
-    }
-
     @ViewBuilder
     func resultDetailChips() -> some View {
         if model.failureCount > 0 {
@@ -289,6 +264,8 @@ private extension BatchImageResultView {
         _ feedback: BatchImageResultModel.SaveFeedback
     ) -> Text {
         switch feedback {
+        case .exportedArchive:
+            Text("ZIP saved to Files")
         case let .exportedFiles(count):
             if count == 1 {
                 Text("1 saved to Files")
@@ -318,6 +295,8 @@ private extension BatchImageResultView {
         for error: BatchImageServiceError
     ) -> Text {
         switch error {
+        case .failedToCreateArchive:
+            Text("Couldn't create the ZIP archive.")
         case .failedToLoadImageData:
             Text("Couldn't load one of the selected images.")
         case .failedToCreateImageSource:
