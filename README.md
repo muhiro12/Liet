@@ -4,14 +4,14 @@
 
 Liet is an iPhone batch image pre-processing app aligned with the repository
 and architecture conventions used by `../Incomes`.
-The current MVP focuses on one job: select multiple photos, apply one resize
-and compression setting to all of them, then save the processed results as new
-files to either Files or Photos.
+The current MVP focuses on one job: select multiple images from Photos or the
+Files app, apply one resize and compression setting to all of them, then save
+the processed results as new files to either Files or Photos.
 
 ## Targets
 
 - **Liet** - the iOS app target that owns the SwiftUI flow and Apple-framework
-  adapters for photo import, image processing, file export, and photo saving.
+  adapters for image import, image processing, file export, and photo saving.
 - **LietLibrary** - the shared library target that owns reusable batch-image
   settings, persistence state, import naming policy, processing planners, and
   output naming.
@@ -23,7 +23,7 @@ files to either Files or Photos.
 - **Shared-library-first** - reusable batch-image value types and pure rules
   live in `LietLibrary` before they spread across app surfaces.
 - **App-side adapters** - `PhotosUI`, `PhotoKit`, `ImageIO`, `UIKit`,
-  `TipKit`, `AppStorage`, and `fileExporter` stay in `Liet`.
+  `TipKit`, `AppStorage`, `fileImporter`, and `fileExporter` stay in `Liet`.
 - **Platform package posture** - `Liet` adopts the `MHPlatform` umbrella,
   while `LietLibrary` adopts `MHPlatformCore`.
 - **Utility package posture** - both the app target and shared library adopt
@@ -34,7 +34,7 @@ files to either Files or Photos.
 
 ## Current MVP behavior
 
-- Select multiple images from the photo library with `PhotosPicker`.
+- Select multiple images from the Photos library or the Files app.
 - Review selected images in a thumbnail grid before processing.
 - Apply one long-edge resize setting to every image while preserving aspect
   ratio and avoiding upscaling.

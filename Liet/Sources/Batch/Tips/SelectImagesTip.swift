@@ -9,7 +9,12 @@ struct SelectImagesTip: Tip {
     }
 
     var message: Text? {
-        Text("Pick one or more photos. Liet applies the same resize and compression settings to every selected image.")
+        Text(
+            """
+            Pick one or more photos or image files. \
+            Liet applies the same resize and compression settings to every selected image.
+            """
+        )
     }
 
     var image: Image? {

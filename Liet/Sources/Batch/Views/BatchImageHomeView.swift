@@ -29,6 +29,8 @@ struct BatchImageHomeView: View {
     @Bindable var model: BatchImageHomeModel
     @Binding var selectedItems: [PhotosPickerItem]
     let reviewSelection: (() -> Void)?
+    @State private var isPresentingFileImporter = false
+    @State private var suppressesSelectedItemsDidChange = false
     @Namespace private var processingMorphNamespace
 
     private let selectImagesTip = SelectImagesTip()
@@ -80,9 +82,23 @@ struct BatchImageHomeView: View {
             }
         }
         .onChange(of: selectedItems) { _, newValue in
+            if suppressesSelectedItemsDidChange {
+                suppressesSelectedItemsDidChange = false
+                return
+            }
+
             Task {
                 await model.importPhotos(from: newValue)
             }
+        }
+        .fileImporter(
+            isPresented: $isPresentingFileImporter,
+            allowedContentTypes: PhotoImportService.supportedImportContentTypes,
+            allowsMultipleSelection: true
+        ) { result in
+            handleFileImportResult(result)
+        } onCancellation: {
+            // Keep the current selection unchanged when the picker is dismissed.
         }
         .alert("Error", isPresented: errorPresented) {
             Button("OK", role: .cancel) {
@@ -181,7 +197,7 @@ private extension BatchImageHomeView {
             number: Layout.importStepNumber,
             title: "Import"
         ) {
-            selectionButton()
+            selectionButtons()
             selectionStatusRow()
             importFeedback()
         }
@@ -388,21 +404,42 @@ private extension BatchImageHomeView {
         }
     }
 
-    func selectionButton() -> some View {
+    func selectionButtons() -> some View {
+        VStack(
+            spacing: Layout.controlSpacing
+        ) {
+            photosSelectionButton()
+            filesSelectionButton()
+        }
+    }
+
+    func photosSelectionButton() -> some View {
         PhotosPicker(
             selection: $selectedItems,
             maxSelectionCount: nil,
             matching: .images,
             preferredItemEncoding: .current
         ) {
-            Label("Select", systemImage: "photo.on.rectangle.angled")
+            Label("Import from Photos", systemImage: "photo.on.rectangle.angled")
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.borderedProminent)
+        .disabled(model.isImporting)
         .popoverTip(
             selectImagesTip,
             arrowEdge: .top
         )
+    }
+
+    func filesSelectionButton() -> some View {
+        Button {
+            isPresentingFileImporter = true
+        } label: {
+            Label("Import from Files", systemImage: "folder")
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.bordered)
+        .disabled(model.isImporting)
     }
 
     func selectionStatusRow() -> some View {
@@ -522,6 +559,29 @@ private extension BatchImageHomeView {
             runProcessingTip,
             arrowEdge: .top
         )
+    }
+
+    func handleFileImportResult(
+        _ result: Result<[URL], any Error>
+    ) {
+        switch result {
+        case let .success(fileURLs):
+            guard !fileURLs.isEmpty else {
+                return
+            }
+
+            if !selectedItems.isEmpty {
+                suppressesSelectedItemsDidChange = true
+                selectedItems = []
+            }
+
+            Task {
+                await model.importFiles(from: fileURLs)
+            }
+        case .failure:
+            model.importFailureCount = nil
+            model.activeAlert = .importSelectionFailed
+        }
     }
 
     func stepCard<Content: View>(

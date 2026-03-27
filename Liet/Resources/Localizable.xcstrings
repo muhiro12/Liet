@@ -625,6 +625,38 @@
         }
       }
     },
+    "Import from Files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import from Files"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルから取り込む"
+          }
+        }
+      }
+    },
+    "Import from Photos" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import from Photos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真から取り込む"
+          }
+        }
+      }
+    },
     "Keep aspect ratio" : {
       "localizations" : {
         "en" : {
@@ -833,18 +865,18 @@
         }
       }
     },
-    "Pick one or more photos. Liet applies the same resize and compression settings to every selected image." : {
+    "Pick one or more photos or image files. Liet applies the same resize and compression settings to every selected image." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pick one or more photos. Liet applies the same resize and compression settings to every selected image."
+            "value" : "Pick one or more photos or image files. Liet applies the same resize and compression settings to every selected image."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1 枚以上の写真を選択してください。Liet はすべての選択画像に同じリサイズ設定と圧縮設定を適用します。"
+            "value" : "1 枚以上の写真または画像ファイルを選択してください。Liet はすべての選択画像に同じリサイズ設定と圧縮設定を適用します。"
           }
         }
       }

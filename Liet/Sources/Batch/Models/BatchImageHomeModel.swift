@@ -237,11 +237,7 @@ extension BatchImageHomeModel {
     func importPhotos(
         from items: [PhotosPickerItem]
     ) async {
-        let sessionID: UUID = .init()
-        importSessionID = sessionID
-        invalidateProcessedResults()
-        activeAlert = nil
-        importFailureCount = nil
+        let sessionID = beginImportSession()
 
         guard !items.isEmpty else {
             importedImages = []
@@ -250,24 +246,28 @@ extension BatchImageHomeModel {
 
         isImporting = true
         let result = await PhotoImportService.importImages(from: items)
+        applyImportResult(
+            result,
+            sessionID: sessionID
+        )
+    }
 
-        guard importSessionID == sessionID else {
+    func importFiles(
+        from fileURLs: [URL]
+    ) async {
+        guard !fileURLs.isEmpty else {
             return
         }
 
-        isImporting = false
-        importedImages = result.importedImages
-
-        if result.failureCount > 0 {
-            importFailureCount = result.failureCount
-        }
-
-        if importedImages.isEmpty {
-            activeAlert = .importSelectionFailed
-            return
-        }
-
-        BatchImageTipSupport.donateImportSuccess()
+        let sessionID = beginImportSession()
+        isImporting = true
+        let result = await PhotoImportService.importImages(
+            from: fileURLs
+        )
+        applyImportResult(
+            result,
+            sessionID: sessionID
+        )
     }
 
     func clearSelection() {
@@ -335,6 +335,38 @@ private extension BatchImageHomeModel {
             exactResizeStrategy: exactResizeStrategy,
             compression: compression
         )
+    }
+
+    func beginImportSession() -> UUID {
+        let sessionID: UUID = .init()
+        importSessionID = sessionID
+        invalidateProcessedResults()
+        activeAlert = nil
+        importFailureCount = nil
+        return sessionID
+    }
+
+    func applyImportResult(
+        _ result: PhotoImportService.Result,
+        sessionID: UUID
+    ) {
+        guard importSessionID == sessionID else {
+            return
+        }
+
+        isImporting = false
+        importedImages = result.importedImages
+
+        if result.failureCount > 0 {
+            importFailureCount = result.failureCount
+        }
+
+        if importedImages.isEmpty {
+            activeAlert = .importSelectionFailed
+            return
+        }
+
+        BatchImageTipSupport.donateImportSuccess()
     }
 
     func applyUpdatedPreferencesState(

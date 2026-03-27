@@ -17,6 +17,12 @@ enum PhotoImportService {
 }
 
 extension PhotoImportService {
+    nonisolated static let supportedImportContentTypes: [UTType] = [
+        .jpeg,
+        .png,
+        ImageIOImageSupport.heicContentType
+    ]
+
     nonisolated static func importImages(
         from items: [PhotosPickerItem]
     ) async -> Result {
@@ -41,6 +47,45 @@ extension PhotoImportService {
             do {
                 let importedImage = try await importImage(
                     item,
+                    selectionIndex: index + 1,
+                    into: importDirectory
+                )
+                importedImages.append(importedImage)
+            } catch {
+                failureCount += 1
+            }
+        }
+
+        return .init(
+            importedImages: importedImages,
+            failureCount: failureCount
+        )
+    }
+
+    nonisolated static func importImages(
+        from fileURLs: [URL]
+    ) -> Result {
+        guard !fileURLs.isEmpty else {
+            return .init(
+                importedImages: [],
+                failureCount: 0
+            )
+        }
+
+        guard let importDirectory = makeImportDirectory() else {
+            return .init(
+                importedImages: [],
+                failureCount: fileURLs.count
+            )
+        }
+
+        var importedImages: [ImportedBatchImage] = []
+        var failureCount = 0
+
+        for (index, fileURL) in fileURLs.enumerated() {
+            do {
+                let importedImage = try importImage(
+                    from: fileURL,
                     selectionIndex: index + 1,
                     into: importDirectory
                 )
@@ -245,6 +290,29 @@ extension PhotoImportService {
         )
     }
 
+    nonisolated static func importImage(
+        from fileURL: URL,
+        selectionIndex: Int,
+        into directoryURL: URL
+    ) throws -> ImportedBatchImage {
+        let hasSecurityScopedAccess = fileURL.startAccessingSecurityScopedResource()
+        defer {
+            if hasSecurityScopedAccess {
+                fileURL.stopAccessingSecurityScopedResource()
+            }
+        }
+
+        return try importImage(
+            from: fileURL,
+            supportedTypeIdentifiers: supportedTypeIdentifiers(
+                for: fileURL
+            ),
+            selectionIndex: selectionIndex,
+            into: directoryURL,
+            resolvedOriginalFilename: fileURL.lastPathComponent
+        )
+    }
+
     nonisolated static func importedFilename(
         for format: ImageFileFormat,
         selectionIndex: Int
@@ -255,6 +323,31 @@ extension PhotoImportService {
         )
         let fileExtension = format.preferredOutputFormat.filenameExtension
         return "import-\(paddedIndex).\(fileExtension)"
+    }
+
+    nonisolated static func supportedTypeIdentifiers(
+        for fileURL: URL
+    ) -> [String] {
+        var typeIdentifiers: [String] = []
+
+        if let resourceValues = try? fileURL.resourceValues(
+            forKeys: [.contentTypeKey]
+        ),
+        let contentType = resourceValues.allValues[.contentTypeKey] as? UTType {
+            typeIdentifiers.append(contentType.identifier)
+        }
+
+        if let fallbackType = UTType(
+            filenameExtension: fileURL.pathExtension
+        ) {
+            let fallbackIdentifier = fallbackType.identifier
+
+            if !typeIdentifiers.contains(fallbackIdentifier) {
+                typeIdentifiers.append(fallbackIdentifier)
+            }
+        }
+
+        return typeIdentifiers
     }
 
     nonisolated static func assetResourceFilenameCandidates(
