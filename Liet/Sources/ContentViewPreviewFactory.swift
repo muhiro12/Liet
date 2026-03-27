@@ -109,10 +109,14 @@ private enum ContentViewPreviewFactory {
         selectionIndex: Int,
         color: UIColor
     ) -> ImportedBatchImage {
-        let url = temporaryDirectory.appendingPathComponent(filename)
         let previewImage = makePreviewImage(
             size: size,
             color: color
+        )
+        let url = makePreviewFileURL(
+            filename: filename,
+            image: previewImage,
+            format: format
         )
 
         return .init(
@@ -132,10 +136,14 @@ private enum ContentViewPreviewFactory {
         size: CGSize,
         color: UIColor
     ) -> ProcessedBatchImage {
-        let url = temporaryDirectory.appendingPathComponent(filename)
         let previewImage = makePreviewImage(
             size: size,
             color: color
+        )
+        let url = makePreviewFileURL(
+            filename: filename,
+            image: previewImage,
+            format: format
         )
 
         return .init(
@@ -170,6 +178,29 @@ private enum ContentViewPreviewFactory {
                 )
             )
         }
+    }
+
+    static func makePreviewFileURL(
+        filename: String,
+        image: UIImage,
+        format: ImageFileFormat
+    ) -> URL {
+        let url = temporaryDirectory.appendingPathComponent(filename)
+        let data: Data? = switch format {
+        case .png:
+            image.pngData()
+        case .jpeg, .heic, .other:
+            image.jpegData(compressionQuality: 1)
+        }
+
+        if let data {
+            try? data.write(
+                to: url,
+                options: .atomic
+            )
+        }
+
+        return url
     }
 }
 

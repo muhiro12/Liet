@@ -6,6 +6,7 @@ import UniformTypeIdentifiers
 
 enum ImageIOImageSupport {
     nonisolated static let previewMaxPixelSize = 320
+    nonisolated static let fullScreenPreviewMaxPixelSize = 4_096
     nonisolated static let heicContentType = UTType(importedAs: "public.heic")
     nonisolated static let minimumPixelDimension = CGFloat(1)
     nonisolated static let minimumPixelSize = 1
@@ -82,6 +83,22 @@ extension ImageIOImageSupport {
         let cgImage = try thumbnailCGImage(
             from: imageSource,
             maxPixelSize: maxPixelSize
+        )
+
+        return .init(cgImage: cgImage)
+    }
+
+    nonisolated static func fullScreenPreviewImage(
+        from url: URL,
+        originalPixelSize: CGSize,
+        maxPixelSizeLimit: Int = fullScreenPreviewMaxPixelSize
+    ) throws -> UIImage {
+        let cgImage = try cgImage(
+            from: url,
+            maxPixelSize: boundedMaxPixelSize(
+                for: originalPixelSize,
+                limit: maxPixelSizeLimit
+            )
         )
 
         return .init(cgImage: cgImage)
@@ -183,6 +200,16 @@ extension ImageIOImageSupport {
                     )
                 )
             )
+        )
+    }
+
+    nonisolated static func boundedMaxPixelSize(
+        for pixelSize: CGSize,
+        limit: Int
+    ) -> Int {
+        min(
+            maxPixelSize(for: pixelSize),
+            max(minimumPixelSize, limit)
         )
     }
 

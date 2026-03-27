@@ -9,6 +9,7 @@ struct ImportedBatchImageTile: View {
     }
 
     let image: ImportedBatchImage
+    var imageTapAction: (() -> Void)?
     var projectedPixelSize: CGSize?
 
     var body: some View {
@@ -16,18 +17,7 @@ struct ImportedBatchImageTile: View {
             alignment: .leading,
             spacing: Layout.textSpacing
         ) {
-            Image(uiImage: image.previewImage)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(maxWidth: .infinity)
-                .frame(height: Layout.imageHeight)
-                .accessibilityHidden(true)
-                .clipShape(
-                    RoundedRectangle(
-                        cornerRadius: Layout.cornerRadius,
-                        style: .continuous
-                    )
-                )
+            previewImage()
 
             Text(image.displayName)
                 .font(.caption.weight(.semibold))
@@ -55,5 +45,33 @@ private extension ImportedBatchImageTile {
         }
 
         return "Output • \(Int(projectedPixelSize.width))×\(Int(projectedPixelSize.height))"
+    }
+
+    @ViewBuilder
+    func previewImage() -> some View {
+        let imageView = Image(uiImage: image.previewImage)
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .frame(maxWidth: .infinity)
+            .frame(height: Layout.imageHeight)
+            .accessibilityHidden(true)
+            .clipShape(
+                RoundedRectangle(
+                    cornerRadius: Layout.cornerRadius,
+                    style: .continuous
+                )
+            )
+
+        if let imageTapAction {
+            Button(
+                action: imageTapAction
+            ) {
+                imageView
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Preview \(image.displayName)")
+        } else {
+            imageView
+        }
     }
 }

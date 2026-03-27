@@ -10,6 +10,7 @@ struct ProcessedBatchImageTile: View {
     }
 
     let image: ProcessedBatchImage
+    var imageTapAction: (() -> Void)?
     let resolvedFilename: String
     let filenameStem: Binding<String>
 
@@ -28,7 +29,7 @@ struct ProcessedBatchImageTile: View {
 
 private extension ProcessedBatchImageTile {
     func previewImage() -> some View {
-        Image(uiImage: image.previewImage)
+        let imageView = Image(uiImage: image.previewImage)
             .resizable()
             .aspectRatio(contentMode: .fill)
             .frame(maxWidth: .infinity)
@@ -40,6 +41,20 @@ private extension ProcessedBatchImageTile {
                     style: .continuous
                 )
             )
+
+        return Group {
+            if let imageTapAction {
+                Button(
+                    action: imageTapAction
+                ) {
+                    imageView
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Preview \(resolvedFilename)")
+            } else {
+                imageView
+            }
+        }
     }
 
     func filenameEditor() -> some View {

@@ -16,6 +16,8 @@ struct BatchImageResultView: View {
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
 
+    @State private var activePreviewItem: BatchImagePreviewItem?
+
     private let processedResultsTip = ProcessedResultsTip()
     private let saveDestinationTip = SaveDestinationTip()
 
@@ -84,6 +86,11 @@ struct BatchImageResultView: View {
                 errorText(for: activeError)
             }
         }
+        .fullScreenCover(item: $activePreviewItem) { item in
+            BatchImageFullscreenPreviewView(
+                item: item
+            )
+        }
     }
 }
 
@@ -146,6 +153,12 @@ private extension BatchImageResultView {
                 ForEach(model.processedImages) { image in
                     ProcessedBatchImageTile(
                         image: image,
+                        imageTapAction: {
+                            activePreviewItem = .init(
+                                processedImage: image,
+                                displayName: model.resolvedFilename(for: image)
+                            )
+                        },
                         resolvedFilename: model.resolvedFilename(for: image),
                         filenameStem: filenameStemBinding(for: image)
                     )

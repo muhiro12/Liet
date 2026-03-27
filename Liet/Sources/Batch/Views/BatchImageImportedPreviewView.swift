@@ -14,6 +14,8 @@ struct BatchImageImportedPreviewView: View {
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
 
+    @State private var activePreviewItem: BatchImagePreviewItem?
+
     let importedImages: [ImportedBatchImage]
     let settings: BatchImageSettings?
     let backToSettings: (() -> Void)?
@@ -42,12 +44,22 @@ struct BatchImageImportedPreviewView: View {
                     ForEach(importedImages) { image in
                         ImportedBatchImageTile(
                             image: image,
+                            imageTapAction: {
+                                activePreviewItem = .init(
+                                    importedImage: image
+                                )
+                            },
                             projectedPixelSize: projectedPixelSize(for: image)
                         )
                     }
                 }
             }
             .padding(Layout.contentPadding)
+        }
+        .fullScreenCover(item: $activePreviewItem) { item in
+            BatchImageFullscreenPreviewView(
+                item: item
+            )
         }
         .navigationTitle("Selection")
         .navigationBarTitleDisplayMode(.inline)
