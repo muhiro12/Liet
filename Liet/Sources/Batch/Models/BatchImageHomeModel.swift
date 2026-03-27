@@ -332,14 +332,14 @@ extension BatchImageHomeModel {
 
     func importFiles(
         from fileURLs: [URL]
-    ) async {
+    ) {
         guard !fileURLs.isEmpty else {
             return
         }
 
         let sessionID = beginImportSession()
         isImporting = true
-        let result = await PhotoImportService.importImages(
+        let result = PhotoImportService.importImages(
             from: fileURLs
         )
         applyImportResult(

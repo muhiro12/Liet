@@ -836,7 +836,7 @@ private extension BatchImageHomeView {
             }
 
             Task {
-                await model.importFiles(from: fileURLs)
+                model.importFiles(from: fileURLs)
             }
         case .failure:
             model.importFailureCount = nil
