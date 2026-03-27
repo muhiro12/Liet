@@ -42,6 +42,17 @@ final class BatchImageResultModel: Identifiable {
 }
 
 extension BatchImageResultModel {
+    var exportFolderDocument: ProcessedImageFolderExportDocument {
+        .init(
+            exportItems: exportItems,
+            filename: exportFolderFilename
+        )
+    }
+
+    var exportFolderFilenameStem: String {
+        exportFolderFilename
+    }
+
     var exportArchiveDocument: ProcessedImageArchiveExportDocument {
         .init(
             exportItems: exportItems,
@@ -72,12 +83,6 @@ extension BatchImageResultModel {
         }
     }
 
-    var exportDocuments: [ProcessedImageExportDocument] {
-        exportItems.map { exportItem in
-            .init(exportItem: exportItem)
-        }
-    }
-
     func beginFileExport() {
         saveFeedback = nil
         activeError = nil
@@ -89,15 +94,15 @@ extension BatchImageResultModel {
     }
 
     func handleFileExportCompletion(
-        _ result: Result<[URL], any Error>
+        _ result: Result<URL, any Error>
     ) {
         isExportingFiles = false
 
         switch result {
-        case let .success(urls):
-            saveFeedback = .exportedFiles(count: urls.count)
+        case .success:
+            saveFeedback = .exportedFiles(count: exportItems.count)
 
-            guard !urls.isEmpty else {
+            guard !exportItems.isEmpty else {
                 return
             }
 
@@ -123,11 +128,6 @@ extension BatchImageResultModel {
         case let .failure(error):
             activeError = error
         }
-    }
-
-    func handleFileExportCancellation() {
-        isExportingArchive = false
-        isExportingFiles = false
     }
 
     func editableFilenameStem(
@@ -182,6 +182,10 @@ extension BatchImageResultModel {
 }
 
 private extension BatchImageResultModel {
+    var exportFolderFilename: String {
+        "Liet-Processed-Images"
+    }
+
     var exportArchiveFilename: String {
         "Liet-Processed-Images.zip"
     }

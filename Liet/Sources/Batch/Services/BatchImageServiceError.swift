@@ -2,6 +2,7 @@ import Foundation
 
 enum BatchImageServiceError: Error {
     case failedToCreateArchive
+    case failedToCreateExportFolder
     case failedToLoadImageData
     case failedToCreateImageSource
     case failedToReadImageProperties

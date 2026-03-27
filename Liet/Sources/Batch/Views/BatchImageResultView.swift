@@ -70,15 +70,12 @@ struct BatchImageResultView: View {
         }
         .fileExporter(
             isPresented: $model.isExportingFiles,
-            documents: model.exportDocuments,
-            contentTypes: BatchImageProcessor.exportContentTypes,
-            onCompletion: { result in
-                model.handleFileExportCompletion(result)
-            },
-            onCancellation: {
-                model.handleFileExportCancellation()
-            }
-        )
+            document: model.exportFolderDocument,
+            contentType: .folder,
+            defaultFilename: model.exportFolderFilenameStem
+        ) { result in
+            model.handleFileExportCompletion(result)
+        }
         .fileExporter(
             isPresented: $model.isExportingArchive,
             document: model.exportArchiveDocument,
@@ -297,6 +294,8 @@ private extension BatchImageResultView {
         switch error {
         case .failedToCreateArchive:
             Text("Couldn't create the ZIP archive.")
+        case .failedToCreateExportFolder:
+            Text("Couldn't create the export folder.")
         case .failedToLoadImageData:
             Text("Couldn't load one of the selected images.")
         case .failedToCreateImageSource:

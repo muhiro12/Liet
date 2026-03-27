@@ -433,6 +433,22 @@
         }
       }
     },
+    "Couldn't create the export folder." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't create the export folder."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "書き出しフォルダを作成できませんでした。"
+          }
+        }
+      }
+    },
     "Couldn't generate an image preview." : {
       "localizations" : {
         "en" : {
