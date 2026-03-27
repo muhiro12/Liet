@@ -6,7 +6,7 @@ public struct BatchImageFilenamePlanner: Equatable, Sendable {
     public struct Item: Identifiable, Equatable, Sendable {
         /// Stable identity used to track per-item custom stems.
         public let id: UUID
-        /// The default stem derived from the original asset.
+        /// The default stem derived from the generated output name.
         public let defaultStem: String
         /// The output format that defines the exported filename extension.
         public let outputFormat: ImageFileFormat

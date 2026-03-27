@@ -4,8 +4,8 @@ import Testing
 struct BatchImageFilenamePlannerTests {
     @Test
     func blank_custom_stems_fall_back_to_default_output_names() {
-        let firstItem = makeItem(defaultStem: "first-Liet")
-        let secondItem = makeItem(defaultStem: "second-Liet")
+        let firstItem = makeItem(defaultStem: "IMG_001")
+        let secondItem = makeItem(defaultStem: "IMG_002")
         var planner: BatchImageFilenamePlanner = .init()
 
         planner.setEditableFilenameStem("", for: firstItem)
@@ -15,7 +15,7 @@ struct BatchImageFilenamePlannerTests {
             planner.resolvedFilename(
                 for: firstItem,
                 within: [firstItem, secondItem]
-            ) == "first-Liet.jpeg"
+            ) == "IMG_001.jpeg"
         )
         #expect(planner.editableFilenameStem(for: secondItem) == "shared")
         #expect(
@@ -28,8 +28,8 @@ struct BatchImageFilenamePlannerTests {
 
     @Test
     func duplicate_custom_stems_are_deduplicated_in_item_order() {
-        let firstItem = makeItem(defaultStem: "first-Liet")
-        let secondItem = makeItem(defaultStem: "second-Liet")
+        let firstItem = makeItem(defaultStem: "IMG_001")
+        let secondItem = makeItem(defaultStem: "IMG_002")
         var planner: BatchImageFilenamePlanner = .init()
 
         planner.setEditableFilenameStem("shared", for: firstItem)
@@ -45,8 +45,8 @@ struct BatchImageFilenamePlannerTests {
 
     @Test
     func custom_stems_strip_trailing_image_extensions_before_deduplication() {
-        let firstItem = makeItem(defaultStem: "first-Liet")
-        let secondItem = makeItem(defaultStem: "second-Liet")
+        let firstItem = makeItem(defaultStem: "IMG_001")
+        let secondItem = makeItem(defaultStem: "IMG_002")
         var planner: BatchImageFilenamePlanner = .init()
 
         planner.setEditableFilenameStem("shared.png", for: firstItem)

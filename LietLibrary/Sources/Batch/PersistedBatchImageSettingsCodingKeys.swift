@@ -9,4 +9,5 @@ enum PersistedBatchImageSettingsCodingKeys: String, CodingKey {
     case exactHeightPixels = "H9v2Tr6B"
     case exactResizeStrategy = "S3n7Yk5M"
     case compression = "C8p4Zd2X"
+    case naming = "N2w5Jh8S"
 }

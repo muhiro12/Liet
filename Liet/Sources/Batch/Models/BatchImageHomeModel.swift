@@ -24,6 +24,9 @@ final class BatchImageHomeModel {
     private(set) var keepsAspectRatio: Bool
     private(set) var userPresetSettings: PersistedBatchImageSettings?
     private(set) var lastUsedSettings: PersistedBatchImageSettings
+    private(set) var namingTemplate: BatchImageNamingTemplate
+    private(set) var customNamingPrefixText: String
+    private(set) var numberingStyle: BatchImageNumberingStyle
     var settingsSource: SettingsSource = .lastUsed {
         didSet {
             if !suppressesAutomaticSettingsDidChange,
@@ -106,6 +109,9 @@ final class BatchImageHomeModel {
         exactResizeStrategy = preferencesState.exactResizeStrategy
         compression = preferencesState.compression
         backgroundRemoval = preferencesState.backgroundRemoval
+        namingTemplate = preferencesState.namingTemplate
+        customNamingPrefixText = preferencesState.customNamingPrefixText
+        numberingStyle = preferencesState.numberingStyle
     }
 }
 
@@ -162,6 +168,18 @@ extension BatchImageHomeModel {
 
     var settings: BatchImageSettings? {
         currentPreferencesState.settings
+    }
+
+    var showsCustomNamingPrefixField: Bool {
+        namingTemplate == .custom
+    }
+
+    var hasValidNaming: Bool {
+        BatchImageNaming(
+            template: namingTemplate,
+            customPrefix: customNamingPrefixText,
+            numberingStyle: numberingStyle
+        ).isValid
     }
 
     func setReferenceDimension(
@@ -233,6 +251,30 @@ extension BatchImageHomeModel {
     ) {
         mutatePreferencesState { preferencesState in
             preferencesState.setBackgroundRemovalEdgeExpansion(newValue)
+        }
+    }
+
+    func setNamingTemplate(
+        _ newValue: BatchImageNamingTemplate
+    ) {
+        mutatePreferencesState { preferencesState in
+            preferencesState.setNamingTemplate(newValue)
+        }
+    }
+
+    func setCustomNamingPrefixText(
+        _ newValue: String
+    ) {
+        mutatePreferencesState { preferencesState in
+            preferencesState.setCustomNamingPrefixText(newValue)
+        }
+    }
+
+    func setNumberingStyle(
+        _ newValue: BatchImageNumberingStyle
+    ) {
+        mutatePreferencesState { preferencesState in
+            preferencesState.setNamingNumberingStyle(newValue)
         }
     }
 
@@ -370,7 +412,10 @@ private extension BatchImageHomeModel {
             settingsSource: settingsSource,
             exactResizeStrategy: exactResizeStrategy,
             compression: compression,
-            backgroundRemoval: backgroundRemoval
+            backgroundRemoval: backgroundRemoval,
+            namingTemplate: namingTemplate,
+            customNamingPrefixText: customNamingPrefixText,
+            numberingStyle: numberingStyle
         )
     }
 
@@ -444,6 +489,9 @@ private extension BatchImageHomeModel {
         exactResizeStrategy = preferencesState.exactResizeStrategy
         compression = preferencesState.compression
         backgroundRemoval = preferencesState.backgroundRemoval
+        namingTemplate = preferencesState.namingTemplate
+        customNamingPrefixText = preferencesState.customNamingPrefixText
+        numberingStyle = preferencesState.numberingStyle
     }
 
     func preferencesState(
@@ -462,7 +510,10 @@ private extension BatchImageHomeModel {
             settingsSource: oldSettingsSource ?? settingsSource,
             exactResizeStrategy: oldExactResizeStrategy ?? exactResizeStrategy,
             compression: oldCompression ?? compression,
-            backgroundRemoval: backgroundRemoval
+            backgroundRemoval: backgroundRemoval,
+            namingTemplate: namingTemplate,
+            customNamingPrefixText: customNamingPrefixText,
+            numberingStyle: numberingStyle
         )
     }
 
@@ -490,7 +541,10 @@ private extension BatchImageHomeModel {
             oldState.keepsAspectRatio != newState.keepsAspectRatio ||
             oldState.exactResizeStrategy != newState.exactResizeStrategy ||
             oldState.compression != newState.compression ||
-            oldState.backgroundRemoval != newState.backgroundRemoval
+            oldState.backgroundRemoval != newState.backgroundRemoval ||
+            oldState.namingTemplate != newState.namingTemplate ||
+            oldState.customNamingPrefixText != newState.customNamingPrefixText ||
+            oldState.numberingStyle != newState.numberingStyle
     }
 
     func savePreferences(

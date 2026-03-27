@@ -3,6 +3,7 @@ import LietLibrary
 import PhotosUI
 import SwiftUI
 import TipKit
+import UIKit
 
 struct BatchImageHomeView: View {
     private enum Layout {
@@ -229,6 +230,39 @@ private extension BatchImageHomeView {
         )
     }
 
+    var namingTemplateBinding: Binding<BatchImageNamingTemplate> {
+        Binding(
+            get: {
+                model.namingTemplate
+            },
+            set: { newValue in
+                model.setNamingTemplate(newValue)
+            }
+        )
+    }
+
+    var customNamingPrefixBinding: Binding<String> {
+        Binding(
+            get: {
+                model.customNamingPrefixText
+            },
+            set: { newValue in
+                model.setCustomNamingPrefixText(newValue)
+            }
+        )
+    }
+
+    var numberingStyleBinding: Binding<BatchImageNumberingStyle> {
+        Binding(
+            get: {
+                model.numberingStyle
+            },
+            set: { newValue in
+                model.setNumberingStyle(newValue)
+            }
+        )
+    }
+
     var settingsSourceBinding: Binding<BatchImageHomeModel.SettingsSource> {
         Binding(
             get: {
@@ -258,6 +292,7 @@ private extension BatchImageHomeView {
         ) {
             settingsSourceSection()
             outputSizeSection()
+            fileNamingSection()
             backgroundRemovalSection()
 
             if model.showsCompressionSection {
@@ -418,6 +453,77 @@ private extension BatchImageHomeView {
         }
     }
 
+    func fileNamingSection() -> some View {
+        settingsSection(title: "File Naming") {
+            VStack(
+                alignment: .leading,
+                spacing: Layout.cardSpacing
+            ) {
+                namingTemplateSection()
+                customNamingPrefixSection()
+                numberingStyleSection()
+            }
+        }
+    }
+
+    func namingTemplateSection() -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.controlSpacing
+        ) {
+            Text("Template")
+                .font(.subheadline.weight(.medium))
+
+            Picker("Template", selection: namingTemplateBinding) {
+                Text("IMG")
+                    .tag(BatchImageNamingTemplate.img)
+                Text("Processed")
+                    .tag(BatchImageNamingTemplate.processed)
+                Text("Custom")
+                    .tag(BatchImageNamingTemplate.custom)
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+
+    @ViewBuilder
+    func customNamingPrefixSection() -> some View {
+        if model.showsCustomNamingPrefixField {
+            dimensionInputSection(
+                title: Text("Custom prefix"),
+                placeholder: "prefix",
+                text: customNamingPrefixBinding,
+                keyboardType: .default
+            )
+
+            if !model.hasValidNaming {
+                BatchStatusChip(
+                    "Enter a custom prefix to enable processing",
+                    systemImage: "text.cursor",
+                    tone: .warning
+                )
+            }
+        }
+    }
+
+    func numberingStyleSection() -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.controlSpacing
+        ) {
+            Text("Numbering")
+                .font(.subheadline.weight(.medium))
+
+            Picker("Numbering", selection: numberingStyleBinding) {
+                Text("001")
+                    .tag(BatchImageNumberingStyle.zeroPaddedThreeDigits)
+                Text("1")
+                    .tag(BatchImageNumberingStyle.plain)
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+
     func backgroundRemovalControls() -> some View {
         VStack(
             alignment: .leading,
@@ -458,7 +564,8 @@ private extension BatchImageHomeView {
     private func dimensionInputSection(
         title: Text,
         placeholder: String,
-        text: Binding<String>
+        text: Binding<String>,
+        keyboardType: UIKeyboardType = .numberPad
     ) -> some View {
         VStack(
             alignment: .leading,
@@ -468,7 +575,7 @@ private extension BatchImageHomeView {
                 .font(.subheadline.weight(.medium))
 
             TextField(placeholder, text: text)
-                .keyboardType(.numberPad)
+                .keyboardType(keyboardType)
                 .textFieldStyle(.roundedBorder)
         }
     }

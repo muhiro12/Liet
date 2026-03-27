@@ -81,7 +81,7 @@ private enum ContentViewPreviewFactory {
 
     static let processedImages: [ProcessedBatchImage] = [
         makeProcessedImage(
-            filename: "preview-landscape-Liet.jpeg",
+            filename: "IMG_001.jpeg",
             format: .jpeg,
             originalFormat: .jpeg,
             size: .init(
@@ -91,7 +91,7 @@ private enum ContentViewPreviewFactory {
             color: .systemTeal
         ),
         makeProcessedImage(
-            filename: "preview-portrait-Liet.png",
+            filename: "IMG_002.png",
             format: .png,
             originalFormat: .png,
             size: .init(

@@ -5,8 +5,6 @@ import Foundation
 public enum BatchImageProcessingPlanner {
     /// Source metadata required to produce an output plan.
     public struct Source: Equatable, Sendable {
-        /// The preferred original filename when available.
-        public let originalFilename: String?
         /// The source image format detected during import.
         public let originalFormat: ImageFileFormat
         /// The original pixel dimensions of the source image.
@@ -16,12 +14,10 @@ public enum BatchImageProcessingPlanner {
 
         /// Creates source metadata for pure processing decisions.
         public init(
-            originalFilename: String?,
             originalFormat: ImageFileFormat,
             originalPixelSize: CGSize,
             selectionIndex: Int
         ) {
-            self.originalFilename = originalFilename
             self.originalFormat = originalFormat
             self.originalPixelSize = originalPixelSize
             self.selectionIndex = selectionIndex
@@ -218,9 +214,13 @@ public extension BatchImageProcessingPlanner {
             )
         let ignoredCompressionSetting = outputFormat == .png &&
             settings.compression != .off
+        let outputStem = settings.naming.filenameStem(
+            for: source.selectionIndex
+        ) ?? BatchImageNaming.default.filenameStem(
+            for: source.selectionIndex
+        ) ?? ProcessedImageNaming.fallbackStem
         let outputFilename = ProcessedImageNaming.makeFilename(
-            originalFilename: source.originalFilename,
-            fallbackIndex: source.selectionIndex,
+            stem: outputStem,
             outputFormat: outputFormat,
             existingFilenames: existingFilenames
         )

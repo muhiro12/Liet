@@ -2,27 +2,7 @@ import Foundation
 
 /// Shared output naming rules for processed images.
 public enum ProcessedImageNaming {
-    /// App-specific suffix appended to processed image names.
-    public static let appSuffix = "Liet"
-
-    /// Builds a unique output filename for a processed image.
-    public static func makeFilename(
-        originalFilename: String?,
-        fallbackIndex: Int,
-        outputFormat: ImageFileFormat,
-        existingFilenames: Set<String> = []
-    ) -> String {
-        let baseName = resolvedBaseName(
-            originalFilename: originalFilename,
-            fallbackIndex: fallbackIndex
-        )
-
-        return makeFilename(
-            stem: "\(baseName)-\(appSuffix)",
-            outputFormat: outputFormat,
-            existingFilenames: existingFilenames
-        )
-    }
+    static let fallbackStem = "image"
 
     /// Builds a unique output filename from an explicit stem.
     public static func makeFilename(
@@ -70,29 +50,6 @@ private extension ProcessedImageNaming {
         "png"
     ]
 
-    static func resolvedBaseName(
-        originalFilename: String?,
-        fallbackIndex: Int
-    ) -> String {
-        if let originalFilename,
-           !originalFilename.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            let baseName = URL(fileURLWithPath: originalFilename)
-                .lastPathComponent
-            let normalizedBaseName = normalizedFilenameStem(
-                from: baseName
-            )
-
-            if !normalizedBaseName.isEmpty {
-                return normalizedBaseName
-            }
-        }
-
-        return String(
-            format: "image-%03d",
-            max(1, fallbackIndex)
-        )
-    }
-
     static func normalizedStem(
         from stem: String
     ) -> String {
@@ -101,7 +58,7 @@ private extension ProcessedImageNaming {
         )
 
         if normalizedStem.isEmpty {
-            return appSuffix
+            return fallbackStem
         }
 
         return normalizedStem

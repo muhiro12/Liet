@@ -21,6 +21,7 @@ struct BatchImageValueTests {
         #expect(settings.exactResizeStrategy == nil)
         #expect(settings.keepsAspectRatio)
         #expect(settings.compression == .off)
+        #expect(settings.naming == .default)
     }
 
     @Test
@@ -60,30 +61,64 @@ struct BatchImageValueTests {
     }
 
     @Test
-    func naming_appends_liet_suffix_and_avoids_duplicates() {
-        let firstFilename = ProcessedImageNaming.makeFilename(
-            originalFilename: "receipt.png",
-            fallbackIndex: 1,
-            outputFormat: .png
+    func naming_templates_generate_expected_stems() throws {
+        let firstStem = try #require(
+            BatchImageNaming.default.filenameStem(for: 1)
         )
-        let secondFilename = ProcessedImageNaming.makeFilename(
-            originalFilename: "receipt.png",
-            fallbackIndex: 1,
-            outputFormat: .png,
-            existingFilenames: [firstFilename]
+        let processedStem = try #require(
+            BatchImageNaming(
+                template: .processed,
+                numberingStyle: .plain
+            ).filenameStem(for: 2)
         )
-        let fallbackFilename = ProcessedImageNaming.makeFilename(
-            originalFilename: nil,
-            fallbackIndex: 3,
-            outputFormat: .jpeg
+        let customStem = try #require(
+            BatchImageNaming(
+                template: .custom,
+                customPrefix: " receipt.png ",
+                numberingStyle: .zeroPaddedThreeDigits
+            ).filenameStem(for: 3)
         )
         let normalizedStemFilename = ProcessedImageNaming.makeFilename(
             stem: "receipt.png",
             outputFormat: .jpeg
         )
-        let duplicatedExtensionFilename = ProcessedImageNaming.makeFilename(
-            originalFilename: "receipt.png.jpeg",
-            fallbackIndex: 2,
+        let blankStemFilename = ProcessedImageNaming.makeFilename(
+            stem: "",
+            outputFormat: .jpeg
+        )
+        let invalidCustomNaming = BatchImageNaming(
+            template: .custom,
+            customPrefix: "   ",
+            numberingStyle: .plain
+        )
+
+        #expect(firstStem == "IMG_001")
+        #expect(processedStem == "processed_2")
+        #expect(customStem == "receipt_003")
+        #expect(invalidCustomNaming.isValid == false)
+    }
+
+    @Test
+    func processed_image_naming_normalizes_stems_and_deduplicates_filenames() {
+        let firstFilename = ProcessedImageNaming.makeFilename(
+            stem: "IMG_001",
+            outputFormat: .png
+        )
+        let secondFilename = ProcessedImageNaming.makeFilename(
+            stem: "IMG_001",
+            outputFormat: .png,
+            existingFilenames: [firstFilename]
+        )
+        let normalizedStemFilename = ProcessedImageNaming.makeFilename(
+            stem: "receipt.png",
+            outputFormat: .jpeg
+        )
+        let blankStemFilename = ProcessedImageNaming.makeFilename(
+            stem: "",
+            outputFormat: .jpeg
+        )
+        let duplicateExtensionFilename = ProcessedImageNaming.makeFilename(
+            stem: "receipt.png.jpeg",
             outputFormat: .jpeg
         )
         let dottedStemFilename = ProcessedImageNaming.makeFilename(
@@ -91,11 +126,11 @@ struct BatchImageValueTests {
             outputFormat: .jpeg
         )
 
-        #expect(firstFilename == "receipt-Liet.png")
-        #expect(secondFilename == "receipt-Liet-2.png")
-        #expect(fallbackFilename == "image-003-Liet.jpeg")
+        #expect(firstFilename == "IMG_001.png")
+        #expect(secondFilename == "IMG_001-2.png")
         #expect(normalizedStemFilename == "receipt.jpeg")
-        #expect(duplicatedExtensionFilename == "receipt-Liet.jpeg")
+        #expect(blankStemFilename == "image.jpeg")
+        #expect(duplicateExtensionFilename == "receipt.jpeg")
         #expect(dottedStemFilename == "report.v2.jpeg")
     }
 }

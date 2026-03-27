@@ -101,7 +101,6 @@ extension BatchImageProcessor {
             do {
                 let plan = BatchImageProcessingPlanner.makePlan(
                     for: .init(
-                        originalFilename: image.originalFilename,
                         originalFormat: image.originalFormat,
                         originalPixelSize: image.pixelSize,
                         selectionIndex: image.selectionIndex

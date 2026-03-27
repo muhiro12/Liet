@@ -24,6 +24,12 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
     public var compression: BatchImageCompression
     /// The background-removal settings currently selected.
     public var backgroundRemoval: BatchBackgroundRemovalSettings
+    /// The output naming template currently selected.
+    public var namingTemplate: BatchImageNamingTemplate
+    /// The editable custom naming prefix text.
+    public var customNamingPrefixText: String
+    /// The numbering style currently selected for generated filenames.
+    public var numberingStyle: BatchImageNumberingStyle
 
     /// Creates a preferences state from explicit editable and persisted values.
     public init(
@@ -37,7 +43,10 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
         settingsSource: BatchImageSettingsSource,
         exactResizeStrategy: BatchExactResizeStrategy,
         compression: BatchImageCompression,
-        backgroundRemoval: BatchBackgroundRemovalSettings
+        backgroundRemoval: BatchBackgroundRemovalSettings,
+        namingTemplate: BatchImageNamingTemplate,
+        customNamingPrefixText: String,
+        numberingStyle: BatchImageNumberingStyle
     ) {
         self.referenceDimension = referenceDimension
         self.referencePixelsText = referencePixelsText
@@ -50,6 +59,9 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
         self.exactResizeStrategy = exactResizeStrategy
         self.compression = compression
         self.backgroundRemoval = backgroundRemoval
+        self.namingTemplate = namingTemplate
+        self.customNamingPrefixText = customNamingPrefixText
+        self.numberingStyle = numberingStyle
     }
 
     /// Creates a preferences state from the persisted preference slots.
@@ -68,7 +80,10 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
             settingsSource: .lastUsed,
             exactResizeStrategy: initialSettings.exactResizeStrategy,
             compression: initialSettings.compression,
-            backgroundRemoval: initialSettings.backgroundRemoval
+            backgroundRemoval: initialSettings.backgroundRemoval,
+            namingTemplate: initialSettings.naming.template,
+            customNamingPrefixText: initialSettings.naming.customPrefix,
+            numberingStyle: initialSettings.naming.numberingStyle
         )
     }
 }
@@ -105,6 +120,10 @@ public extension BatchImagePreferencesState {
 
     /// The resolved batch settings when the current inputs are valid.
     var settings: BatchImageSettings? {
+        guard let validatedNaming else {
+            return nil
+        }
+
         if keepsAspectRatio {
             guard let referencePixels else {
                 return nil
@@ -116,7 +135,8 @@ public extension BatchImagePreferencesState {
                     pixels: referencePixels
                 ),
                 compression: compression,
-                backgroundRemoval: backgroundRemoval
+                backgroundRemoval: backgroundRemoval,
+                naming: validatedNaming
             )
         }
 
@@ -132,12 +152,17 @@ public extension BatchImagePreferencesState {
                 strategy: exactResizeStrategy
             ),
             compression: compression,
-            backgroundRemoval: backgroundRemoval
+            backgroundRemoval: backgroundRemoval,
+            naming: validatedNaming
         )
     }
 
     /// The persisted settings payload for the current editable values when valid.
     var currentPersistedSettings: PersistedBatchImageSettings? {
+        guard let validatedNaming else {
+            return nil
+        }
+
         let persistedResizeMode: PersistedBatchResizeMode = keepsAspectRatio
             ? .aspectRatioPreserved
             : .exactSize
@@ -177,7 +202,8 @@ public extension BatchImagePreferencesState {
             exactHeightPixels: storedExactHeightPixels,
             exactResizeStrategy: exactResizeStrategy,
             compression: compression,
-            backgroundRemoval: backgroundRemoval
+            backgroundRemoval: backgroundRemoval,
+            naming: validatedNaming
         )
     }
 
@@ -357,5 +383,8 @@ private extension BatchImagePreferencesState {
         exactResizeStrategy = settings.exactResizeStrategy
         compression = settings.compression
         backgroundRemoval = settings.backgroundRemoval
+        namingTemplate = settings.naming.template
+        customNamingPrefixText = settings.naming.customPrefix
+        numberingStyle = settings.naming.numberingStyle
     }
 }

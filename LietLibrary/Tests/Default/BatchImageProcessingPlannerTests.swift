@@ -113,7 +113,6 @@ struct BatchImageProcessingPlannerTests {
         )
         let heicPlan = BatchImageProcessingPlanner.makePlan(
             for: .init(
-                originalFilename: "capture.heic",
                 originalFormat: .heic,
                 originalPixelSize: .init(width: 1_600, height: 900),
                 selectionIndex: 1
@@ -123,7 +122,6 @@ struct BatchImageProcessingPlannerTests {
         )
         let pngPlan = BatchImageProcessingPlanner.makePlan(
             for: .init(
-                originalFilename: nil,
                 originalFormat: .png,
                 originalPixelSize: .init(width: 300, height: 200),
                 selectionIndex: 3
@@ -137,14 +135,14 @@ struct BatchImageProcessingPlannerTests {
         )
 
         #expect(heicPlan.outputFormat == .jpeg)
-        #expect(heicPlan.outputFilename == "capture-Liet.jpeg")
+        #expect(heicPlan.outputFilename == "IMG_001.jpeg")
         #expect(Int(heicPlan.outputPixelSize.width) == 800)
         #expect(Int(heicPlan.outputPixelSize.height) == 450)
         #expect(heicPlan.usedJPEGFallback)
         #expect(heicPlan.shouldCopyOriginal == false)
 
         #expect(pngPlan.outputFormat == .png)
-        #expect(pngPlan.outputFilename == "image-003-Liet.png")
+        #expect(pngPlan.outputFilename == "IMG_003.png")
         #expect(pngPlan.ignoredCompressionSetting)
 
         #expect(summary.jpegFallbackCount == 1)
@@ -168,7 +166,6 @@ struct BatchImageProcessingPlannerTests {
         )
         let plan = BatchImageProcessingPlanner.makePlan(
             for: .init(
-                originalFilename: "capture.heic",
                 originalFormat: .heic,
                 originalPixelSize: .init(width: 1_920, height: 1_080),
                 selectionIndex: 1
@@ -178,9 +175,55 @@ struct BatchImageProcessingPlannerTests {
         )
 
         #expect(plan.outputFormat == .png)
-        #expect(plan.outputFilename == "capture-Liet.png")
+        #expect(plan.outputFilename == "IMG_001.png")
         #expect(plan.usedJPEGFallback == false)
         #expect(plan.ignoredCompressionSetting)
         #expect(plan.shouldCopyOriginal == false)
+    }
+
+    @Test
+    func make_plan_uses_selected_naming_template_and_numbering_style() {
+        let processedPlan = BatchImageProcessingPlanner.makePlan(
+            for: .init(
+                originalFormat: .jpeg,
+                originalPixelSize: .init(width: 1_000, height: 1_000),
+                selectionIndex: 2
+            ),
+            settings: .init(
+                resizeMode: .fitWithin(
+                    referenceDimension: .width,
+                    pixels: 800
+                ),
+                compression: .off,
+                naming: .init(
+                    template: .processed,
+                    numberingStyle: .plain
+                )
+            ),
+            heicEncoderAvailable: true
+        )
+        let customPlan = BatchImageProcessingPlanner.makePlan(
+            for: .init(
+                originalFormat: .jpeg,
+                originalPixelSize: .init(width: 1_000, height: 1_000),
+                selectionIndex: 5
+            ),
+            settings: .init(
+                resizeMode: .fitWithin(
+                    referenceDimension: .width,
+                    pixels: 800
+                ),
+                compression: .off,
+                naming: .init(
+                    template: .custom,
+                    customPrefix: "receipt.png",
+                    numberingStyle: .zeroPaddedThreeDigits
+                )
+            ),
+            heicEncoderAvailable: true
+        )
+
+        #expect(processedPlan.outputFilename == "processed_2.jpeg")
+        #expect(customPlan.outputFilename == "receipt_005.jpeg")
     }
 }
