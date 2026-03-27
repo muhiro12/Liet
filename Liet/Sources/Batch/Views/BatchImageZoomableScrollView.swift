@@ -2,6 +2,15 @@ import SwiftUI
 import UIKit
 
 struct BatchImageZoomableScrollView: UIViewRepresentable {
+    private final class LayoutAwareScrollView: UIScrollView {
+        var layoutDidChange: ((UIScrollView) -> Void)?
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            layoutDidChange?(self)
+        }
+    }
+
     final class Coordinator: NSObject, UIGestureRecognizerDelegate, UIScrollViewDelegate {
         static let centeringDivisor = 2.0
         static let minimumZoomScale: CGFloat = 1
@@ -62,7 +71,11 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
             scrollView.maximumZoomScale = maximumZoomScale
             scrollView.minimumZoomScale = Self.minimumZoomScale
 
-            if boundsChanged || resetZoomScale {
+            let needsLayoutUpdate = boundsChanged ||
+                resetZoomScale ||
+                imageView.frame.size == .zero
+
+            if needsLayoutUpdate {
                 let fittedSize = fittedImageSize(
                     imageSize: image.size,
                     containerSize: scrollView.bounds.size
@@ -73,7 +86,11 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
                     size: fittedSize
                 )
                 scrollView.contentSize = fittedSize
+            }
+
+            if resetZoomScale {
                 scrollView.zoomScale = Self.minimumZoomScale
+                scrollView.contentOffset = .zero
             }
 
             updateContentInset(for: scrollView)
@@ -177,7 +194,7 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
     func makeUIView(
         context: Context
     ) -> UIScrollView {
-        let scrollView = UIScrollView()
+        let scrollView = LayoutAwareScrollView()
         scrollView.backgroundColor = .clear
         scrollView.bouncesZoom = true
         scrollView.delegate = context.coordinator
@@ -194,6 +211,12 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
         scrollView.addGestureRecognizer(
             context.coordinator.backgroundTapRecognizer
         )
+        scrollView.layoutDidChange = { [coordinator = context.coordinator] scrollView in
+            coordinator.updateLayout(
+                for: scrollView,
+                resetZoomScale: false
+            )
+        }
 
         return scrollView
     }

@@ -27,6 +27,7 @@ struct BatchImageFullscreenPreviewView: View {
     private var dismiss
 
     let item: BatchImagePreviewItem
+    private let usesInjectedPreviewImage: Bool
 
     @State private var previewPhase: PreviewPhase = .loading
 
@@ -53,7 +54,31 @@ struct BatchImageFullscreenPreviewView: View {
             .padding(.bottom, Layout.metadataBottomPadding)
         }
         .task(id: item.id) {
+            guard !usesInjectedPreviewImage else {
+                return
+            }
+
             await loadPreview()
+        }
+    }
+}
+
+extension BatchImageFullscreenPreviewView {
+    init(
+        item: BatchImagePreviewItem,
+        initialPreviewImage: UIImage? = nil
+    ) {
+        self.item = item
+        usesInjectedPreviewImage = initialPreviewImage != nil
+
+        if let initialPreviewImage {
+            _previewPhase = State(
+                initialValue: .loaded(initialPreviewImage)
+            )
+        } else {
+            _previewPhase = State(
+                initialValue: .loading
+            )
         }
     }
 }
@@ -156,4 +181,18 @@ private extension BatchImageFullscreenPreviewView {
 
         previewPhase = loadedPhase
     }
+}
+
+#Preview("Imported Fullscreen") {
+    BatchImageFullscreenPreviewView(
+        item: BatchImagePreviewFixture.importedPreviewItem,
+        initialPreviewImage: BatchImagePreviewFixture.importedFullscreenPreviewImage
+    )
+}
+
+#Preview("Processed Fullscreen") {
+    BatchImageFullscreenPreviewView(
+        item: BatchImagePreviewFixture.processedPreviewItem,
+        initialPreviewImage: BatchImagePreviewFixture.processedFullscreenPreviewImage
+    )
 }
