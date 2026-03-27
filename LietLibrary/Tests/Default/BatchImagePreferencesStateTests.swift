@@ -12,7 +12,13 @@ struct BatchImagePreferencesStateTests {
                 exactWidthPixels: 1_920,
                 exactHeightPixels: 1_080,
                 exactResizeStrategy: .stretch,
-                compression: .high
+                compression: .high,
+                backgroundRemoval: .init(
+                    isEnabled: true,
+                    strength: 0.7,
+                    edgeSmoothing: 0.2,
+                    edgeExpansion: 0.15
+                )
             ),
             lastUsedSettings: .init(
                 resizeMode: .exactSize,
@@ -21,7 +27,13 @@ struct BatchImagePreferencesStateTests {
                 exactWidthPixels: 320,
                 exactHeightPixels: 180,
                 exactResizeStrategy: .coverCrop,
-                compression: .medium
+                compression: .medium,
+                backgroundRemoval: .init(
+                    isEnabled: false,
+                    strength: 0.4,
+                    edgeSmoothing: 0.1,
+                    edgeExpansion: -0.1
+                )
             )
         )
 
@@ -36,6 +48,7 @@ struct BatchImagePreferencesStateTests {
         #expect(state.resizeHeightText == "180")
         #expect(state.exactResizeStrategy == .coverCrop)
         #expect(state.compression == .medium)
+        #expect(state.backgroundRemoval.isEnabled == false)
     }
 
     @Test
@@ -128,6 +141,10 @@ struct BatchImagePreferencesStateTests {
         state.setReferenceDimension(.height)
         state.setReferencePixelsText("1080")
         state.setCompression(.high)
+        state.setBackgroundRemovalEnabled(true)
+        state.setBackgroundRemovalStrength(0.8)
+        state.setBackgroundRemovalEdgeSmoothing(0.3)
+        state.setBackgroundRemovalEdgeExpansion(-0.2)
 
         #expect(state.settingsSource == .custom)
         #expect(state.lastUsedSettings == .default)
@@ -138,6 +155,10 @@ struct BatchImagePreferencesStateTests {
         #expect(state.lastUsedSettings.referenceDimension == .height)
         #expect(state.lastUsedSettings.referencePixels == 1_080)
         #expect(state.lastUsedSettings.compression == .high)
+        #expect(state.lastUsedSettings.backgroundRemoval.isEnabled)
+        #expect(state.lastUsedSettings.backgroundRemoval.strength == 0.8)
+        #expect(state.lastUsedSettings.backgroundRemoval.edgeSmoothing == 0.3)
+        #expect(state.lastUsedSettings.backgroundRemoval.edgeExpansion == -0.2)
         #expect(state.preferences.lastUsedSettings == state.lastUsedSettings)
     }
 
@@ -179,5 +200,6 @@ private extension BatchImagePreferencesStateTests {
         #expect(lhs.exactHeightPixels == rhs.exactHeightPixels)
         #expect(lhs.exactResizeStrategy == rhs.exactResizeStrategy)
         #expect(lhs.compression == rhs.compression)
+        #expect(lhs.backgroundRemoval == rhs.backgroundRemoval)
     }
 }

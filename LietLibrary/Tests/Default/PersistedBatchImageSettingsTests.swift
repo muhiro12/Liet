@@ -1,3 +1,4 @@
+import Foundation
 @testable import LietLibrary
 import Testing
 
@@ -11,7 +12,13 @@ struct PersistedBatchImageSettingsTests {
             exactWidthPixels: 320,
             exactHeightPixels: 180,
             exactResizeStrategy: .coverCrop,
-            compression: .medium
+            compression: .medium,
+            backgroundRemoval: .init(
+                isEnabled: true,
+                strength: 0.75,
+                edgeSmoothing: 0.2,
+                edgeExpansion: 0.1
+            )
         )
 
         let restoredSettings = try #require(
@@ -54,9 +61,55 @@ struct PersistedBatchImageSettingsTests {
             PersistedBatchImagePreferences.default.lastUsedSettings.compression ==
                 defaultSettings.compression
         )
+        #expect(
+            PersistedBatchImagePreferences.default.lastUsedSettings.backgroundRemoval ==
+                defaultSettings.backgroundRemoval
+        )
         #expect(defaultSettings.resizeMode == .aspectRatioPreserved)
         #expect(defaultSettings.referencePixels == 1_920)
         #expect(defaultSettings.exactWidthPixels == 1_920)
         #expect(defaultSettings.exactHeightPixels == 1_080)
+        #expect(defaultSettings.backgroundRemoval == .default)
+    }
+
+    @Test
+    func missing_background_removal_payload_defaults_during_restore() throws {
+        let currentSettings = PersistedBatchImageSettings(
+            resizeMode: .exactSize,
+            referenceDimension: .height,
+            referencePixels: 512,
+            exactWidthPixels: 320,
+            exactHeightPixels: 180,
+            exactResizeStrategy: .coverCrop,
+            compression: .medium,
+            backgroundRemoval: .init(
+                isEnabled: true,
+                strength: 0.75,
+                edgeSmoothing: 0.2,
+                edgeExpansion: 0.1
+            )
+        )
+        let rawData = try #require(
+            currentSettings.rawValue.data(using: .utf8)
+        )
+        var payload = try #require(
+            JSONSerialization.jsonObject(with: rawData) as? [String: Any]
+        )
+        payload.removeValue(
+            forKey: PersistedBatchImageSettingsCodingKeys.backgroundRemoval.rawValue
+        )
+        let legacyData = try JSONSerialization.data(
+            withJSONObject: payload,
+            options: JSONSerialization.WritingOptions.sortedKeys
+        )
+        let legacyRawValue = try #require(
+            String(data: legacyData, encoding: .utf8)
+        )
+
+        let restoredSettings = try #require(
+            PersistedBatchImageSettings(rawValue: legacyRawValue)
+        )
+
+        #expect(restoredSettings.backgroundRemoval == .default)
     }
 }

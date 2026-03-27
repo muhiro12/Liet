@@ -1,6 +1,7 @@
 import Foundation
 
 enum PersistedBatchImageSettingsCodingKeys: String, CodingKey {
+    case backgroundRemoval = "B2m6Qr8N"
     case resizeMode = "R7m2Kp4Q"
     case referenceDimension = "D4x8Nh1V"
     case referencePixels = "P6t3Lc9W"

@@ -143,7 +143,7 @@ extension BatchImageProcessor {
                 } else {
                     let renderedOutput = try renderedImage(
                         from: image.sourceURL,
-                        resizeMode: settings.resizeMode,
+                        settings: settings,
                         outputFormat: plan.outputFormat
                     )
                     try writeImage(

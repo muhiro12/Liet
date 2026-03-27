@@ -77,6 +77,7 @@ final class BatchImageHomeModel {
             }
         }
     }
+    private(set) var backgroundRemoval: BatchBackgroundRemovalSettings
     var isImporting = false
     var isProcessing = false
     var activeAlert: AlertState?
@@ -104,6 +105,7 @@ final class BatchImageHomeModel {
         settingsSource = preferencesState.settingsSource
         exactResizeStrategy = preferencesState.exactResizeStrategy
         compression = preferencesState.compression
+        backgroundRemoval = preferencesState.backgroundRemoval
     }
 }
 
@@ -144,13 +146,15 @@ extension BatchImageHomeModel {
     }
 
     var showsCompressionSection: Bool {
-        importedImages.contains { image in
-            supportsLossyCompression(for: image)
-        }
+        backgroundRemoval.isEnabled ||
+            importedImages.contains { image in
+                supportsLossyCompression(for: image)
+            }
     }
 
     var showsMixedCompressionHint: Bool {
-        showsCompressionSection &&
+        backgroundRemoval.isEnabled == false &&
+            showsCompressionSection &&
             importedImages.contains { image in
                 image.originalFormat == .png
             }
@@ -197,6 +201,38 @@ extension BatchImageHomeModel {
     ) {
         mutatePreferencesState { preferencesState in
             preferencesState.setKeepsAspectRatio(newValue)
+        }
+    }
+
+    func setBackgroundRemovalEnabled(
+        _ newValue: Bool
+    ) {
+        mutatePreferencesState { preferencesState in
+            preferencesState.setBackgroundRemovalEnabled(newValue)
+        }
+    }
+
+    func setBackgroundRemovalStrength(
+        _ newValue: Double
+    ) {
+        mutatePreferencesState { preferencesState in
+            preferencesState.setBackgroundRemovalStrength(newValue)
+        }
+    }
+
+    func setBackgroundRemovalEdgeSmoothing(
+        _ newValue: Double
+    ) {
+        mutatePreferencesState { preferencesState in
+            preferencesState.setBackgroundRemovalEdgeSmoothing(newValue)
+        }
+    }
+
+    func setBackgroundRemovalEdgeExpansion(
+        _ newValue: Double
+    ) {
+        mutatePreferencesState { preferencesState in
+            preferencesState.setBackgroundRemovalEdgeExpansion(newValue)
         }
     }
 
@@ -333,7 +369,8 @@ private extension BatchImageHomeModel {
             lastUsedSettings: lastUsedSettings,
             settingsSource: settingsSource,
             exactResizeStrategy: exactResizeStrategy,
-            compression: compression
+            compression: compression,
+            backgroundRemoval: backgroundRemoval
         )
     }
 
@@ -406,6 +443,7 @@ private extension BatchImageHomeModel {
         settingsSource = preferencesState.settingsSource
         exactResizeStrategy = preferencesState.exactResizeStrategy
         compression = preferencesState.compression
+        backgroundRemoval = preferencesState.backgroundRemoval
     }
 
     func preferencesState(
@@ -423,7 +461,8 @@ private extension BatchImageHomeModel {
             lastUsedSettings: lastUsedSettings,
             settingsSource: oldSettingsSource ?? settingsSource,
             exactResizeStrategy: oldExactResizeStrategy ?? exactResizeStrategy,
-            compression: oldCompression ?? compression
+            compression: oldCompression ?? compression,
+            backgroundRemoval: backgroundRemoval
         )
     }
 
@@ -450,7 +489,8 @@ private extension BatchImageHomeModel {
             oldState.resizeHeightText != newState.resizeHeightText ||
             oldState.keepsAspectRatio != newState.keepsAspectRatio ||
             oldState.exactResizeStrategy != newState.exactResizeStrategy ||
-            oldState.compression != newState.compression
+            oldState.compression != newState.compression ||
+            oldState.backgroundRemoval != newState.backgroundRemoval
     }
 
     func savePreferences(

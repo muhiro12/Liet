@@ -257,7 +257,7 @@ private extension BatchImageResultView {
     func pngCompressionText(
         _: Int
     ) -> Text {
-        Text("PNG kept original")
+        Text("PNG output ignored compression")
     }
 
     func saveFeedbackText(
@@ -307,6 +307,8 @@ private extension BatchImageResultView {
             Text("Couldn't generate an image preview.")
         case .failedToEncodeImage:
             Text("Couldn't write one of the processed images.")
+        case .failedToRemoveBackground:
+            Text("Couldn't remove the background from one of the images.")
         case .photoLibraryPermissionDenied:
             Text("Photo Library access is required to save images.")
         case .photoLibrarySaveFailed:

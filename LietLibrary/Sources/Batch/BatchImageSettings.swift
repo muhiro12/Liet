@@ -6,14 +6,18 @@ public struct BatchImageSettings: Equatable, Codable, Sendable {
     public var resizeMode: BatchResizeMode
     /// The lossy compression preset used when the format supports it.
     public var compression: BatchImageCompression
+    /// The optional background-removal behavior for the batch.
+    public var backgroundRemoval: BatchBackgroundRemovalSettings
 
     /// Creates a batch settings value with the repository defaults.
     public init(
         resizeMode: BatchResizeMode = .default,
-        compression: BatchImageCompression = .off
+        compression: BatchImageCompression = .off,
+        backgroundRemoval: BatchBackgroundRemovalSettings = .default
     ) {
         self.resizeMode = resizeMode
         self.compression = compression
+        self.backgroundRemoval = backgroundRemoval
     }
 }
 

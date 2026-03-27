@@ -22,6 +22,8 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
     public var exactResizeStrategy: BatchExactResizeStrategy
     /// The compression preset currently selected.
     public var compression: BatchImageCompression
+    /// The background-removal settings currently selected.
+    public var backgroundRemoval: BatchBackgroundRemovalSettings
 
     /// Creates a preferences state from explicit editable and persisted values.
     public init(
@@ -34,7 +36,8 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
         lastUsedSettings: PersistedBatchImageSettings,
         settingsSource: BatchImageSettingsSource,
         exactResizeStrategy: BatchExactResizeStrategy,
-        compression: BatchImageCompression
+        compression: BatchImageCompression,
+        backgroundRemoval: BatchBackgroundRemovalSettings
     ) {
         self.referenceDimension = referenceDimension
         self.referencePixelsText = referencePixelsText
@@ -46,6 +49,7 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
         self.settingsSource = settingsSource
         self.exactResizeStrategy = exactResizeStrategy
         self.compression = compression
+        self.backgroundRemoval = backgroundRemoval
     }
 
     /// Creates a preferences state from the persisted preference slots.
@@ -63,7 +67,8 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
             lastUsedSettings: preferences.lastUsedSettings,
             settingsSource: .lastUsed,
             exactResizeStrategy: initialSettings.exactResizeStrategy,
-            compression: initialSettings.compression
+            compression: initialSettings.compression,
+            backgroundRemoval: initialSettings.backgroundRemoval
         )
     }
 }
@@ -110,7 +115,8 @@ public extension BatchImagePreferencesState {
                     referenceDimension: referenceDimension,
                     pixels: referencePixels
                 ),
-                compression: compression
+                compression: compression,
+                backgroundRemoval: backgroundRemoval
             )
         }
 
@@ -125,7 +131,8 @@ public extension BatchImagePreferencesState {
                 heightPixels: exactHeightPixels,
                 strategy: exactResizeStrategy
             ),
-            compression: compression
+            compression: compression,
+            backgroundRemoval: backgroundRemoval
         )
     }
 
@@ -169,7 +176,8 @@ public extension BatchImagePreferencesState {
             exactWidthPixels: storedExactWidthPixels,
             exactHeightPixels: storedExactHeightPixels,
             exactResizeStrategy: exactResizeStrategy,
-            compression: compression
+            compression: compression,
+            backgroundRemoval: backgroundRemoval
         )
     }
 
@@ -348,5 +356,6 @@ private extension BatchImagePreferencesState {
         keepsAspectRatio = settings.resizeMode == .aspectRatioPreserved
         exactResizeStrategy = settings.exactResizeStrategy
         compression = settings.compression
+        backgroundRemoval = settings.backgroundRemoval
     }
 }

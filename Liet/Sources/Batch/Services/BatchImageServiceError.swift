@@ -7,6 +7,7 @@ enum BatchImageServiceError: Error {
     case failedToReadImageProperties
     case failedToCreateThumbnail
     case failedToEncodeImage
+    case failedToRemoveBackground
     case photoLibraryPermissionDenied
     case photoLibrarySaveFailed
 }

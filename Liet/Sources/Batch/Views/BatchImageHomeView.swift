@@ -71,6 +71,10 @@ struct BatchImageHomeView: View {
             processingAnimation,
             value: model.showsCompressionSection
         )
+        .animation(
+            processingAnimation,
+            value: model.backgroundRemoval.isEnabled
+        )
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 BatchToolbarIconButton(
@@ -181,6 +185,50 @@ private extension BatchImageHomeView {
         )
     }
 
+    var backgroundRemovalEnabledBinding: Binding<Bool> {
+        Binding(
+            get: {
+                model.backgroundRemoval.isEnabled
+            },
+            set: { newValue in
+                model.setBackgroundRemovalEnabled(newValue)
+            }
+        )
+    }
+
+    var backgroundRemovalStrengthBinding: Binding<Double> {
+        Binding(
+            get: {
+                model.backgroundRemoval.strength
+            },
+            set: { newValue in
+                model.setBackgroundRemovalStrength(newValue)
+            }
+        )
+    }
+
+    var backgroundRemovalEdgeSmoothingBinding: Binding<Double> {
+        Binding(
+            get: {
+                model.backgroundRemoval.edgeSmoothing
+            },
+            set: { newValue in
+                model.setBackgroundRemovalEdgeSmoothing(newValue)
+            }
+        )
+    }
+
+    var backgroundRemovalEdgeExpansionBinding: Binding<Double> {
+        Binding(
+            get: {
+                model.backgroundRemoval.edgeExpansion
+            },
+            set: { newValue in
+                model.setBackgroundRemovalEdgeExpansion(newValue)
+            }
+        )
+    }
+
     var settingsSourceBinding: Binding<BatchImageHomeModel.SettingsSource> {
         Binding(
             get: {
@@ -210,6 +258,7 @@ private extension BatchImageHomeView {
         ) {
             settingsSourceSection()
             outputSizeSection()
+            backgroundRemovalSection()
 
             if model.showsCompressionSection {
                 compressionSection()
@@ -355,6 +404,57 @@ private extension BatchImageHomeView {
         }
     }
 
+    func backgroundRemovalSection() -> some View {
+        settingsSection(title: "Background Removal") {
+            Toggle(
+                "Remove background",
+                isOn: backgroundRemovalEnabledBinding
+            )
+
+            if model.backgroundRemoval.isEnabled {
+                backgroundRemovalControls()
+                    .transition(optionalProcessingSectionTransition)
+            }
+        }
+    }
+
+    func backgroundRemovalControls() -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.cardSpacing
+        ) {
+            adjustmentSlider(
+                title: "Strength",
+                value: backgroundRemovalStrengthBinding,
+                range: 0...1,
+                valueText: percentageText(
+                    model.backgroundRemoval.strength
+                )
+            )
+            adjustmentSlider(
+                title: "Edge smoothing",
+                value: backgroundRemovalEdgeSmoothingBinding,
+                range: 0...1,
+                valueText: percentageText(
+                    model.backgroundRemoval.edgeSmoothing
+                )
+            )
+            adjustmentSlider(
+                title: "Edge expand / contract",
+                value: backgroundRemovalEdgeExpansionBinding,
+                range: -1...1,
+                valueText: signedPercentageText(
+                    model.backgroundRemoval.edgeExpansion
+                )
+            )
+            BatchStatusChip(
+                "Exports PNG with transparency",
+                systemImage: "sparkles",
+                tone: .neutral
+            )
+        }
+    }
+
     private func dimensionInputSection(
         title: Text,
         placeholder: String,
@@ -370,6 +470,32 @@ private extension BatchImageHomeView {
             TextField(placeholder, text: text)
                 .keyboardType(.numberPad)
                 .textFieldStyle(.roundedBorder)
+        }
+    }
+
+    private func adjustmentSlider(
+        title: LocalizedStringKey,
+        value: Binding<Double>,
+        range: ClosedRange<Double>,
+        valueText: String
+    ) -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.controlSpacing
+        ) {
+            HStack {
+                Text(title)
+                    .font(.subheadline.weight(.medium))
+                Spacer()
+                Text(valueText)
+                    .font(.footnote.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+
+            Slider(
+                value: value,
+                in: range
+            )
         }
     }
 
@@ -503,6 +629,15 @@ private extension BatchImageHomeView {
                     .tag(BatchImageCompression.low)
             }
             .pickerStyle(.segmented)
+            .disabled(model.backgroundRemoval.isEnabled)
+
+            if model.backgroundRemoval.isEnabled {
+                BatchStatusChip(
+                    "Transparent PNG output ignores compression",
+                    systemImage: "drop",
+                    tone: .neutral
+                )
+            }
 
             if model.showsMixedCompressionHint {
                 BatchStatusChip(
@@ -559,6 +694,24 @@ private extension BatchImageHomeView {
             runProcessingTip,
             arrowEdge: .top
         )
+    }
+
+    func percentageText(
+        _ value: Double
+    ) -> String {
+        "\(Int((value * 100).rounded()))%"
+    }
+
+    func signedPercentageText(
+        _ value: Double
+    ) -> String {
+        let percentage = Int((value * 100).rounded())
+
+        if percentage > 0 {
+            return "+\(percentage)%"
+        }
+
+        return "\(percentage)%"
     }
 
     func handleFileImportResult(

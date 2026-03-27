@@ -95,6 +95,22 @@ public extension BatchImageProcessingPlanner {
         return preferredOutputFormat
     }
 
+    /// Resolves the final output format while considering batch settings.
+    static func resolvedOutputFormat(
+        for originalFormat: ImageFileFormat,
+        settings: BatchImageSettings,
+        heicEncoderAvailable: Bool
+    ) -> ImageFileFormat {
+        if settings.backgroundRemoval.isEnabled {
+            return .png
+        }
+
+        return resolvedOutputFormat(
+            for: originalFormat,
+            heicEncoderAvailable: heicEncoderAvailable
+        )
+    }
+
     /// Projects the output pixel size for a source image under the selected resize mode.
     static func projectedPixelSize(
         originalPixelSize: CGSize,
@@ -155,6 +171,10 @@ public extension BatchImageProcessingPlanner {
         outputFormat: ImageFileFormat,
         targetPixelSize: CGSize? = nil
     ) -> Bool {
+        guard settings.backgroundRemoval.isEnabled == false else {
+            return false
+        }
+
         guard case .fitWithin = settings.resizeMode else {
             return false
         }
@@ -188,11 +208,16 @@ public extension BatchImageProcessingPlanner {
     ) -> Plan {
         let outputFormat = resolvedOutputFormat(
             for: source.originalFormat,
+            settings: settings,
             heicEncoderAvailable: heicEncoderAvailable
         )
-        let usedJPEGFallback = source.originalFormat.requiresOutputFallback ||
-            (source.originalFormat == .heic && outputFormat == .jpeg)
-        let ignoredCompressionSetting = outputFormat == .png
+        let usedJPEGFallback = settings.backgroundRemoval.isEnabled == false &&
+            (
+                source.originalFormat.requiresOutputFallback ||
+                    (source.originalFormat == .heic && outputFormat == .jpeg)
+            )
+        let ignoredCompressionSetting = outputFormat == .png &&
+            settings.compression != .off
         let outputFilename = ProcessedImageNaming.makeFilename(
             originalFilename: source.originalFilename,
             fallbackIndex: source.selectionIndex,

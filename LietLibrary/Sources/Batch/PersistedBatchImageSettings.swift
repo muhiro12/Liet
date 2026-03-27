@@ -10,7 +10,8 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
         exactWidthPixels: BatchResizeMode.defaultWidthPixels,
         exactHeightPixels: BatchResizeMode.defaultHeightPixels,
         exactResizeStrategy: .stretch,
-        compression: .off
+        compression: .off,
+        backgroundRemoval: .default
     )
 
     /// The persisted resize-mode selection.
@@ -27,6 +28,8 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
     public var exactResizeStrategy: BatchExactResizeStrategy
     /// The persisted compression preset.
     public var compression: BatchImageCompression
+    /// The persisted background-removal settings.
+    public var backgroundRemoval: BatchBackgroundRemovalSettings
 
     /// The serialized representation stored in app preferences.
     public var rawValue: String {
@@ -46,7 +49,8 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
         exactWidthPixels: Int,
         exactHeightPixels: Int,
         exactResizeStrategy: BatchExactResizeStrategy,
-        compression: BatchImageCompression
+        compression: BatchImageCompression,
+        backgroundRemoval: BatchBackgroundRemovalSettings = .default
     ) {
         self.resizeMode = resizeMode
         self.referenceDimension = referenceDimension
@@ -55,6 +59,7 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
         self.exactHeightPixels = exactHeightPixels
         self.exactResizeStrategy = exactResizeStrategy
         self.compression = compression
+        self.backgroundRemoval = backgroundRemoval
     }
 
     /// Restores a persisted settings payload from its serialized representation.
@@ -98,6 +103,10 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
             BatchImageCompression.self,
             forKey: .compression
         )
+        backgroundRemoval = try container.decodeIfPresent(
+            BatchBackgroundRemovalSettings.self,
+            forKey: .backgroundRemoval
+        ) ?? .default
     }
 
     /// Encodes stored settings into the app preference payload.
@@ -110,5 +119,6 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
         try container.encode(exactHeightPixels, forKey: .exactHeightPixels)
         try container.encode(exactResizeStrategy, forKey: .exactResizeStrategy)
         try container.encode(compression, forKey: .compression)
+        try container.encode(backgroundRemoval, forKey: .backgroundRemoval)
     }
 }

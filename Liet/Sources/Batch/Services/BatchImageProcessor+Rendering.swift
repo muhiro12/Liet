@@ -11,13 +11,13 @@ extension BatchImageProcessor {
 
     nonisolated static func renderedImage(
         from sourceURL: URL,
-        resizeMode: BatchResizeMode,
+        settings: BatchImageSettings,
         outputFormat: ImageFileFormat
     ) throws -> RenderedImage {
         let imageSource = try ImageIOImageSupport.imageSource(url: sourceURL)
         let originalPixelSize = try ImageIOImageSupport.pixelSize(from: imageSource)
 
-        switch resizeMode {
+        switch settings.resizeMode {
         case let .fitWithin(
             referenceDimension,
             pixels
@@ -28,7 +28,8 @@ extension BatchImageProcessor {
                     originalPixelSize: originalPixelSize,
                     referenceDimension: referenceDimension,
                     referencePixels: pixels
-                )
+                ),
+                backgroundRemoval: settings.backgroundRemoval
             )
         case let .exactSize(
             widthPixels,
@@ -41,20 +42,23 @@ extension BatchImageProcessor {
                 outputFormat: outputFormat,
                 widthPixels: widthPixels,
                 heightPixels: heightPixels,
-                strategy: strategy
+                strategy: strategy,
+                backgroundRemoval: settings.backgroundRemoval
             )
         }
     }
 
     nonisolated static func resizedImage(
         from imageSource: CGImageSource,
-        targetPixelSize: CGSize
+        targetPixelSize: CGSize,
+        backgroundRemoval: BatchBackgroundRemovalSettings
     ) throws -> RenderedImage {
-        let cgImage = try ImageIOImageSupport.cgImage(
+        let cgImage = try preparedSourceImage(
             from: imageSource,
             maxPixelSize: ImageIOImageSupport.maxPixelSize(
                 for: targetPixelSize
-            )
+            ),
+            backgroundRemoval: backgroundRemoval
         )
 
         return .init(
@@ -73,7 +77,8 @@ extension BatchImageProcessor {
         outputFormat: ImageFileFormat,
         widthPixels: Int,
         heightPixels: Int,
-        strategy: BatchExactResizeStrategy
+        strategy: BatchExactResizeStrategy,
+        backgroundRemoval: BatchBackgroundRemovalSettings
     ) throws -> RenderedImage {
         let canvasPixelSize = exactCanvasPixelSize(
             widthPixels: widthPixels,
@@ -84,11 +89,12 @@ extension BatchImageProcessor {
             canvasPixelSize: canvasPixelSize,
             strategy: strategy
         )
-        let sourceImage = try ImageIOImageSupport.cgImage(
+        let sourceImage = try preparedSourceImage(
             from: imageSource,
             maxPixelSize: ImageIOImageSupport.maxPixelSize(
                 for: projectedContentPixelSize
-            )
+            ),
+            backgroundRemoval: backgroundRemoval
         )
         let sourcePixelSize = CGSize(
             width: sourceImage.width,
@@ -193,6 +199,26 @@ extension BatchImageProcessor {
                 originalPixelSize: image.pixelSize,
                 resizeMode: settings.resizeMode
             )
+        )
+    }
+
+    nonisolated static func preparedSourceImage(
+        from imageSource: CGImageSource,
+        maxPixelSize: Int,
+        backgroundRemoval: BatchBackgroundRemovalSettings
+    ) throws -> CGImage {
+        let sourceImage = try ImageIOImageSupport.cgImage(
+            from: imageSource,
+            maxPixelSize: maxPixelSize
+        )
+
+        guard backgroundRemoval.isEnabled else {
+            return sourceImage
+        }
+
+        return try BatchBackgroundRemovalService.removedBackgroundImage(
+            from: sourceImage,
+            settings: backgroundRemoval
         )
     }
 }
