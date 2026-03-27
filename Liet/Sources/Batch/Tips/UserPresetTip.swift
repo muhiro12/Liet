@@ -9,7 +9,7 @@ struct UserPresetTip: Tip {
     }
 
     var message: Text? {
-        Text("Save the current size and compression setup so you can start from it later.")
+        Text("Save the current feature setup so you can start from it later.")
     }
 
     var image: Image? {

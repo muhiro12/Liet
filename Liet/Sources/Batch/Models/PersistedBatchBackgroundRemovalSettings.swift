@@ -1,0 +1,3 @@
+import LietLibrary
+
+typealias PersistedBatchBackgroundRemovalSettings = LietLibrary.PersistedBatchBackgroundRemovalSettings

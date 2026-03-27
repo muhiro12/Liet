@@ -12,7 +12,7 @@ struct SelectImagesTip: Tip {
         Text(
             """
             Pick one or more photos or image files. \
-            Liet applies the same resize and compression settings to every selected image.
+            Liet applies the same settings to every selected image in the current feature.
             """
         )
     }

@@ -1,41 +1,65 @@
 import LietLibrary
 import SwiftUI
 
-#Preview("iPhone Imported") {
+#Preview("Chooser") {
+    ContentView()
+}
+
+#Preview("Resize Imported") {
     ContentView(
-        model: .previewImported(),
+        resizeModel: .previewImported(),
+        selectedFeature: .resizeImages,
         preferredCompactColumn: .detail
     )
 }
 
-#Preview("iPhone Result") {
+#Preview("Resize Result") {
     ContentView(
-        model: .previewProcessed(),
+        resizeModel: .previewProcessed(),
+        selectedFeature: .resizeImages,
+        preferredCompactColumn: .detail
+    )
+}
+
+#Preview("Background Imported") {
+    ContentView(
+        backgroundRemovalModel: .previewImported(),
+        selectedFeature: .removeBackground,
+        preferredCompactColumn: .detail
+    )
+}
+
+#Preview("Background Result") {
+    ContentView(
+        backgroundRemovalModel: .previewProcessed(),
+        selectedFeature: .removeBackground,
         preferredCompactColumn: .detail
     )
 }
 
 #Preview(
-    "iPad Imported",
+    "iPad Resize Imported",
     traits: .fixedLayout(
         width: ContentViewPreviewFactory.iPadPreviewWidth,
         height: ContentViewPreviewFactory.iPadPreviewHeight
     )
 ) {
     ContentView(
-        model: .previewImported()
+        resizeModel: .previewImported(),
+        selectedFeature: .resizeImages
     )
 }
 
 #Preview(
-    "iPad Result",
+    "iPad Background Result",
     traits: .fixedLayout(
         width: ContentViewPreviewFactory.iPadPreviewWidth,
         height: ContentViewPreviewFactory.iPadPreviewHeight
     )
 ) {
     ContentView(
-        model: .previewProcessed()
+        backgroundRemovalModel: .previewProcessed(),
+        selectedFeature: .removeBackground
     )
 }
 
@@ -59,6 +83,29 @@ private extension BatchImageHomeModel {
         model.resultModel = .init(
             outcome: .init(
                 processedImages: BatchImagePreviewFixture.processedImages,
+                failureCount: 0,
+                jpegFallbackCount: 0,
+                ignoredCompressionCount: 0
+            )
+        )
+        return model
+    }
+}
+
+private extension BatchBackgroundRemovalHomeModel {
+    static func previewImported() -> BatchBackgroundRemovalHomeModel {
+        let model: BatchBackgroundRemovalHomeModel = .init(
+            settingsStore: .inMemory()
+        )
+        model.importedImages = BatchImagePreviewFixture.importedImages
+        return model
+    }
+
+    static func previewProcessed() -> BatchBackgroundRemovalHomeModel {
+        let model = previewImported()
+        model.resultModel = .init(
+            outcome: .init(
+                processedImages: BatchImagePreviewFixture.backgroundRemovedImages,
                 failureCount: 0,
                 jpegFallbackCount: 0,
                 ignoredCompressionCount: 0

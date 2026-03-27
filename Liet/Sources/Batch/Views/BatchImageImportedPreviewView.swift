@@ -1,4 +1,3 @@
-import LietLibrary
 import SwiftUI
 import TipKit
 
@@ -17,7 +16,8 @@ struct BatchImageImportedPreviewView: View {
     @State private var activePreviewItem: BatchImagePreviewItem?
 
     let importedImages: [ImportedBatchImage]
-    let settings: BatchImageSettings?
+    let summaryText: String?
+    let projectedPixelSizeResolver: ((ImportedBatchImage) -> CGSize?)?
     let backToSettings: (() -> Void)?
     private let selectionPreviewTip = SelectionPreviewTip()
 
@@ -97,14 +97,6 @@ private extension BatchImageImportedPreviewView {
         }
     }
 
-    var summaryText: String? {
-        guard let settings else {
-            return nil
-        }
-
-        return outputSummaryText(settings)
-    }
-
     func header() -> some View {
         VStack(
             alignment: .leading,
@@ -127,7 +119,8 @@ private extension BatchImageImportedPreviewView {
         let title = Text(selectionTitle)
             .font(.title2.weight(.semibold))
 
-        if settings == nil {
+        if summaryText == nil,
+           projectedPixelSizeResolver == nil {
             title.popoverTip(
                 selectionPreviewTip,
                 arrowEdge: .top
@@ -140,46 +133,6 @@ private extension BatchImageImportedPreviewView {
     func projectedPixelSize(
         for image: ImportedBatchImage
     ) -> CGSize? {
-        guard let settings else {
-            return nil
-        }
-
-        return BatchImageProcessor.projectedPixelSize(
-            for: image,
-            settings: settings
-        )
-    }
-
-    func outputSummaryText(
-        _ settings: BatchImageSettings
-    ) -> String? {
-        if let referenceDimension = settings.referenceDimension,
-           let referencePixels = settings.referencePixels {
-            let referenceLabel = switch referenceDimension {
-            case .width:
-                String(localized: "Width")
-            case .height:
-                String(localized: "Height")
-            }
-
-            return "\(referenceLabel) \(referencePixels) px • \(String(localized: "Keep ratio"))"
-        }
-
-        guard let exactWidthPixels = settings.exactWidthPixels,
-              let exactHeightPixels = settings.exactHeightPixels,
-              let exactResizeStrategy = settings.exactResizeStrategy else {
-            return nil
-        }
-
-        let strategyLabel = switch exactResizeStrategy {
-        case .stretch:
-            String(localized: "Stretch")
-        case .contain:
-            String(localized: "Contain")
-        case .coverCrop:
-            String(localized: "Crop")
-        }
-
-        return "\(exactWidthPixels)×\(exactHeightPixels) • \(strategyLabel)"
+        projectedPixelSizeResolver?(image)
     }
 }

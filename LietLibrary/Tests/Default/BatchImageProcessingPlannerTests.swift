@@ -150,38 +150,6 @@ struct BatchImageProcessingPlannerTests {
     }
 
     @Test
-    func background_removal_forces_png_output_and_prevents_original_copy() {
-        let settings = BatchImageSettings(
-            resizeMode: .fitWithin(
-                referenceDimension: .width,
-                pixels: 1_920
-            ),
-            compression: .high,
-            backgroundRemoval: .init(
-                isEnabled: true,
-                strength: 0.8,
-                edgeSmoothing: 0.25,
-                edgeExpansion: 0.1
-            )
-        )
-        let plan = BatchImageProcessingPlanner.makePlan(
-            for: .init(
-                originalFormat: .heic,
-                originalPixelSize: .init(width: 1_920, height: 1_080),
-                selectionIndex: 1
-            ),
-            settings: settings,
-            heicEncoderAvailable: false
-        )
-
-        #expect(plan.outputFormat == .png)
-        #expect(plan.outputFilename == "IMG_001.png")
-        #expect(plan.usedJPEGFallback == false)
-        #expect(plan.ignoredCompressionSetting)
-        #expect(plan.shouldCopyOriginal == false)
-    }
-
-    @Test
     func make_plan_uses_selected_naming_template_and_numbering_style() {
         let processedPlan = BatchImageProcessingPlanner.makePlan(
             for: .init(

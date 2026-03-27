@@ -1,10 +1,11 @@
 # Liet Current Product and Architecture Overview
 
-Current as of March 26, 2026.
+Current as of March 28, 2026.
 
 ## Purpose
 
-Liet is currently an iPhone batch image pre-processing product.
+Liet is currently an iPhone batch image pre-processing product with separate
+resize and background-removal feature flows.
 The implementation keeps reusable batch-image state, naming rules, and
 processing planners in `LietLibrary`, while Apple-framework adapters and UI
 remain in the app target.
@@ -32,11 +33,15 @@ remain in the app target.
 
 ## Current End-User Features
 
+- Choose either a resize flow or a background-removal flow from the app entry
+  screen.
 - Select multiple images from the photo library.
 - Review imported image thumbnails before processing.
 - Resize all selected images with one long-edge pixel setting while preserving
   aspect ratio and avoiding upscaling.
 - Compress all selected images with one shared quality setting.
+- Remove backgrounds from all selected images with one shared tuning setup and
+  export transparent PNG copies at the original size.
 - Preserve JPEG, PNG, and HEIC output when possible.
 - Fall back to JPEG for unsupported formats and for HEIC when the current
   runtime cannot encode HEIC output.

@@ -11,7 +11,6 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
         exactHeightPixels: BatchResizeMode.defaultHeightPixels,
         exactResizeStrategy: .stretch,
         compression: .off,
-        backgroundRemoval: .default,
         naming: .default
     )
 
@@ -29,8 +28,6 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
     public var exactResizeStrategy: BatchExactResizeStrategy
     /// The persisted compression preset.
     public var compression: BatchImageCompression
-    /// The persisted background-removal settings.
-    public var backgroundRemoval: BatchBackgroundRemovalSettings
     /// The persisted output naming settings.
     public var naming: BatchImageNaming
 
@@ -53,7 +50,6 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
         exactHeightPixels: Int,
         exactResizeStrategy: BatchExactResizeStrategy,
         compression: BatchImageCompression,
-        backgroundRemoval: BatchBackgroundRemovalSettings = .default,
         naming: BatchImageNaming = .default
     ) {
         self.resizeMode = resizeMode
@@ -63,7 +59,6 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
         self.exactHeightPixels = exactHeightPixels
         self.exactResizeStrategy = exactResizeStrategy
         self.compression = compression
-        self.backgroundRemoval = backgroundRemoval
         self.naming = naming
     }
 
@@ -108,10 +103,6 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
             BatchImageCompression.self,
             forKey: .compression
         )
-        backgroundRemoval = try container.decodeIfPresent(
-            BatchBackgroundRemovalSettings.self,
-            forKey: .backgroundRemoval
-        ) ?? .default
         naming = try container.decodeIfPresent(
             BatchImageNaming.self,
             forKey: .naming
@@ -128,7 +119,6 @@ public struct PersistedBatchImageSettings: Codable, Equatable, RawRepresentable,
         try container.encode(exactHeightPixels, forKey: .exactHeightPixels)
         try container.encode(exactResizeStrategy, forKey: .exactResizeStrategy)
         try container.encode(compression, forKey: .compression)
-        try container.encode(backgroundRemoval, forKey: .backgroundRemoval)
         try container.encode(naming, forKey: .naming)
     }
 }

@@ -25,6 +25,15 @@ struct BatchImageValueTests {
     }
 
     @Test
+    func background_removal_settings_default_to_adjustable_values() {
+        let settings: BatchBackgroundRemovalSettings = .default
+
+        #expect(settings.strength == 0.5)
+        #expect(settings.edgeSmoothing == 0.15)
+        #expect(settings.edgeExpansion == 0)
+    }
+
+    @Test
     func resize_modes_expose_expected_dimensions_and_strategy() {
         let fitWithinResizeMode = BatchResizeMode.fitWithin(
             referenceDimension: .height,

@@ -9,8 +9,8 @@ struct ProcessingSetupTip: Tip {
     var message: Text? {
         Text(
             """
-            Start from Last Used or User Preset, then adjust size and compression. Editing any \
-            value switches to Custom.
+            Start from Last Used or User Preset, then adjust the current feature settings. \
+            Editing any value switches to Custom.
             """
         )
     }

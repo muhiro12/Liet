@@ -61,6 +61,22 @@ enum BatchImagePreviewFixture {
             color: .systemOrange
         )
     ]
+    static let backgroundRemovedImages: [ProcessedBatchImage] = [
+        makeProcessedImage(
+            filename: "IMG_001.png",
+            format: .png,
+            originalFormat: .jpeg,
+            size: landscapeSize,
+            color: .systemTeal
+        ),
+        makeProcessedImage(
+            filename: "IMG_002.png",
+            format: .png,
+            originalFormat: .png,
+            size: portraitSize,
+            color: .systemOrange
+        )
+    ]
 
     static var importedPreviewItem: BatchImagePreviewItem {
         .init(

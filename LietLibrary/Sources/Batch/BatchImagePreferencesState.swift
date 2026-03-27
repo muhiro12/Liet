@@ -22,8 +22,6 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
     public var exactResizeStrategy: BatchExactResizeStrategy
     /// The compression preset currently selected.
     public var compression: BatchImageCompression
-    /// The background-removal settings currently selected.
-    public var backgroundRemoval: BatchBackgroundRemovalSettings
     /// The output naming template currently selected.
     public var namingTemplate: BatchImageNamingTemplate
     /// The editable custom naming prefix text.
@@ -43,7 +41,6 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
         settingsSource: BatchImageSettingsSource,
         exactResizeStrategy: BatchExactResizeStrategy,
         compression: BatchImageCompression,
-        backgroundRemoval: BatchBackgroundRemovalSettings,
         namingTemplate: BatchImageNamingTemplate,
         customNamingPrefixText: String,
         numberingStyle: BatchImageNumberingStyle
@@ -58,7 +55,6 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
         self.settingsSource = settingsSource
         self.exactResizeStrategy = exactResizeStrategy
         self.compression = compression
-        self.backgroundRemoval = backgroundRemoval
         self.namingTemplate = namingTemplate
         self.customNamingPrefixText = customNamingPrefixText
         self.numberingStyle = numberingStyle
@@ -80,7 +76,6 @@ public struct BatchImagePreferencesState: Equatable, Sendable {
             settingsSource: .lastUsed,
             exactResizeStrategy: initialSettings.exactResizeStrategy,
             compression: initialSettings.compression,
-            backgroundRemoval: initialSettings.backgroundRemoval,
             namingTemplate: initialSettings.naming.template,
             customNamingPrefixText: initialSettings.naming.customPrefix,
             numberingStyle: initialSettings.naming.numberingStyle
@@ -135,7 +130,6 @@ public extension BatchImagePreferencesState {
                     pixels: referencePixels
                 ),
                 compression: compression,
-                backgroundRemoval: backgroundRemoval,
                 naming: validatedNaming
             )
         }
@@ -152,7 +146,6 @@ public extension BatchImagePreferencesState {
                 strategy: exactResizeStrategy
             ),
             compression: compression,
-            backgroundRemoval: backgroundRemoval,
             naming: validatedNaming
         )
     }
@@ -202,7 +195,6 @@ public extension BatchImagePreferencesState {
             exactHeightPixels: storedExactHeightPixels,
             exactResizeStrategy: exactResizeStrategy,
             compression: compression,
-            backgroundRemoval: backgroundRemoval,
             naming: validatedNaming
         )
     }
@@ -382,7 +374,6 @@ private extension BatchImagePreferencesState {
         keepsAspectRatio = settings.resizeMode == .aspectRatioPreserved
         exactResizeStrategy = settings.exactResizeStrategy
         compression = settings.compression
-        backgroundRemoval = settings.backgroundRemoval
         namingTemplate = settings.naming.template
         customNamingPrefixText = settings.naming.customPrefix
         numberingStyle = settings.naming.numberingStyle

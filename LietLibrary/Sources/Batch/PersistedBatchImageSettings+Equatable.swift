@@ -13,6 +13,6 @@ public extension PersistedBatchImageSettings {
             lhs.exactHeightPixels == rhs.exactHeightPixels &&
             lhs.exactResizeStrategy == rhs.exactResizeStrategy &&
             lhs.compression == rhs.compression &&
-            lhs.backgroundRemoval == rhs.backgroundRemoval
+            lhs.naming == rhs.naming
     }
 }

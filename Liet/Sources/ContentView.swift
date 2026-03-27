@@ -2,35 +2,61 @@ import PhotosUI
 import SwiftUI
 
 struct ContentView: View {
-    @State private var model: BatchImageHomeModel
-    @State private var selectedItems: [PhotosPickerItem]
+    @State private var resizeModel: BatchImageHomeModel
+    @State private var backgroundRemovalModel: BatchBackgroundRemovalHomeModel
+    @State private var selectedFeature: BatchFeatureKind?
+    @State private var resizeSelectedItems: [PhotosPickerItem]
+    @State private var backgroundRemovalSelectedItems: [PhotosPickerItem]
     @State private var columnVisibility: NavigationSplitViewVisibility
     @State private var preferredCompactColumn: NavigationSplitViewColumn
 
     var body: some View {
-        @Bindable var model = model
+        @Bindable var resizeModel = resizeModel
+        @Bindable var backgroundRemovalModel = backgroundRemovalModel
 
         NavigationSplitView(
             columnVisibility: $columnVisibility,
             preferredCompactColumn: $preferredCompactColumn
         ) {
-            BatchImageHomeView(
-                model: model,
-                selectedItems: $selectedItems,
-                reviewSelection: showImportedPreview
+            sidebarView(
+                resizeModel: resizeModel,
+                backgroundRemovalModel: backgroundRemovalModel
             )
         } detail: {
-            detailView()
+            detailView(
+                resizeModel: resizeModel,
+                backgroundRemovalModel: backgroundRemovalModel
+            )
         }
-        .onChange(of: model.resultModel?.id) { _, resultID in
-            guard resultID != nil else {
+        .onChange(of: resizeModel.resultModel?.id) { _, resultID in
+            guard selectedFeature == .resizeImages,
+                  resultID != nil else {
                 return
             }
 
             showDetailColumn()
         }
-        .onChange(of: model.importedImages.count) { _, importedImageCount in
-            guard importedImageCount == 0 else {
+        .onChange(of: backgroundRemovalModel.resultModel?.id) { _, resultID in
+            guard selectedFeature == .removeBackground,
+                  resultID != nil else {
+                return
+            }
+
+            showDetailColumn()
+        }
+        .onChange(of: resizeModel.importedImages.count) { _, importedImageCount in
+            guard selectedFeature == .resizeImages,
+                  importedImageCount == 0 else {
+                return
+            }
+
+            showSidebarColumn()
+        }
+        .onChange(
+            of: backgroundRemovalModel.importedImages.count
+        ) { _, importedImageCount in
+            guard selectedFeature == .removeBackground,
+                  importedImageCount == 0 else {
                 return
             }
 
@@ -39,13 +65,21 @@ struct ContentView: View {
     }
 
     init(
-        model: BatchImageHomeModel = .init(),
-        selectedItems: [PhotosPickerItem] = [],
+        resizeModel: BatchImageHomeModel = .init(),
+        backgroundRemovalModel: BatchBackgroundRemovalHomeModel = .init(),
+        selectedFeature: BatchFeatureKind? = nil,
+        resizeSelectedItems: [PhotosPickerItem] = [],
+        backgroundRemovalSelectedItems: [PhotosPickerItem] = [],
         columnVisibility: NavigationSplitViewVisibility = .automatic,
         preferredCompactColumn: NavigationSplitViewColumn = .sidebar
     ) {
-        _model = State(initialValue: model)
-        _selectedItems = State(initialValue: selectedItems)
+        _resizeModel = State(initialValue: resizeModel)
+        _backgroundRemovalModel = State(initialValue: backgroundRemovalModel)
+        _selectedFeature = State(initialValue: selectedFeature)
+        _resizeSelectedItems = State(initialValue: resizeSelectedItems)
+        _backgroundRemovalSelectedItems = State(
+            initialValue: backgroundRemovalSelectedItems
+        )
         _columnVisibility = State(initialValue: columnVisibility)
         _preferredCompactColumn = State(initialValue: preferredCompactColumn)
     }
@@ -53,27 +87,118 @@ struct ContentView: View {
 
 private extension ContentView {
     @ViewBuilder
-    func detailView() -> some View {
-        if let resultModel = model.resultModel {
+    func sidebarView(
+        resizeModel: BatchImageHomeModel,
+        backgroundRemovalModel: BatchBackgroundRemovalHomeModel
+    ) -> some View {
+        switch selectedFeature {
+        case .resizeImages:
+            BatchImageHomeView(
+                model: resizeModel,
+                selectedItems: $resizeSelectedItems,
+                reviewSelection: showImportedPreview,
+                backToChooser: showFeatureChooser
+            )
+        case .removeBackground:
+            BatchBackgroundRemovalHomeView(
+                model: backgroundRemovalModel,
+                selectedItems: $backgroundRemovalSelectedItems,
+                reviewSelection: showImportedPreview,
+                backToChooser: showFeatureChooser
+            )
+        case nil:
+            BatchFeatureChooserView(selectFeature: selectFeature)
+        }
+    }
+
+    @ViewBuilder
+    func detailView(
+        resizeModel: BatchImageHomeModel,
+        backgroundRemovalModel: BatchBackgroundRemovalHomeModel
+    ) -> some View {
+        switch selectedFeature {
+        case .resizeImages:
+            resizeDetailView(
+                resizeModel: resizeModel
+            )
+        case .removeBackground:
+            backgroundRemovalDetailView(
+                backgroundRemovalModel: backgroundRemovalModel
+            )
+        case nil:
+            BatchFeatureEmptyDetailView()
+        }
+    }
+
+    @ViewBuilder
+    func resizeDetailView(
+        resizeModel: BatchImageHomeModel
+    ) -> some View {
+        if let resultModel = resizeModel.resultModel {
             BatchImageResultView(
                 model: resultModel,
                 backToSettings: showSidebarColumn
             )
-        } else if model.importedImages.isEmpty {
+        } else if resizeModel.importedImages.isEmpty {
             BatchImageEmptyDetailView(
                 backToSettings: showSidebarColumn
             )
         } else {
             BatchImageImportedPreviewView(
-                importedImages: model.importedImages,
-                settings: model.settings,
+                importedImages: resizeModel.importedImages,
+                summaryText: resizeModel.selectionSummaryText,
+                projectedPixelSizeResolver: resizeModel.projectedPixelSize(for:),
                 backToSettings: showSidebarColumn
             )
         }
     }
 
+    @ViewBuilder
+    func backgroundRemovalDetailView(
+        backgroundRemovalModel: BatchBackgroundRemovalHomeModel
+    ) -> some View {
+        if let resultModel = backgroundRemovalModel.resultModel {
+            BatchImageResultView(
+                model: resultModel,
+                backToSettings: showSidebarColumn
+            )
+        } else if backgroundRemovalModel.importedImages.isEmpty {
+            BatchImageEmptyDetailView(
+                backToSettings: showSidebarColumn
+            )
+        } else {
+            BatchImageImportedPreviewView(
+                importedImages: backgroundRemovalModel.importedImages,
+                summaryText: backgroundRemovalModel.selectionSummaryText,
+                projectedPixelSizeResolver: backgroundRemovalModel.projectedPixelSize(for:),
+                backToSettings: showSidebarColumn
+            )
+        }
+    }
+
+    func selectFeature(
+        _ feature: BatchFeatureKind
+    ) {
+        selectedFeature = feature
+        showSidebarColumn()
+    }
+
+    func showFeatureChooser() {
+        selectedFeature = nil
+        showSidebarColumn()
+    }
+
     func showImportedPreview() {
-        guard !model.importedImages.isEmpty else {
+        switch selectedFeature {
+        case .resizeImages:
+            guard !resizeModel.importedImages.isEmpty else {
+                return
+            }
+        case .removeBackground:
+            guard !backgroundRemovalModel.importedImages.isEmpty else {
+                return
+            }
+        case nil:
             return
         }
 

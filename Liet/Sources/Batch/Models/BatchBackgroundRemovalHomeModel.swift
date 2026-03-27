@@ -7,23 +7,18 @@ import SwiftUI
 
 @MainActor
 @Observable
-final class BatchImageHomeModel {
+final class BatchBackgroundRemovalHomeModel {
     typealias SettingsSource = BatchImageSettingsSource
 
     enum AlertState: Equatable {
-        case invalidResizeSize
+        case invalidConfiguration
         case importSelectionFailed
         case processSelectionFailed
     }
 
     var importedImages: [ImportedBatchImage] = []
-    private(set) var referenceDimension: BatchResizeReferenceDimension
-    private(set) var referencePixelsText: String
-    private(set) var resizeWidthText: String
-    private(set) var resizeHeightText: String
-    private(set) var keepsAspectRatio: Bool
-    private(set) var userPresetSettings: PersistedBatchImageSettings?
-    private(set) var lastUsedSettings: PersistedBatchImageSettings
+    private(set) var userPresetSettings: PersistedBatchBackgroundRemovalSettings?
+    private(set) var lastUsedSettings: PersistedBatchBackgroundRemovalSettings
     private(set) var namingTemplate: BatchImageNamingTemplate
     private(set) var customNamingPrefixText: String
     private(set) var numberingStyle: BatchImageNumberingStyle
@@ -43,20 +38,15 @@ final class BatchImageHomeModel {
             }
         }
     }
-    var exactResizeStrategy: BatchExactResizeStrategy = .stretch {
+    var strength: Double = BatchBackgroundRemovalSettings.default.strength {
         didSet {
             if !suppressesAutomaticSettingsDidChange,
-               exactResizeStrategy != oldValue {
+               strength != oldValue {
                 let oldState = preferencesState(
-                    exactResizeStrategy: oldValue
+                    strength: oldValue
                 )
                 var newState = oldState
-                newState.setExactResizeStrategy(exactResizeStrategy)
-
-                if !newState.keepsAspectRatio {
-                    BatchImageTipSupport.markExactResizeMethodConfigured()
-                }
-
+                newState.setStrength(strength)
                 applyUpdatedPreferencesState(
                     oldState: oldState,
                     newState: newState
@@ -64,15 +54,31 @@ final class BatchImageHomeModel {
             }
         }
     }
-    var compression: BatchImageCompression = .off {
+    var edgeSmoothing: Double = BatchBackgroundRemovalSettings.default.edgeSmoothing {
         didSet {
             if !suppressesAutomaticSettingsDidChange,
-               compression != oldValue {
+               edgeSmoothing != oldValue {
                 let oldState = preferencesState(
-                    compression: oldValue
+                    edgeSmoothing: oldValue
                 )
                 var newState = oldState
-                newState.setCompression(compression)
+                newState.setEdgeSmoothing(edgeSmoothing)
+                applyUpdatedPreferencesState(
+                    oldState: oldState,
+                    newState: newState
+                )
+            }
+        }
+    }
+    var edgeExpansion: Double = BatchBackgroundRemovalSettings.default.edgeExpansion {
+        didSet {
+            if !suppressesAutomaticSettingsDidChange,
+               edgeExpansion != oldValue {
+                let oldState = preferencesState(
+                    edgeExpansion: oldValue
+                )
+                var newState = oldState
+                newState.setEdgeExpansion(edgeExpansion)
                 applyUpdatedPreferencesState(
                     oldState: oldState,
                     newState: newState
@@ -86,40 +92,36 @@ final class BatchImageHomeModel {
     var importFailureCount: Int?
     var resultModel: BatchImageResultModel?
 
-    private let settingsStore: BatchImageSettingsStore
+    private let settingsStore: BatchBackgroundRemovalSettingsStore
     private var importSessionID: UUID = .init()
     private var suppressesAutomaticSettingsDidChange = false
 
     init(
-        settingsStore: BatchImageSettingsStore = .live()
+        settingsStore: BatchBackgroundRemovalSettingsStore = .live()
     ) {
         self.settingsStore = settingsStore
-        let preferencesState = BatchImagePreferencesState(
+        let preferencesState = BatchBackgroundRemovalPreferencesState(
             preferences: settingsStore.load() ?? .default
         )
-        referenceDimension = preferencesState.referenceDimension
-        referencePixelsText = preferencesState.referencePixelsText
-        resizeWidthText = preferencesState.resizeWidthText
-        resizeHeightText = preferencesState.resizeHeightText
-        keepsAspectRatio = preferencesState.keepsAspectRatio
         userPresetSettings = preferencesState.userPresetSettings
         lastUsedSettings = preferencesState.lastUsedSettings
         settingsSource = preferencesState.settingsSource
-        exactResizeStrategy = preferencesState.exactResizeStrategy
-        compression = preferencesState.compression
+        strength = preferencesState.strength
+        edgeSmoothing = preferencesState.edgeSmoothing
+        edgeExpansion = preferencesState.edgeExpansion
         namingTemplate = preferencesState.namingTemplate
         customNamingPrefixText = preferencesState.customNamingPrefixText
         numberingStyle = preferencesState.numberingStyle
     }
 }
 
-extension BatchImageHomeModel {
+extension BatchBackgroundRemovalHomeModel {
     var showsProcessingStep: Bool {
         !importedImages.isEmpty
     }
 
     var canProcess: Bool {
-        settings != nil &&
+        currentPreferencesState.currentPersistedSettings != nil &&
             !importedImages.isEmpty &&
             !isImporting &&
             !isProcessing
@@ -133,137 +135,26 @@ extension BatchImageHomeModel {
         currentPreferencesState.hasUserPresetSettings
     }
 
-    var referencePixels: Int? {
-        currentPreferencesState.referencePixels
-    }
-
-    var exactWidthPixels: Int? {
-        currentPreferencesState.exactWidthPixels
-    }
-
-    var exactHeightPixels: Int? {
-        currentPreferencesState.exactHeightPixels
-    }
-
-    var showsExactResizeStrategy: Bool {
-        !keepsAspectRatio
-    }
-
-    var showsCompressionSection: Bool {
-        importedImages.contains { image in
-            supportsLossyCompression(for: image)
-        }
-    }
-
-    var showsMixedCompressionHint: Bool {
-        showsCompressionSection &&
-            importedImages.contains { image in
-                image.originalFormat == .png
-            }
-    }
-
-    var settings: BatchImageSettings? {
-        currentPreferencesState.settings
-    }
-
     var showsCustomNamingPrefixField: Bool {
         namingTemplate == .custom
     }
 
     var hasValidNaming: Bool {
-        BatchImageNaming(
-            template: namingTemplate,
-            customPrefix: customNamingPrefixText,
-            numberingStyle: numberingStyle
-        ).isValid
+        currentPreferencesState.naming != nil
     }
 
     var selectionSummaryText: String? {
-        guard let settings else {
+        guard !importedImages.isEmpty else {
             return nil
         }
 
-        if let referenceDimension = settings.referenceDimension,
-           let referencePixels = settings.referencePixels {
-            let referenceLabel = switch referenceDimension {
-            case .width:
-                String(localized: "Width")
-            case .height:
-                String(localized: "Height")
-            }
-
-            return "\(referenceLabel) \(referencePixels) px • \(String(localized: "Keep ratio"))"
-        }
-
-        guard let exactWidthPixels = settings.exactWidthPixels,
-              let exactHeightPixels = settings.exactHeightPixels,
-              let exactResizeStrategy = settings.exactResizeStrategy else {
-            return nil
-        }
-
-        let strategyLabel = switch exactResizeStrategy {
-        case .stretch:
-            String(localized: "Stretch")
-        case .contain:
-            String(localized: "Contain")
-        case .coverCrop:
-            String(localized: "Crop")
-        }
-
-        return "\(exactWidthPixels)×\(exactHeightPixels) • \(strategyLabel)"
+        return "Original size • Transparent PNG"
     }
 
     func projectedPixelSize(
         for image: ImportedBatchImage
     ) -> CGSize? {
-        guard let settings else {
-            return nil
-        }
-
-        return BatchImageProcessor.projectedPixelSize(
-            for: image,
-            settings: settings
-        )
-    }
-
-    func setReferenceDimension(
-        _ newValue: BatchResizeReferenceDimension
-    ) {
-        mutatePreferencesState { preferencesState in
-            preferencesState.setReferenceDimension(newValue)
-        }
-    }
-
-    func setReferencePixelsText(
-        _ newValue: String
-    ) {
-        mutatePreferencesState { preferencesState in
-            preferencesState.setReferencePixelsText(newValue)
-        }
-    }
-
-    func setResizeWidthText(
-        _ newValue: String
-    ) {
-        mutatePreferencesState { preferencesState in
-            preferencesState.setResizeWidthText(newValue)
-        }
-    }
-
-    func setResizeHeightText(
-        _ newValue: String
-    ) {
-        mutatePreferencesState { preferencesState in
-            preferencesState.setResizeHeightText(newValue)
-        }
-    }
-
-    func setKeepsAspectRatio(
-        _ newValue: Bool
-    ) {
-        mutatePreferencesState { preferencesState in
-            preferencesState.setKeepsAspectRatio(newValue)
-        }
+        image.pixelSize
     }
 
     func setNamingTemplate(
@@ -376,9 +267,9 @@ extension BatchImageHomeModel {
     func processImages() {
         let preferencesState = currentPreferencesState
 
-        guard let settings = preferencesState.settings,
-              let currentPersistedSettings = preferencesState.currentPersistedSettings else {
-            activeAlert = .invalidResizeSize
+        guard let currentPersistedSettings = preferencesState.currentPersistedSettings,
+              let naming = preferencesState.naming else {
+            activeAlert = .invalidConfiguration
             return
         }
 
@@ -390,9 +281,10 @@ extension BatchImageHomeModel {
         savePreferences(updatedPreferencesState.preferences)
         activeAlert = nil
         isProcessing = true
-        let outcome = BatchImageProcessor.process(
+        let outcome = BatchBackgroundRemovalProcessor.process(
             images: importedImages,
-            settings: settings
+            settings: preferencesState.settings,
+            naming: naming
         )
         isProcessing = false
 
@@ -411,19 +303,15 @@ extension BatchImageHomeModel {
     }
 }
 
-private extension BatchImageHomeModel {
-    var currentPreferencesState: BatchImagePreferencesState {
+private extension BatchBackgroundRemovalHomeModel {
+    var currentPreferencesState: BatchBackgroundRemovalPreferencesState {
         .init(
-            referenceDimension: referenceDimension,
-            referencePixelsText: referencePixelsText,
-            resizeWidthText: resizeWidthText,
-            resizeHeightText: resizeHeightText,
-            keepsAspectRatio: keepsAspectRatio,
             userPresetSettings: userPresetSettings,
             lastUsedSettings: lastUsedSettings,
             settingsSource: settingsSource,
-            exactResizeStrategy: exactResizeStrategy,
-            compression: compression,
+            strength: strength,
+            edgeSmoothing: edgeSmoothing,
+            edgeExpansion: edgeExpansion,
             namingTemplate: namingTemplate,
             customNamingPrefixText: customNamingPrefixText,
             numberingStyle: numberingStyle
@@ -463,8 +351,8 @@ private extension BatchImageHomeModel {
     }
 
     func applyUpdatedPreferencesState(
-        oldState: BatchImagePreferencesState,
-        newState: BatchImagePreferencesState
+        oldState: BatchBackgroundRemovalPreferencesState,
+        newState: BatchBackgroundRemovalPreferencesState
     ) {
         guard newState != oldState else {
             return
@@ -482,23 +370,19 @@ private extension BatchImageHomeModel {
     }
 
     func applyPreferencesState(
-        _ preferencesState: BatchImagePreferencesState
+        _ preferencesState: BatchBackgroundRemovalPreferencesState
     ) {
         suppressesAutomaticSettingsDidChange = true
         defer {
             suppressesAutomaticSettingsDidChange = false
         }
 
-        referenceDimension = preferencesState.referenceDimension
-        referencePixelsText = preferencesState.referencePixelsText
-        resizeWidthText = preferencesState.resizeWidthText
-        resizeHeightText = preferencesState.resizeHeightText
-        keepsAspectRatio = preferencesState.keepsAspectRatio
         userPresetSettings = preferencesState.userPresetSettings
         lastUsedSettings = preferencesState.lastUsedSettings
         settingsSource = preferencesState.settingsSource
-        exactResizeStrategy = preferencesState.exactResizeStrategy
-        compression = preferencesState.compression
+        strength = preferencesState.strength
+        edgeSmoothing = preferencesState.edgeSmoothing
+        edgeExpansion = preferencesState.edgeExpansion
         namingTemplate = preferencesState.namingTemplate
         customNamingPrefixText = preferencesState.customNamingPrefixText
         numberingStyle = preferencesState.numberingStyle
@@ -506,20 +390,17 @@ private extension BatchImageHomeModel {
 
     func preferencesState(
         settingsSource oldSettingsSource: SettingsSource? = nil,
-        exactResizeStrategy oldExactResizeStrategy: BatchExactResizeStrategy? = nil,
-        compression oldCompression: BatchImageCompression? = nil
-    ) -> BatchImagePreferencesState {
+        strength oldStrength: Double? = nil,
+        edgeSmoothing oldEdgeSmoothing: Double? = nil,
+        edgeExpansion oldEdgeExpansion: Double? = nil
+    ) -> BatchBackgroundRemovalPreferencesState {
         .init(
-            referenceDimension: referenceDimension,
-            referencePixelsText: referencePixelsText,
-            resizeWidthText: resizeWidthText,
-            resizeHeightText: resizeHeightText,
-            keepsAspectRatio: keepsAspectRatio,
             userPresetSettings: userPresetSettings,
             lastUsedSettings: lastUsedSettings,
             settingsSource: oldSettingsSource ?? settingsSource,
-            exactResizeStrategy: oldExactResizeStrategy ?? exactResizeStrategy,
-            compression: oldCompression ?? compression,
+            strength: oldStrength ?? strength,
+            edgeSmoothing: oldEdgeSmoothing ?? edgeSmoothing,
+            edgeExpansion: oldEdgeExpansion ?? edgeExpansion,
             namingTemplate: namingTemplate,
             customNamingPrefixText: customNamingPrefixText,
             numberingStyle: numberingStyle
@@ -527,7 +408,7 @@ private extension BatchImageHomeModel {
     }
 
     func mutatePreferencesState(
-        _ transform: (inout BatchImagePreferencesState) -> Void
+        _ transform: (inout BatchBackgroundRemovalPreferencesState) -> Void
     ) {
         let oldState = currentPreferencesState
         var newState = oldState
@@ -540,36 +421,21 @@ private extension BatchImageHomeModel {
     }
 
     func hasEditableSettingsChanged(
-        from oldState: BatchImagePreferencesState,
-        to newState: BatchImagePreferencesState
+        from oldState: BatchBackgroundRemovalPreferencesState,
+        to newState: BatchBackgroundRemovalPreferencesState
     ) -> Bool {
-        oldState.referenceDimension != newState.referenceDimension ||
-            oldState.referencePixelsText != newState.referencePixelsText ||
-            oldState.resizeWidthText != newState.resizeWidthText ||
-            oldState.resizeHeightText != newState.resizeHeightText ||
-            oldState.keepsAspectRatio != newState.keepsAspectRatio ||
-            oldState.exactResizeStrategy != newState.exactResizeStrategy ||
-            oldState.compression != newState.compression ||
+        oldState.strength != newState.strength ||
+            oldState.edgeSmoothing != newState.edgeSmoothing ||
+            oldState.edgeExpansion != newState.edgeExpansion ||
             oldState.namingTemplate != newState.namingTemplate ||
             oldState.customNamingPrefixText != newState.customNamingPrefixText ||
             oldState.numberingStyle != newState.numberingStyle
     }
 
     func savePreferences(
-        _ preferences: PersistedBatchImagePreferences
+        _ preferences: PersistedBatchBackgroundRemovalPreferences
     ) {
         settingsStore.save(preferences)
-    }
-
-    func supportsLossyCompression(
-        for image: ImportedBatchImage
-    ) -> Bool {
-        let outputFormat = BatchImageProcessingPlanner.resolvedOutputFormat(
-            for: image.originalFormat,
-            heicEncoderAvailable: BatchImageProcessor.heicEncoderAvailable
-        )
-
-        return outputFormat.supportsLossyCompressionQuality
     }
 }
 // swiftlint:enable file_length

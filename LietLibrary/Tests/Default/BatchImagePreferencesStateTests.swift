@@ -8,12 +8,6 @@ struct BatchImagePreferencesStateTests {
             referenceDimension: .width,
             referencePixels: 2_048,
             compression: .high,
-            backgroundRemoval: .init(
-                isEnabled: true,
-                strength: 0.7,
-                edgeSmoothing: 0.2,
-                edgeExpansion: 0.15
-            ),
             naming: .init(
                 template: .custom,
                 customPrefix: "receipt",
@@ -28,12 +22,6 @@ struct BatchImagePreferencesStateTests {
             exactHeightPixels: 180,
             exactResizeStrategy: .coverCrop,
             compression: .medium,
-            backgroundRemoval: .init(
-                isEnabled: false,
-                strength: 0.4,
-                edgeSmoothing: 0.1,
-                edgeExpansion: -0.1
-            ),
             naming: .init(
                 template: .processed,
                 numberingStyle: .zeroPaddedThreeDigits
@@ -140,10 +128,6 @@ struct BatchImagePreferencesStateTests {
         state.setReferenceDimension(.height)
         state.setReferencePixelsText("1080")
         state.setCompression(.high)
-        state.setBackgroundRemovalEnabled(true)
-        state.setBackgroundRemovalStrength(0.8)
-        state.setBackgroundRemovalEdgeSmoothing(0.3)
-        state.setBackgroundRemovalEdgeExpansion(-0.2)
         state.setNamingTemplate(.processed)
         state.setNamingNumberingStyle(.plain)
 
@@ -156,10 +140,6 @@ struct BatchImagePreferencesStateTests {
         #expect(state.lastUsedSettings.referenceDimension == .height)
         #expect(state.lastUsedSettings.referencePixels == 1_080)
         #expect(state.lastUsedSettings.compression == .high)
-        #expect(state.lastUsedSettings.backgroundRemoval.isEnabled)
-        #expect(state.lastUsedSettings.backgroundRemoval.strength == 0.8)
-        #expect(state.lastUsedSettings.backgroundRemoval.edgeSmoothing == 0.3)
-        #expect(state.lastUsedSettings.backgroundRemoval.edgeExpansion == -0.2)
         #expect(state.lastUsedSettings.naming.template == .processed)
         #expect(state.lastUsedSettings.naming.numberingStyle == .plain)
         #expect(state.preferences.lastUsedSettings == state.lastUsedSettings)
@@ -214,7 +194,6 @@ private extension BatchImagePreferencesStateTests {
         exactHeightPixels: Int = 1_080,
         exactResizeStrategy: BatchExactResizeStrategy = .stretch,
         compression: BatchImageCompression = .off,
-        backgroundRemoval: BatchBackgroundRemovalSettings = .default,
         naming: BatchImageNaming = .default
     ) -> PersistedBatchImageSettings {
         .init(
@@ -225,7 +204,6 @@ private extension BatchImagePreferencesStateTests {
             exactHeightPixels: exactHeightPixels,
             exactResizeStrategy: exactResizeStrategy,
             compression: compression,
-            backgroundRemoval: backgroundRemoval,
             naming: naming
         )
     }
@@ -241,7 +219,6 @@ private extension BatchImagePreferencesStateTests {
         #expect(lhs.exactHeightPixels == rhs.exactHeightPixels)
         #expect(lhs.exactResizeStrategy == rhs.exactResizeStrategy)
         #expect(lhs.compression == rhs.compression)
-        #expect(lhs.backgroundRemoval == rhs.backgroundRemoval)
         #expect(lhs.naming == rhs.naming)
     }
 
@@ -255,7 +232,6 @@ private extension BatchImagePreferencesStateTests {
         #expect(state.resizeHeightText == "180")
         #expect(state.exactResizeStrategy == .coverCrop)
         #expect(state.compression == .medium)
-        #expect(state.backgroundRemoval.isEnabled == false)
         #expect(state.namingTemplate == .processed)
         #expect(state.customNamingPrefixText.isEmpty)
         #expect(state.numberingStyle == .zeroPaddedThreeDigits)

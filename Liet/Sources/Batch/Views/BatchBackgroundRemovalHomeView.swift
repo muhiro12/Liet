@@ -5,7 +5,7 @@ import SwiftUI
 import TipKit
 import UIKit
 
-struct BatchImageHomeView: View {
+struct BatchBackgroundRemovalHomeView: View {
     private enum Layout {
         static let cardCornerRadius = 20.0
         static let cardPadding = 18.0
@@ -27,18 +27,16 @@ struct BatchImageHomeView: View {
         static let stepBorderOpacity = 0.08
     }
 
-    @Bindable var model: BatchImageHomeModel
+    @Bindable var model: BatchBackgroundRemovalHomeModel
     @Binding var selectedItems: [PhotosPickerItem]
     let reviewSelection: (() -> Void)?
     let backToChooser: (() -> Void)?
     @State private var isPresentingFileImporter = false
     @State private var suppressesSelectedItemsDidChange = false
-    @Namespace private var processingMorphNamespace
 
     private let selectImagesTip = SelectImagesTip()
     private let processingSetupTip = ProcessingSetupTip()
     private let runProcessingTip = RunProcessingTip()
-    private let resizeMethodTip = ResizeMethodTip()
     private let userPresetTip = UserPresetTip()
 
     var body: some View {
@@ -59,19 +57,11 @@ struct BatchImageHomeView: View {
             .padding(Layout.contentPadding)
         }
         .scrollDismissesKeyboard(.interactively)
-        .navigationTitle("Resize Images")
+        .navigationTitle("Remove Background")
         .navigationBarTitleDisplayMode(.large)
         .animation(
             processingAnimation,
             value: model.importedImages.count
-        )
-        .animation(
-            processingAnimation,
-            value: model.keepsAspectRatio
-        )
-        .animation(
-            processingAnimation,
-            value: model.showsCompressionSection
         )
         .toolbar {
             if let backToChooser {
@@ -125,7 +115,7 @@ struct BatchImageHomeView: View {
     }
 }
 
-private extension BatchImageHomeView {
+private extension BatchBackgroundRemovalHomeView {
     var errorPresented: Binding<Bool> {
         Binding(
             get: {
@@ -139,57 +129,35 @@ private extension BatchImageHomeView {
         )
     }
 
-    var resizeWidthBinding: Binding<String> {
+    var strengthBinding: Binding<Double> {
         Binding(
             get: {
-                model.resizeWidthText
+                model.strength
             },
             set: { newValue in
-                model.setResizeWidthText(newValue)
+                model.strength = newValue
             }
         )
     }
 
-    var resizeHeightBinding: Binding<String> {
+    var edgeSmoothingBinding: Binding<Double> {
         Binding(
             get: {
-                model.resizeHeightText
+                model.edgeSmoothing
             },
             set: { newValue in
-                model.setResizeHeightText(newValue)
+                model.edgeSmoothing = newValue
             }
         )
     }
 
-    var referencePixelsBinding: Binding<String> {
+    var edgeExpansionBinding: Binding<Double> {
         Binding(
             get: {
-                model.referencePixelsText
+                model.edgeExpansion
             },
             set: { newValue in
-                model.setReferencePixelsText(newValue)
-            }
-        )
-    }
-
-    var referenceDimensionBinding: Binding<BatchResizeReferenceDimension> {
-        Binding(
-            get: {
-                model.referenceDimension
-            },
-            set: { newValue in
-                model.setReferenceDimension(newValue)
-            }
-        )
-    }
-
-    var keepsAspectRatioBinding: Binding<Bool> {
-        Binding(
-            get: {
-                model.keepsAspectRatio
-            },
-            set: { newValue in
-                model.setKeepsAspectRatio(newValue)
+                model.edgeExpansion = newValue
             }
         )
     }
@@ -227,7 +195,7 @@ private extension BatchImageHomeView {
         )
     }
 
-    var settingsSourceBinding: Binding<BatchImageHomeModel.SettingsSource> {
+    var settingsSourceBinding: Binding<BatchBackgroundRemovalHomeModel.SettingsSource> {
         Binding(
             get: {
                 model.settingsSource
@@ -255,14 +223,8 @@ private extension BatchImageHomeView {
             title: "Processing Settings"
         ) {
             settingsSourceSection()
-            outputSizeSection()
             fileNamingSection()
-
-            if model.showsCompressionSection {
-                compressionSection()
-                    .transition(optionalProcessingSectionTransition)
-            }
-
+            backgroundRemovalSection()
             userPresetSection()
         }
     }
@@ -276,114 +238,22 @@ private extension BatchImageHomeView {
         }
     }
 
-    func outputSizeSection() -> some View {
-        settingsSection(title: "Output Size") {
-            resizeSection()
-        }
-    }
-
     func settingsSourceSection() -> some View {
         settingsSection(title: "Starting Point") {
             Picker("Starting Point", selection: settingsSourceBinding) {
                 Text("Last Used")
-                    .tag(BatchImageHomeModel.SettingsSource.lastUsed)
+                    .tag(BatchBackgroundRemovalHomeModel.SettingsSource.lastUsed)
                 Text("User Preset")
-                    .tag(BatchImageHomeModel.SettingsSource.userPreset)
+                    .tag(BatchBackgroundRemovalHomeModel.SettingsSource.userPreset)
                     .disabled(!model.hasUserPresetSettings)
                 Text("Custom")
-                    .tag(BatchImageHomeModel.SettingsSource.custom)
+                    .tag(BatchBackgroundRemovalHomeModel.SettingsSource.custom)
             }
             .pickerStyle(.segmented)
             .popoverTip(
                 processingSetupTip,
                 arrowEdge: .top
             )
-        }
-    }
-
-    func resizeSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.cardSpacing
-        ) {
-            Toggle(
-                "Keep aspect ratio",
-                isOn: keepsAspectRatioBinding
-            )
-
-            resizeModeSection()
-        }
-    }
-
-    @ViewBuilder
-    func resizeModeSection() -> some View {
-        ZStack(alignment: .topLeading) {
-            if model.keepsAspectRatio {
-                aspectRatioInputSection()
-                    .matchedGeometryEffect(
-                        id: "processing.resize.mode",
-                        in: processingMorphNamespace
-                    )
-                    .transition(resizeModeTransition)
-            } else {
-                exactResizeInputSection()
-                    .matchedGeometryEffect(
-                        id: "processing.resize.mode",
-                        in: processingMorphNamespace
-                    )
-                    .transition(resizeModeTransition)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    func aspectRatioInputSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.cardSpacing
-        ) {
-            VStack(
-                alignment: .leading,
-                spacing: Layout.controlSpacing
-            ) {
-                Text("Reference edge")
-                    .font(.subheadline.weight(.medium))
-
-                Picker("Reference edge", selection: referenceDimensionBinding) {
-                    Text("Width")
-                        .tag(BatchResizeReferenceDimension.width)
-                    Text("Height")
-                        .tag(BatchResizeReferenceDimension.height)
-                }
-                .pickerStyle(.segmented)
-            }
-
-            dimensionInputSection(
-                title: Text(referencePixelsTitle),
-                placeholder: referencePixelsPlaceholder,
-                text: referencePixelsBinding
-            )
-        }
-    }
-
-    func exactResizeInputSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.cardSpacing
-        ) {
-            dimensionInputSection(
-                title: Text("Width (px)"),
-                placeholder: "1920",
-                text: resizeWidthBinding
-            )
-
-            dimensionInputSection(
-                title: Text("Height (px)"),
-                placeholder: "1080",
-                text: resizeHeightBinding
-            )
-
-            exactSizeSection()
         }
     }
 
@@ -473,6 +343,43 @@ private extension BatchImageHomeView {
         }
     }
 
+    func backgroundRemovalSection() -> some View {
+        settingsSection(title: "Background Removal") {
+            backgroundRemovalControls()
+        }
+    }
+
+    func backgroundRemovalControls() -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: Layout.cardSpacing
+        ) {
+            adjustmentSlider(
+                title: "Strength",
+                value: strengthBinding,
+                range: 0...1,
+                valueText: percentageText(model.strength)
+            )
+            adjustmentSlider(
+                title: "Edge smoothing",
+                value: edgeSmoothingBinding,
+                range: 0...1,
+                valueText: percentageText(model.edgeSmoothing)
+            )
+            adjustmentSlider(
+                title: "Edge expand / contract",
+                value: edgeExpansionBinding,
+                range: -1...1,
+                valueText: signedPercentageText(model.edgeExpansion)
+            )
+            BatchStatusChip(
+                "Exports PNG with transparency",
+                systemImage: "sparkles",
+                tone: .neutral
+            )
+        }
+    }
+
     private func dimensionInputSection(
         title: Text,
         placeholder: String,
@@ -515,37 +422,6 @@ private extension BatchImageHomeView {
                 value: value,
                 in: range
             )
-        }
-    }
-
-    func exactSizeSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.cardSpacing
-        ) {
-            VStack(
-                alignment: .leading,
-                spacing: Layout.controlSpacing
-            ) {
-                Text("Method")
-                    .font(.subheadline.weight(.medium))
-
-                Picker(selection: $model.exactResizeStrategy) {
-                    Text("Stretch")
-                        .tag(BatchExactResizeStrategy.stretch)
-                    Text("Contain")
-                        .tag(BatchExactResizeStrategy.contain)
-                    Text("Crop")
-                        .tag(BatchExactResizeStrategy.coverCrop)
-                } label: {
-                    Text("Method")
-                }
-                .pickerStyle(.segmented)
-                .popoverTip(
-                    resizeMethodTip,
-                    arrowEdge: .top
-                )
-            }
         }
     }
 
@@ -635,30 +511,6 @@ private extension BatchImageHomeView {
         }
     }
 
-    func compressionSection() -> some View {
-        settingsSection(title: "Compression") {
-            Picker("Compression", selection: $model.compression) {
-                Text("Off")
-                    .tag(BatchImageCompression.off)
-                Text("High")
-                    .tag(BatchImageCompression.high)
-                Text("Medium")
-                    .tag(BatchImageCompression.medium)
-                Text("Low")
-                    .tag(BatchImageCompression.low)
-            }
-            .pickerStyle(.segmented)
-
-            if model.showsMixedCompressionHint {
-                BatchStatusChip(
-                    "PNG keeps original format",
-                    systemImage: "photo",
-                    tone: .neutral
-                )
-            }
-        }
-    }
-
     func userPresetSection() -> some View {
         settingsSection(title: "User Preset") {
             Button {
@@ -704,6 +556,24 @@ private extension BatchImageHomeView {
             runProcessingTip,
             arrowEdge: .top
         )
+    }
+
+    func percentageText(
+        _ value: Double
+    ) -> String {
+        "\(Int((value * 100).rounded()))%"
+    }
+
+    func signedPercentageText(
+        _ value: Double
+    ) -> String {
+        let percentage = Int((value * 100).rounded())
+
+        if percentage > 0 {
+            return "+\(percentage)%"
+        }
+
+        return "\(percentage)%"
     }
 
     func handleFileImportResult(
@@ -802,42 +672,6 @@ private extension BatchImageHomeView {
                 anchor: .top
             )
         )
-    }
-
-    var optionalProcessingSectionTransition: AnyTransition {
-        .opacity.combined(
-            with: .scale(
-                scale: Layout.sectionTransitionScale,
-                anchor: .top
-            )
-        )
-    }
-
-    var resizeModeTransition: AnyTransition {
-        .opacity.combined(
-            with: .scale(
-                scale: Layout.sectionTransitionScale,
-                anchor: .top
-            )
-        )
-    }
-
-    var referencePixelsTitle: String {
-        switch model.referenceDimension {
-        case .width:
-            "Width (px)"
-        case .height:
-            "Height (px)"
-        }
-    }
-
-    var referencePixelsPlaceholder: String {
-        switch model.referenceDimension {
-        case .width:
-            "1920"
-        case .height:
-            "1080"
-        }
     }
 }
 // swiftlint:enable file_length type_contents_order

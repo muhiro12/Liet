@@ -13,12 +13,6 @@ struct PersistedBatchImageSettingsTests {
             exactHeightPixels: 180,
             exactResizeStrategy: .coverCrop,
             compression: .medium,
-            backgroundRemoval: .init(
-                isEnabled: true,
-                strength: 0.75,
-                edgeSmoothing: 0.2,
-                edgeExpansion: 0.1
-            ),
             naming: .init(
                 template: .custom,
                 customPrefix: "receipt",
@@ -67,10 +61,6 @@ struct PersistedBatchImageSettingsTests {
                 defaultSettings.compression
         )
         #expect(
-            PersistedBatchImagePreferences.default.lastUsedSettings.backgroundRemoval ==
-                defaultSettings.backgroundRemoval
-        )
-        #expect(
             PersistedBatchImagePreferences.default.lastUsedSettings.naming ==
                 defaultSettings.naming
         )
@@ -78,12 +68,11 @@ struct PersistedBatchImageSettingsTests {
         #expect(defaultSettings.referencePixels == 1_920)
         #expect(defaultSettings.exactWidthPixels == 1_920)
         #expect(defaultSettings.exactHeightPixels == 1_080)
-        #expect(defaultSettings.backgroundRemoval == .default)
         #expect(defaultSettings.naming == .default)
     }
 
     @Test
-    func missing_background_removal_payload_defaults_during_restore() throws {
+    func legacy_background_removal_payload_is_ignored_during_restore() throws {
         let currentSettings = PersistedBatchImageSettings(
             resizeMode: .exactSize,
             referenceDimension: .height,
@@ -92,11 +81,10 @@ struct PersistedBatchImageSettingsTests {
             exactHeightPixels: 180,
             exactResizeStrategy: .coverCrop,
             compression: .medium,
-            backgroundRemoval: .init(
-                isEnabled: true,
-                strength: 0.75,
-                edgeSmoothing: 0.2,
-                edgeExpansion: 0.1
+            naming: .init(
+                template: .custom,
+                customPrefix: "receipt",
+                numberingStyle: .plain
             )
         )
         let rawData = try #require(
@@ -105,9 +93,9 @@ struct PersistedBatchImageSettingsTests {
         var payload = try #require(
             JSONSerialization.jsonObject(with: rawData) as? [String: Any]
         )
-        payload.removeValue(
-            forKey: PersistedBatchImageSettingsCodingKeys.backgroundRemoval.rawValue
-        )
+        payload[PersistedBatchImageSettingsCodingKeys.backgroundRemoval.rawValue] = [
+            "legacy": true
+        ]
         let legacyData = try JSONSerialization.data(
             withJSONObject: payload,
             options: JSONSerialization.WritingOptions.sortedKeys
@@ -120,7 +108,7 @@ struct PersistedBatchImageSettingsTests {
             PersistedBatchImageSettings(rawValue: legacyRawValue)
         )
 
-        #expect(restoredSettings.backgroundRemoval == .default)
+        #expect(restoredSettings == currentSettings)
     }
 
     @Test
@@ -133,12 +121,6 @@ struct PersistedBatchImageSettingsTests {
             exactHeightPixels: 180,
             exactResizeStrategy: .coverCrop,
             compression: .medium,
-            backgroundRemoval: .init(
-                isEnabled: true,
-                strength: 0.75,
-                edgeSmoothing: 0.2,
-                edgeExpansion: 0.1
-            ),
             naming: .init(
                 template: .custom,
                 customPrefix: "receipt",

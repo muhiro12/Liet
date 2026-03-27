@@ -4,9 +4,10 @@
 
 Liet is an iPhone batch image pre-processing app aligned with the repository
 and architecture conventions used by `../Incomes`.
-The current MVP focuses on one job: select multiple images from Photos or the
-Files app, apply one resize and compression setting to all of them, then save
-the processed results as new files to either Files or Photos.
+The current MVP offers two dedicated batch jobs chosen from the app entry
+screen: resize a batch with shared size and compression settings, or remove
+backgrounds to create transparent PNG copies. Both flows save processed
+results as new files to either Files or Photos.
 
 ## Targets
 
@@ -34,6 +35,8 @@ the processed results as new files to either Files or Photos.
 
 ## Current MVP behavior
 
+- Choose either the resize flow or the background-removal flow from the entry
+  screen.
 - Select multiple images from the Photos library or the Files app.
 - Review selected images in a thumbnail grid before processing.
 - Apply one long-edge resize setting to every image while preserving aspect
@@ -41,6 +44,8 @@ the processed results as new files to either Files or Photos.
 - Apply one compression setting to every image:
   JPEG and HEIC use quality values, while PNG keeps its format and ignores the
   quality setting.
+- Remove backgrounds for all selected images with one shared tuning setup and
+  transparent PNG output at the original size.
 - Preserve the original image format when possible for JPEG, PNG, and HEIC.
 - Fall back to JPEG when the original format is unsupported or when HEIC
   output is unavailable on the current runtime.
