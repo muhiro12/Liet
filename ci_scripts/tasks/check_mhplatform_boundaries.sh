@@ -207,6 +207,31 @@ if [[ -n "$direct_core_module_imports" ]]; then
 $direct_core_module_imports"
 fi
 
+app_direct_module_imports=$(
+  rg \
+    --line-number \
+    '^(@preconcurrency )?import (MHAppRuntime|MHPlatformCore|MHDeepLinking|MHLogging|MHNotificationPayloads|MHNotificationPlans|MHRouteExecution|MHPersistenceMaintenance|MHPreferences|MHMutationFlow|MHReviewPolicy)$' \
+    Liet/Sources \
+    -g '*.swift' || true
+)
+
+if [[ -n "$app_direct_module_imports" ]]; then
+  record_failure "Liet/Sources must import MHPlatform instead of direct MHPlatform modules:
+$app_direct_module_imports"
+fi
+
+app_umbrella_imports=$(
+  rg \
+    --line-number \
+    '^(@preconcurrency )?import MHPlatform$|^@_exported import MHPlatform$' \
+    Liet/Sources \
+    -g '*.swift' || true
+)
+
+if [[ -z "$app_umbrella_imports" ]]; then
+  record_failure "Liet/Sources must use the MHPlatform umbrella import."
+fi
+
 legacy_runtime_core_references=$(
   rg \
     --line-number \

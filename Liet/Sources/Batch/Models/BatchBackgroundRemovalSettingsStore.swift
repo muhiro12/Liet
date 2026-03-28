@@ -1,7 +1,6 @@
 import Foundation
 import LietLibrary
-import MHPreferences
-import SwiftUI
+import MHPlatform
 
 struct BatchBackgroundRemovalSettingsStore {
     nonisolated static let appGroupIdentifier = AppGroup.id
@@ -42,14 +41,19 @@ extension BatchBackgroundRemovalSettingsStore {
     static func appStorage(
         userDefaults: UserDefaults
     ) -> Self {
-        let storageBox = AppStorageBox(userDefaults: userDefaults)
+        let preferenceStore = MHPreferenceStore(
+            userDefaults: userDefaults
+        )
+        let storage = BatchBackgroundRemovalPreferencesStore(
+            preferenceStore: preferenceStore
+        )
 
         return .init(
             loadHandler: {
-                storageBox.loadPreferences()
+                storage.load()
             },
             saveHandler: { preferences in
-                storageBox.savePreferences(preferences)
+                storage.save(preferences)
             }
         )
     }
@@ -77,74 +81,5 @@ extension BatchBackgroundRemovalSettingsStore {
                 storageBox.value = preferences
             }
         )
-    }
-}
-
-private extension BatchBackgroundRemovalSettingsStore {
-    final class AppStorageBox {
-        @AppStorage private var lastUsedSettings: PersistedBatchBackgroundRemovalSettings
-        @AppStorage private var userPresetSettingsRawValue: String
-
-        private let userDefaults: UserDefaults
-
-        private var hasLastUsedSettings: Bool {
-            userDefaults.string(
-                forKey: BatchBackgroundRemovalAppStorageKey.lastUsedSettings.preferenceKey.storageKey
-            ) != nil
-        }
-
-        private var hasUserPresetSettings: Bool {
-            userDefaults.string(
-                forKey: BatchBackgroundRemovalAppStorageKey.userPresetSettings.preferenceKey.storageKey
-            ) != nil
-        }
-
-        private var hasStoredPreferences: Bool {
-            hasLastUsedSettings || hasUserPresetSettings
-        }
-
-        init(
-            userDefaults: UserDefaults
-        ) {
-            self.userDefaults = userDefaults
-            _lastUsedSettings = AppStorage(
-                BatchBackgroundRemovalAppStorageKey.lastUsedSettings,
-                default: .default,
-                store: userDefaults
-            )
-            _userPresetSettingsRawValue = AppStorage(
-                BatchBackgroundRemovalAppStorageKey.userPresetSettings,
-                default: "",
-                store: userDefaults
-            )
-        }
-
-        func loadPreferences() -> PersistedBatchBackgroundRemovalPreferences? {
-            guard hasStoredPreferences else {
-                return nil
-            }
-
-            return .init(
-                userPresetSettings: hasUserPresetSettings
-                    ? PersistedBatchBackgroundRemovalSettings(rawValue: userPresetSettingsRawValue)
-                    : nil,
-                lastUsedSettings: lastUsedSettings
-            )
-        }
-
-        func savePreferences(
-            _ preferences: PersistedBatchBackgroundRemovalPreferences
-        ) {
-            lastUsedSettings = preferences.lastUsedSettings
-            guard let userPresetSettings = preferences.userPresetSettings else {
-                userPresetSettingsRawValue = ""
-                userDefaults.removeObject(
-                    forKey: BatchBackgroundRemovalAppStorageKey.userPresetSettings.preferenceKey.storageKey
-                )
-                return
-            }
-
-            userPresetSettingsRawValue = userPresetSettings.rawValue
-        }
     }
 }

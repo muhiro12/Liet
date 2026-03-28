@@ -53,8 +53,12 @@ remain in the app target.
 - Local-package-based shared library integration through `LietLibrary`.
 - Shared-library-owned pure state and planners for batch-image preferences,
   filename resolution, import filename selection, and processing decisions.
+- Shared-library-owned `MHPlatformCore` preference stores with v2 payload
+  storage and legacy App Group key migration.
+- App-root `MHPlatform` runtime bootstrap using the shared App Group
+  preferences suite.
 - App-side adapter isolation for `PhotosUI`, `PhotoKit`, `ImageIO`, `TipKit`,
-  `AppStorage`, and file export APIs.
+  and file export APIs.
 - Logic verification concentrated in `LietLibraryTests`, while the app target
   is validated by build-only CI checks.
 - Partial-success batch processing so one failed image does not block the

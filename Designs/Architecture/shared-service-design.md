@@ -20,9 +20,9 @@ across the iOS app and any future companion surfaces.
 
 | Concern | Lives in | Examples |
 | --- | --- | --- |
-| Shared domain logic | `LietLibrary` | future models, predicates, calculators, planners, mutation services, shared identifiers |
+| Shared domain logic | `LietLibrary` | future models, predicates, calculators, planners, mutation services, shared identifiers, shared preference stores |
 | Apple-framework adapters | `Liet` | App Intents, notifications, widget reloads, deep links, review flows |
-| App-side platform support | `Liet/Sources/Common/Platform` | future runtime assembly, route pipeline setup, environment injection |
+| App-side platform support | `Liet/Sources/Common/Platform` | future runtime assembly, route pipeline setup, environment injection, `MHPlatform` bootstrap wiring |
 | Presentation orchestration | `Liet` | SwiftUI views, navigation state, screen coordinators, presentation models |
 
 ## MHPlatform Adoption

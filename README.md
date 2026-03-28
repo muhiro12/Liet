@@ -24,9 +24,12 @@ results as new files to either Files or Photos.
 - **Shared-library-first** - reusable batch-image value types and pure rules
   live in `LietLibrary` before they spread across app surfaces.
 - **App-side adapters** - `PhotosUI`, `PhotoKit`, `ImageIO`, `UIKit`,
-  `TipKit`, `AppStorage`, `fileImporter`, and `fileExporter` stay in `Liet`.
+  `TipKit`, `fileImporter`, and `fileExporter` stay in `Liet`.
 - **Platform package posture** - `Liet` adopts the `MHPlatform` umbrella,
   while `LietLibrary` adopts `MHPlatformCore`.
+- **Runtime bootstrap posture** - the app root uses
+  `MHAppRuntimeBootstrap(configuration:)` with `AppGroup.id` as the shared
+  preferences suite.
 - **Utility package posture** - both the app target and shared library adopt
   `SwiftUtilities` through the repository-managed 1.x semver range.
 - **Non-destructive processing** - source images are never overwritten.
@@ -50,8 +53,8 @@ results as new files to either Files or Photos.
 - Fall back to JPEG when the original format is unsupported or when HEIC
   output is unavailable on the current runtime.
 - Save processed results either to the Files app or to the Photos app.
-- Persist last used settings plus one manually saved user preset in App Group
-  AppStorage.
+- Persist last used settings plus one manually saved user preset through
+  `LietLibrary` stores backed by `MHPlatformCore` preference persistence.
 
 ## Current limitations
 

@@ -15,8 +15,8 @@ Related decision:
 
 | Layer | Owns | Must not own |
 | --- | --- | --- |
-| Domain (`LietLibrary`) | Reusable business logic, future shared models, predicates, planners, pure helpers, shared app-group constants | Apple-framework side effects, app lifecycle wiring, SwiftUI presentation |
-| Adapter (`Liet`, future widgets, future App Intents) | Parameter parsing, platform API calls, dependency wiring, follow-up orchestration based on domain outcomes | Duplicated domain branching or long-lived business rules |
+| Domain (`LietLibrary`) | Reusable business logic, future shared models, predicates, planners, pure helpers, shared app-group constants, shared preference persistence | Apple-framework side effects, app lifecycle wiring, SwiftUI presentation |
+| Adapter (`Liet`, future widgets, future App Intents) | Parameter parsing, platform API calls, `MHPlatform` runtime/bootstrap wiring, follow-up orchestration based on domain outcomes | Duplicated domain branching or long-lived business rules |
 | View (SwiftUI) | Focus state, sheets, navigation state, screen-scoped `@Observable` presentation models, display-only formatting | Domain validation branching, persistence rules, reusable calculations |
 
 ## View Rules
@@ -38,7 +38,7 @@ Not allowed in views:
 
 ## Canonical Mutation Flow
 
-`View -> Workflow/Adapter (Liet target) -> LietLibrary service -> persistence write -> Observation updates`
+`View -> Workflow/Adapter (Liet target) -> LietLibrary service/store -> persistence write -> Observation updates`
 
 Adapters may orchestrate platform side effects after mutation completion, but
 mutation rules and changed-entity decisions should come from `LietLibrary`.
@@ -60,8 +60,9 @@ Keep in `Liet`:
 
 ## Current Scaffold Status
 
-- `LietLibrary` currently exposes only shared scaffold code such as `AppGroup`.
-- `Liet` currently stays intentionally thin and only proves the package
-  boundary, app group readiness, and repo workflow.
+- `LietLibrary` now owns shared App Group constants plus MHPlatformCore-backed
+  batch preference persistence and legacy key migration.
+- `Liet` now boots through `MHAppRuntimeBootstrap(configuration:)` while
+  keeping Apple-framework adapters in the app target.
 - New features should expand the shared library first when the logic is likely
   to be reused by more than one surface.
