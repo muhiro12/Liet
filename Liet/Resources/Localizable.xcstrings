@@ -785,23 +785,6 @@
         }
       }
     },
-    "Files" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Files"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ファイル"
-          }
-        }
-      }
-    },
     "Height" : {
       "localizations" : {
         "en" : {
