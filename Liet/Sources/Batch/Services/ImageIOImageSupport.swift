@@ -7,7 +7,7 @@ import UniformTypeIdentifiers
 enum ImageIOImageSupport {
     nonisolated static let previewMaxPixelSize = 320
     nonisolated static let fullScreenPreviewMaxPixelSize = 4_096
-    nonisolated static let heicContentType = UTType(importedAs: "public.heic")
+    nonisolated static let heicContentType = UTType.heic
     nonisolated static let minimumPixelDimension = CGFloat(1)
     nonisolated static let minimumPixelSize = 1
     nonisolated static let bitsPerComponent = 8
