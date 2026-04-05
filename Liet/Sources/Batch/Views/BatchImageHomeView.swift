@@ -359,7 +359,7 @@ private extension BatchImageHomeView {
             }
 
             dimensionInputSection(
-                title: Text(referencePixelsTitle),
+                title: referencePixelsTitle,
                 placeholder: referencePixelsPlaceholder,
                 text: referencePixelsBinding
             )
@@ -822,12 +822,12 @@ private extension BatchImageHomeView {
         )
     }
 
-    var referencePixelsTitle: String {
+    var referencePixelsTitle: Text {
         switch model.referenceDimension {
         case .width:
-            "Width (px)"
+            Text("Width (px)")
         case .height:
-            "Height (px)"
+            Text("Height (px)")
         }
     }
 

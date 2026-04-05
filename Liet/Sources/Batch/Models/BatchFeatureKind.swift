@@ -8,24 +8,6 @@ enum BatchFeatureKind: String, CaseIterable, Identifiable {
         rawValue
     }
 
-    var title: String {
-        switch self {
-        case .resizeImages:
-            "Resize Images"
-        case .removeBackground:
-            "Remove Background"
-        }
-    }
-
-    var subtitle: String {
-        switch self {
-        case .resizeImages:
-            "Apply one shared output size, compression, and naming setup to the full batch."
-        case .removeBackground:
-            "Create transparent PNG copies with one shared background-removal setup."
-        }
-    }
-
     var systemImage: String {
         switch self {
         case .resizeImages:

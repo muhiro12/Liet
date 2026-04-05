@@ -37,9 +37,12 @@ extension ImportedBatchImage {
             return URL(fileURLWithPath: originalFilename).lastPathComponent
         }
 
-        return String(
-            format: "Image %03d",
+        let formattedSelectionIndex = String(
+            format: "%03d",
             selectionIndex
+        )
+        return String(
+            localized: "Image \(formattedSelectionIndex)"
         )
     }
 

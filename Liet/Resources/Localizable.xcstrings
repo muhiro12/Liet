@@ -129,6 +129,54 @@
         }
       }
     },
+    "%lld×%lld • Contain" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld×%lld • Contain"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld×%lld • 全体表示"
+          }
+        }
+      }
+    },
+    "%lld×%lld • Crop" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld×%lld • Crop"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld×%lld • 中央クロップ"
+          }
+        }
+      }
+    },
+    "%lld×%lld • Stretch" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld×%lld • Stretch"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld×%lld • 引き伸ばし"
+          }
+        }
+      }
+    },
     "1" : {
       "localizations" : {
         "en" : {
@@ -273,6 +321,22 @@
         }
       }
     },
+    "Apply one shared output size, compression, and naming setup to the full batch." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apply one shared output size, compression, and naming setup to the full batch."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一括処理全体に共通の出力サイズ、圧縮、命名設定を適用します。"
+          }
+        }
+      }
+    },
     "Back to Settings" : {
       "localizations" : {
         "en" : {
@@ -305,6 +369,38 @@
         }
       }
     },
+    "Choose a feature" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a feature"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "機能を選択"
+          }
+        }
+      }
+    },
+    "Choose a feature to start" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a feature to start"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "機能を選択して開始"
+          }
+        }
+      }
+    },
     "Choose a starting point" : {
       "localizations" : {
         "en" : {
@@ -317,6 +413,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "開始設定を選ぶ"
+          }
+        }
+      }
+    },
+    "Choose Feature" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose Feature"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "機能を選択"
           }
         }
       }
@@ -417,22 +529,6 @@
         }
       }
     },
-    "Couldn't create the ZIP archive." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't create the ZIP archive."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ZIP アーカイブを作成できませんでした。"
-          }
-        }
-      }
-    },
     "Couldn't create the export folder." : {
       "localizations" : {
         "en" : {
@@ -445,6 +541,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "書き出しフォルダを作成できませんでした。"
+          }
+        }
+      }
+    },
+    "Couldn't create the ZIP archive." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't create the ZIP archive."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZIP アーカイブを作成できませんでした。"
           }
         }
       }
@@ -577,6 +689,22 @@
         }
       }
     },
+    "Couldn't remove the background from the selected images." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't remove the background from the selected images."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した画像の背景を削除できませんでした。"
+          }
+        }
+      }
+    },
     "Couldn't save the processed images to Photos." : {
       "localizations" : {
         "en" : {
@@ -605,6 +733,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "処理後の画像の一部を書き出せませんでした。"
+          }
+        }
+      }
+    },
+    "Create transparent PNG copies with one shared background-removal setup." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create transparent PNG copies with one shared background-removal setup."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景除去の共通設定で透過 PNG のコピーを作成します。"
           }
         }
       }
@@ -701,6 +845,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "処理を有効にするにはカスタム接頭辞を入力してください"
+          }
+        }
+      }
+    },
+    "Enter valid file naming values." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter valid file naming values."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効なファイル命名の値を入力してください。"
           }
         }
       }
@@ -817,6 +977,22 @@
         }
       }
     },
+    "Height %lld px • Keep ratio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Height %lld px • Keep ratio"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高さ %lld px • 縦横比を保持"
+          }
+        }
+      }
+    },
     "High" : {
       "localizations" : {
         "en" : {
@@ -829,6 +1005,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "高"
+          }
+        }
+      }
+    },
+    "Image %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Image %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像 %@"
           }
         }
       }
@@ -903,22 +1095,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Keep aspect ratio"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "縦横比を保持"
-          }
-        }
-      }
-    },
-    "Keep ratio" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keep ratio"
           }
         },
         "ja" : {
@@ -1073,6 +1249,38 @@
         }
       }
     },
+    "Original size • Transparent PNG" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Original size • Transparent PNG"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "元のサイズ • 透過 PNG"
+          }
+        }
+      }
+    },
+    "Output • %lld×%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Output • %lld×%lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出力 • %lld×%lld"
+          }
+        }
+      }
+    },
     "Output Size" : {
       "localizations" : {
         "en" : {
@@ -1121,18 +1329,18 @@
         }
       }
     },
-    "Pick one or more photos or image files. Liet applies the same resize and compression settings to every selected image." : {
+    "Pick one or more photos or image files. Liet applies the same settings to every selected image in the current feature." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pick one or more photos or image files. Liet applies the same resize and compression settings to every selected image."
+            "value" : "Pick one or more photos or image files. Liet applies the same settings to every selected image in the current feature."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1 枚以上の写真または画像ファイルを選択してください。Liet はすべての選択画像に同じリサイズ設定と圧縮設定を適用します。"
+            "value" : "1 枚以上の写真または画像ファイルを選択してください。Liet は現在の機能で、選択したすべての画像に同じ設定を適用します。"
           }
         }
       }
@@ -1313,18 +1521,50 @@
         }
       }
     },
-    "Remove background" : {
+    "Remove Background" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Remove background"
+            "value" : "Remove Background"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "背景を除去"
+            "value" : "背景を削除"
+          }
+        }
+      }
+    },
+    "Resize a whole batch or create transparent PNG copies with separate settings." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resize a whole batch or create transparent PNG copies with separate settings."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一括リサイズ、または別設定で透過 PNG コピーを作成します。"
+          }
+        }
+      }
+    },
+    "Resize Images" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resize Images"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像サイズ変更"
           }
         }
       }
@@ -1425,18 +1665,18 @@
         }
       }
     },
-    "Save the current size and compression setup so you can start from it later." : {
+    "Save the current feature setup so you can start from it later." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Save the current size and compression setup so you can start from it later."
+            "value" : "Save the current feature setup so you can start from it later."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "現在のサイズと圧縮設定を保存して、次回の開始点にできます。"
+            "value" : "現在の機能設定を保存して、次回の開始点にできます。"
           }
         }
       }
@@ -1505,18 +1745,18 @@
         }
       }
     },
-    "Start from Last Used or User Preset, then adjust size and compression. Editing any value switches to Custom." : {
+    "Start from Last Used or User Preset, then adjust the current feature settings. Editing any value switches to Custom." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Start from Last Used or User Preset, then adjust size and compression. Editing any value switches to Custom."
+            "value" : "Start from Last Used or User Preset, then adjust the current feature settings. Editing any value switches to Custom."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "前回の設定またはユーザー設定から始めて、サイズと圧縮を調整します。値を編集するとカスタムに切り替わります。"
+            "value" : "前回の設定またはユーザー設定から始めて、現在の機能設定を調整します。値を編集するとカスタムに切り替わります。"
           }
         }
       }
@@ -1649,22 +1889,6 @@
         }
       }
     },
-    "Transparent PNG output ignores compression" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Transparent PNG output ignores compression"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "透過 PNG 出力では圧縮設定を無視"
-          }
-        }
-      }
-    },
     "Use Files to choose a folder in the Files app. Use Photos to add the processed images to your photo library as new items." : {
       "localizations" : {
         "en" : {
@@ -1757,6 +1981,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "幅 (px)"
+          }
+        }
+      }
+    },
+    "Width %lld px • Keep ratio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Width %lld px • Keep ratio"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "幅 %lld px • 縦横比を保持"
           }
         }
       }

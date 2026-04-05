@@ -28,8 +28,8 @@ struct ImportedBatchImageTile: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(Layout.detailLineLimit)
 
-            if let projectedDetailText {
-                Text(projectedDetailText)
+            if let projectedPixelSize {
+                projectedDetailText(for: projectedPixelSize)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(Layout.detailLineLimit)
@@ -39,12 +39,10 @@ struct ImportedBatchImageTile: View {
 }
 
 private extension ImportedBatchImageTile {
-    var projectedDetailText: String? {
-        guard let projectedPixelSize else {
-            return nil
-        }
-
-        return "Output • \(Int(projectedPixelSize.width))×\(Int(projectedPixelSize.height))"
+    func projectedDetailText(
+        for projectedPixelSize: CGSize
+    ) -> Text {
+        Text("Output • \(Int(projectedPixelSize.width))×\(Int(projectedPixelSize.height))")
     }
 
     @ViewBuilder

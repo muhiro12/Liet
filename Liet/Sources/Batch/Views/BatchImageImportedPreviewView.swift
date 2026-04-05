@@ -16,7 +16,7 @@ struct BatchImageImportedPreviewView: View {
     @State private var activePreviewItem: BatchImagePreviewItem?
 
     let importedImages: [ImportedBatchImage]
-    let summaryText: String?
+    let summaryText: Text?
     let projectedPixelSizeResolver: ((ImportedBatchImage) -> CGSize?)?
     let backToSettings: (() -> Void)?
     private let selectionPreviewTip = SelectionPreviewTip()
@@ -89,11 +89,11 @@ struct BatchImageImportedPreviewView: View {
 }
 
 private extension BatchImageImportedPreviewView {
-    var selectionTitle: String {
+    var selectionTitle: Text {
         if importedImages.count == 1 {
-            "1 image selected"
+            Text("1 image selected")
         } else {
-            "\(importedImages.count) images selected"
+            Text("\(importedImages.count) images selected")
         }
     }
 
@@ -106,7 +106,7 @@ private extension BatchImageImportedPreviewView {
 
             if let summaryText {
                 BatchStatusChip(
-                    text: Text(summaryText),
+                    text: summaryText,
                     systemImage: "arrow.up.left.and.arrow.down.right",
                     tone: .accent
                 )
@@ -116,7 +116,7 @@ private extension BatchImageImportedPreviewView {
 
     @ViewBuilder
     func titleView() -> some View {
-        let title = Text(selectionTitle)
+        let title = selectionTitle
             .font(.title2.weight(.semibold))
 
         if summaryText == nil,

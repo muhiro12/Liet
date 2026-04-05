@@ -74,10 +74,10 @@ private extension BatchFeatureChooserView {
                 alignment: .leading,
                 spacing: Layout.featureDescriptionSpacing
             ) {
-                Text(feature.title)
+                featureTitle(feature)
                     .font(.headline)
                     .foregroundStyle(.primary)
-                Text(feature.subtitle)
+                featureSubtitle(feature)
                     .font(.subheadline)
                     .multilineTextAlignment(.leading)
                     .foregroundStyle(.secondary)
@@ -107,6 +107,28 @@ private extension BatchFeatureChooserView {
                 Color.primary.opacity(Layout.stepBorderOpacity),
                 lineWidth: Layout.stepBorderLineWidth
             )
+        }
+    }
+
+    func featureTitle(
+        _ feature: BatchFeatureKind
+    ) -> Text {
+        switch feature {
+        case .resizeImages:
+            Text("Resize Images")
+        case .removeBackground:
+            Text("Remove Background")
+        }
+    }
+
+    func featureSubtitle(
+        _ feature: BatchFeatureKind
+    ) -> Text {
+        switch feature {
+        case .resizeImages:
+            Text("Apply one shared output size, compression, and naming setup to the full batch.")
+        case .removeBackground:
+            Text("Create transparent PNG copies with one shared background-removal setup.")
         }
     }
 }

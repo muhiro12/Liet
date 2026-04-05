@@ -143,12 +143,12 @@ extension BatchBackgroundRemovalHomeModel {
         currentPreferencesState.naming != nil
     }
 
-    var selectionSummaryText: String? {
+    var selectionSummaryText: Text? {
         guard !importedImages.isEmpty else {
             return nil
         }
 
-        return "Original size • Transparent PNG"
+        return Text("Original size • Transparent PNG")
     }
 
     func projectedPixelSize(

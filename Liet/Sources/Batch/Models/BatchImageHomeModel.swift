@@ -178,21 +178,19 @@ extension BatchImageHomeModel {
         ).isValid
     }
 
-    var selectionSummaryText: String? {
+    var selectionSummaryText: Text? {
         guard let settings else {
             return nil
         }
 
         if let referenceDimension = settings.referenceDimension,
            let referencePixels = settings.referencePixels {
-            let referenceLabel = switch referenceDimension {
+            return switch referenceDimension {
             case .width:
-                String(localized: "Width")
+                Text("Width \(referencePixels) px • Keep ratio")
             case .height:
-                String(localized: "Height")
+                Text("Height \(referencePixels) px • Keep ratio")
             }
-
-            return "\(referenceLabel) \(referencePixels) px • \(String(localized: "Keep ratio"))"
         }
 
         guard let exactWidthPixels = settings.exactWidthPixels,
@@ -201,16 +199,14 @@ extension BatchImageHomeModel {
             return nil
         }
 
-        let strategyLabel = switch exactResizeStrategy {
+        return switch exactResizeStrategy {
         case .stretch:
-            String(localized: "Stretch")
+            Text("\(exactWidthPixels)×\(exactHeightPixels) • Stretch")
         case .contain:
-            String(localized: "Contain")
+            Text("\(exactWidthPixels)×\(exactHeightPixels) • Contain")
         case .coverCrop:
-            String(localized: "Crop")
+            Text("\(exactWidthPixels)×\(exactHeightPixels) • Crop")
         }
-
-        return "\(exactWidthPixels)×\(exactHeightPixels) • \(strategyLabel)"
     }
 
     func projectedPixelSize(
