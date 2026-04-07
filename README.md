@@ -70,15 +70,13 @@ results as new files to either Files or Photos.
 ## Setup
 
 1. Clone the repository and open the project directory.
-2. Update bundle identifiers, `AppGroup.id`, and
-   `Liet/Configurations/Liet.entitlements` if you are not using the default
-   `com.muhiro12.Liet` identifiers.
-3. Review `Liet/Configurations/Secret.swift`.
-   The file contains compile-safe placeholder values inherited from the repo
-   baseline and should be replaced before shipping real capabilities.
-4. Open `Liet.xcodeproj` in Xcode and run the **Liet** scheme on an iOS 18
+2. Review `Liet/Configurations/Info.plist` if you plan to enable ads.
+   The repository currently keeps the Google Mobile Ads application identifier
+   on the standard test value because the 1.0 release does not expose an ad UI
+   yet. Replace it before shipping any real ad surface.
+3. Open `Liet.xcodeproj` in Xcode and run the **Liet** scheme on an iOS 18
    simulator or device.
-5. When saving to Photos, allow the add-only Photo Library permission when the
+4. When saving to Photos, allow the add-only Photo Library permission when the
    app requests it.
 
 ## Build and Test

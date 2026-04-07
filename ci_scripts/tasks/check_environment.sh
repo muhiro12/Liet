@@ -81,16 +81,10 @@ check_swiftlint_environment() {
 }
 
 check_build_environment() {
-  local secret_path="Liet/Configurations/Secret.swift"
   local entitlements_path="Liet/Configurations/Liet.entitlements"
 
   ensure_command "xcodebuild" "Install Xcode and ensure xcodebuild is available from the command line."
   ensure_command "xcrun" "Install Xcode command line tools and ensure xcrun is available."
-
-  if [[ ! -f "$secret_path" ]]; then
-    record_failure "Missing file: $secret_path"
-    record_next_step "Restore $secret_path with compile-safe placeholder values or local secrets."
-  fi
 
   if [[ ! -f "$entitlements_path" ]]; then
     record_failure "Missing file: $entitlements_path"
