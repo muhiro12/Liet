@@ -5,13 +5,7 @@ import MHPlatformCore
 public struct BatchImagePreferencesStore {
     private enum StorageKeys {
         static let preferences = MHCodablePreferenceKey<PersistedBatchImagePreferences>(
-            storageKey: "batch.image.preferences.v2"
-        )
-        static let lastUsedSettings = MHStringPreferenceKey(
-            storageKey: "d9K2mQ7x"
-        )
-        static let userPresetSettings = MHStringPreferenceKey(
-            storageKey: "P4v8T1nR"
+            storageKey: "B7q1N4xP"
         )
     }
 
@@ -24,18 +18,14 @@ public struct BatchImagePreferencesStore {
         self.preferenceStore = preferenceStore
     }
 
-    /// Returns the current persisted preferences, including legacy-key migration.
+    /// Returns the current persisted preferences when available.
     public func load() -> PersistedBatchImagePreferences? {
-        if let preferences = preferenceStore.codable(
+        preferenceStore.codable(
             for: StorageKeys.preferences
-        ) {
-            return preferences
-        }
-
-        return loadLegacyPreferences()
+        )
     }
 
-    /// Persists the current preferences and removes legacy string slots.
+    /// Persists the current preferences to the opaque storage slot.
     public func save(
         _ preferences: PersistedBatchImagePreferences
     ) {
@@ -43,35 +33,5 @@ public struct BatchImagePreferencesStore {
             preferences,
             for: StorageKeys.preferences
         )
-        removeLegacyPreferences()
-    }
-}
-
-private extension BatchImagePreferencesStore {
-    func loadLegacyPreferences() -> PersistedBatchImagePreferences? {
-        let lastUsedSettings = preferenceStore.string(
-            for: StorageKeys.lastUsedSettings
-        )
-        let userPresetSettings = preferenceStore.string(
-            for: StorageKeys.userPresetSettings
-        )
-
-        guard lastUsedSettings != nil || userPresetSettings != nil else {
-            return nil
-        }
-
-        return .init(
-            userPresetSettings: userPresetSettings.flatMap(
-                PersistedBatchImageSettings.init(rawValue:)
-            ),
-            lastUsedSettings: lastUsedSettings.flatMap(
-                PersistedBatchImageSettings.init(rawValue:)
-            ) ?? .default
-        )
-    }
-
-    func removeLegacyPreferences() {
-        preferenceStore.remove(StorageKeys.lastUsedSettings)
-        preferenceStore.remove(StorageKeys.userPresetSettings)
     }
 }

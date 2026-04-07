@@ -5,13 +5,7 @@ import MHPlatformCore
 public struct BatchBackgroundRemovalPreferencesStore {
     private enum StorageKeys {
         static let preferences = MHCodablePreferenceKey<PersistedBatchBackgroundRemovalPreferences>(
-            storageKey: "batch.backgroundRemoval.preferences.v2"
-        )
-        static let lastUsedSettings = MHStringPreferenceKey(
-            storageKey: "G7r2Lp5X"
-        )
-        static let userPresetSettings = MHStringPreferenceKey(
-            storageKey: "U1m8Qv4N"
+            storageKey: "H3m8R2vK"
         )
     }
 
@@ -24,18 +18,14 @@ public struct BatchBackgroundRemovalPreferencesStore {
         self.preferenceStore = preferenceStore
     }
 
-    /// Returns the current persisted preferences, including legacy-key migration.
+    /// Returns the current persisted preferences when available.
     public func load() -> PersistedBatchBackgroundRemovalPreferences? {
-        if let preferences = preferenceStore.codable(
+        preferenceStore.codable(
             for: StorageKeys.preferences
-        ) {
-            return preferences
-        }
-
-        return loadLegacyPreferences()
+        )
     }
 
-    /// Persists the current preferences and removes legacy string slots.
+    /// Persists the current preferences to the opaque storage slot.
     public func save(
         _ preferences: PersistedBatchBackgroundRemovalPreferences
     ) {
@@ -43,35 +33,5 @@ public struct BatchBackgroundRemovalPreferencesStore {
             preferences,
             for: StorageKeys.preferences
         )
-        removeLegacyPreferences()
-    }
-}
-
-private extension BatchBackgroundRemovalPreferencesStore {
-    func loadLegacyPreferences() -> PersistedBatchBackgroundRemovalPreferences? {
-        let lastUsedSettings = preferenceStore.string(
-            for: StorageKeys.lastUsedSettings
-        )
-        let userPresetSettings = preferenceStore.string(
-            for: StorageKeys.userPresetSettings
-        )
-
-        guard lastUsedSettings != nil || userPresetSettings != nil else {
-            return nil
-        }
-
-        return .init(
-            userPresetSettings: userPresetSettings.flatMap(
-                PersistedBatchBackgroundRemovalSettings.init(rawValue:)
-            ),
-            lastUsedSettings: lastUsedSettings.flatMap(
-                PersistedBatchBackgroundRemovalSettings.init(rawValue:)
-            ) ?? .default
-        )
-    }
-
-    func removeLegacyPreferences() {
-        preferenceStore.remove(StorageKeys.lastUsedSettings)
-        preferenceStore.remove(StorageKeys.userPresetSettings)
     }
 }

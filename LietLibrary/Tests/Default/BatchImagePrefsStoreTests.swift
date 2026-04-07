@@ -3,115 +3,31 @@ import Testing
 
 struct BatchImagePrefsStoreTests {
     @Test
-    func saves_preferences_to_v2_key_and_removes_legacy_keys() {
+    func returns_nil_when_no_preferences_have_been_saved() {
         let context = PreferenceStoreTestContext()
         defer {
             context.tearDown()
         }
 
-        seedLegacyPreferences(in: context)
+        let store = makeStore(context)
+
+        #expect(store.load() == nil)
+    }
+
+    @Test
+    func saves_preferences_to_the_opaque_storage_key() {
+        let context = PreferenceStoreTestContext()
+        defer {
+            context.tearDown()
+        }
 
         let store = makeStore(context)
         let preferences = makePreferences()
 
         store.save(preferences)
 
-        assertLegacyKeysRemoved(in: context)
-        #expect(context.userDefaults.object(forKey: "batch.image.preferences.v2") != nil)
+        #expect(context.userDefaults.object(forKey: "B7q1N4xP") != nil)
         #expect(store.load() == preferences)
-    }
-
-    @Test
-    func migrates_legacy_preferences_when_v2_payload_is_missing() {
-        let context = PreferenceStoreTestContext()
-        defer {
-            context.tearDown()
-        }
-
-        let lastUsedSettings: PersistedBatchImageSettings = .init(
-            resizeMode: .exactSize,
-            referenceDimension: .width,
-            referencePixels: 1_200,
-            exactWidthPixels: 800,
-            exactHeightPixels: 600,
-            exactResizeStrategy: .coverCrop,
-            compression: .off,
-            naming: .init(
-                template: .processed,
-                customPrefix: "",
-                numberingStyle: .plain
-            )
-        )
-        let userPresetSettings: PersistedBatchImageSettings = .init(
-            resizeMode: .aspectRatioPreserved,
-            referenceDimension: .height,
-            referencePixels: 900,
-            exactWidthPixels: 900,
-            exactHeightPixels: 900,
-            exactResizeStrategy: .stretch,
-            compression: .low,
-            naming: .init(
-                template: .img,
-                customPrefix: "",
-                numberingStyle: .zeroPaddedThreeDigits
-            )
-        )
-
-        context.userDefaults.set(
-            lastUsedSettings.rawValue,
-            forKey: "d9K2mQ7x"
-        )
-        context.userDefaults.set(
-            userPresetSettings.rawValue,
-            forKey: "P4v8T1nR"
-        )
-
-        let store = makeStore(context)
-        let loadedPreferences = store.load()
-
-        #expect(
-            loadedPreferences == .init(
-                userPresetSettings: userPresetSettings,
-                lastUsedSettings: lastUsedSettings
-            )
-        )
-    }
-
-    @Test
-    func defaults_last_used_settings_when_only_legacy_user_preset_exists() {
-        let context = PreferenceStoreTestContext()
-        defer {
-            context.tearDown()
-        }
-
-        let userPresetSettings: PersistedBatchImageSettings = .init(
-            resizeMode: .exactSize,
-            referenceDimension: .width,
-            referencePixels: 1_024,
-            exactWidthPixels: 512,
-            exactHeightPixels: 512,
-            exactResizeStrategy: .contain,
-            compression: .medium,
-            naming: .init(
-                template: .custom,
-                customPrefix: "scan",
-                numberingStyle: .plain
-            )
-        )
-        context.userDefaults.set(
-            userPresetSettings.rawValue,
-            forKey: "P4v8T1nR"
-        )
-
-        let store = makeStore(context)
-        let loadedPreferences = store.load()
-
-        #expect(
-            loadedPreferences == .init(
-                userPresetSettings: userPresetSettings,
-                lastUsedSettings: .default
-            )
-        )
     }
 }
 
@@ -164,25 +80,5 @@ private extension BatchImagePrefsStoreTests {
                 )
             )
         )
-    }
-
-    func seedLegacyPreferences(
-        in context: PreferenceStoreTestContext
-    ) {
-        context.userDefaults.set(
-            PersistedBatchImageSettings.default.rawValue,
-            forKey: "d9K2mQ7x"
-        )
-        context.userDefaults.set(
-            PersistedBatchImageSettings.default.rawValue,
-            forKey: "P4v8T1nR"
-        )
-    }
-
-    func assertLegacyKeysRemoved(
-        in context: PreferenceStoreTestContext
-    ) {
-        #expect(context.userDefaults.object(forKey: "d9K2mQ7x") == nil)
-        #expect(context.userDefaults.object(forKey: "P4v8T1nR") == nil)
     }
 }
