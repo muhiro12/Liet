@@ -426,7 +426,7 @@
 		};
 		C00000012F72000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/muhiro12/MHPlatform";
+			repositoryURL = "https://github.com/muhiro12/MHPlatform.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.0;

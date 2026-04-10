@@ -54,6 +54,8 @@ struct BatchImageHomeView: View {
                         .transition(processingStepTransition)
                     processStepSection()
                         .transition(processingStepTransition)
+                    AdvertisementSection(.small)
+                        .transition(processingStepTransition)
                 }
             }
             .padding(Layout.contentPadding)

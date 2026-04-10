@@ -61,6 +61,8 @@ results as new files to either Files or Photos.
 - The MVP does not preserve detailed metadata such as EXIF payloads.
 - There is no per-image customization, editing UI, background processing, or
   overwrite flow.
+- The current app target does not yet include regional consent flows such as
+  UMP or ATT for advertising.
 
 ## Requirements
 
@@ -70,14 +72,16 @@ results as new files to either Files or Photos.
 ## Setup
 
 1. Clone the repository and open the project directory.
-2. Review `Liet/Configurations/Info.plist` if you plan to enable ads.
-   The repository currently keeps the Google Mobile Ads application identifier
-   on the standard test value because the 1.0 release does not expose an ad UI
-   yet. Replace it before shipping any real ad surface.
+2. The app's native AdMob placements are wired through `MHPlatform`.
+   `Liet/Configurations/Info.plist` already carries the live AdMob app ID, and
+   Debug builds use Google's standard native test ad unit.
 3. Open `Liet.xcodeproj` in Xcode and run the **Liet** scheme on an iOS 18
    simulator or device.
 4. When saving to Photos, allow the add-only Photo Library permission when the
    app requests it.
+5. Before shipping an update with ads, review App Store Connect privacy
+   disclosures and any regional consent requirements because this repository
+   currently does not include UMP or ATT flows.
 
 ## Build and Test
 

@@ -1,3 +1,4 @@
+import MHPlatform
 import PhotosUI
 import SwiftUI
 
@@ -218,4 +219,5 @@ private extension ContentView {
 
 #Preview {
     ContentView()
+        .mhAppRuntimeEnvironment(ContentViewPreviewFactory.previewRuntime)
 }

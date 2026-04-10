@@ -39,6 +39,8 @@ struct BatchFeatureChooserView: View {
                         featureButton(feature)
                     }
                 }
+
+                AdvertisementSection(.small)
             }
             .padding(Layout.contentPadding)
         }

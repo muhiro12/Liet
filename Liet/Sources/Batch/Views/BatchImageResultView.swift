@@ -35,6 +35,7 @@ struct BatchImageResultView: View {
                 spacing: Layout.contentSpacing
             ) {
                 summarySection()
+                AdvertisementSection(.medium)
                 previewsSection()
                 BatchImageResultSaveSectionView(
                     model: model,

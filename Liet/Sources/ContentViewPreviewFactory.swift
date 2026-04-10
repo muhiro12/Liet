@@ -1,8 +1,10 @@
 import LietLibrary
+import MHPlatform
 import SwiftUI
 
 #Preview("Chooser") {
     ContentView()
+        .mhAppRuntimeEnvironment(ContentViewPreviewFactory.previewRuntime)
 }
 
 #Preview("Resize Imported") {
@@ -11,6 +13,7 @@ import SwiftUI
         selectedFeature: .resizeImages,
         preferredCompactColumn: .detail
     )
+    .mhAppRuntimeEnvironment(ContentViewPreviewFactory.previewRuntime)
 }
 
 #Preview("Resize Result") {
@@ -19,6 +22,7 @@ import SwiftUI
         selectedFeature: .resizeImages,
         preferredCompactColumn: .detail
     )
+    .mhAppRuntimeEnvironment(ContentViewPreviewFactory.previewRuntime)
 }
 
 #Preview("Background Imported") {
@@ -27,6 +31,7 @@ import SwiftUI
         selectedFeature: .removeBackground,
         preferredCompactColumn: .detail
     )
+    .mhAppRuntimeEnvironment(ContentViewPreviewFactory.previewRuntime)
 }
 
 #Preview("Background Result") {
@@ -35,6 +40,7 @@ import SwiftUI
         selectedFeature: .removeBackground,
         preferredCompactColumn: .detail
     )
+    .mhAppRuntimeEnvironment(ContentViewPreviewFactory.previewRuntime)
 }
 
 #Preview(
@@ -48,6 +54,7 @@ import SwiftUI
         resizeModel: .previewImported(),
         selectedFeature: .resizeImages
     )
+    .mhAppRuntimeEnvironment(ContentViewPreviewFactory.previewRuntime)
 }
 
 #Preview(
@@ -61,11 +68,22 @@ import SwiftUI
         backgroundRemovalModel: .previewProcessed(),
         selectedFeature: .removeBackground
     )
+    .mhAppRuntimeEnvironment(ContentViewPreviewFactory.previewRuntime)
 }
 
-private enum ContentViewPreviewFactory {
+enum ContentViewPreviewFactory {
     static let iPadPreviewWidth = 1_194.0
     static let iPadPreviewHeight = 834.0
+
+    @MainActor static var previewRuntime: MHAppRuntime {
+        .init(
+            runtimeOnly: .init(
+                nativeAdUnitID: nil,
+                preferencesSuiteName: AppGroup.id,
+                showsLicenses: false
+            )
+        )
+    }
 }
 
 private extension BatchImageHomeModel {
