@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ADB88DD02F89BE0B00C59D93 /* MHDesign in Frameworks */ = {isa = PBXBuildFile; productRef = ADB88DCF2F89BE0B00C59D93 /* MHDesign */; };
 		B00000012F72000100000010 /* SwiftUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = B00000012F7200010000000F /* SwiftUtilities */; };
 		C00000012F72000100000003 /* MHPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = C00000012F72000100000002 /* MHPlatform */; };
 		C00000012F72000100000005 /* LietLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = C00000012F72000100000004 /* LietLibrary */; };
@@ -46,6 +47,7 @@
 				C00000012F72000100000003 /* MHPlatform in Frameworks */,
 				C00000012F72000100000005 /* LietLibrary in Frameworks */,
 				B00000012F72000100000010 /* SwiftUtilities in Frameworks */,
+				ADB88DD02F89BE0B00C59D93 /* MHDesign in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,6 +94,7 @@
 				C00000012F72000100000004 /* LietLibrary */,
 				C00000012F72000100000002 /* MHPlatform */,
 				B00000012F7200010000000F /* SwiftUtilities */,
+				ADB88DCF2F89BE0B00C59D93 /* MHDesign */,
 			);
 			productName = Liet;
 			productReference = AD87A26C2F715087006CC661 /* Liet.app */;
@@ -128,6 +131,7 @@
 				C00000012F72000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */,
 				B00000012F72000100000013 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 				B00000012F7200010000000E /* XCRemoteSwiftPackageReference "SwiftUtilities" */,
+				ADB88DCE2F89BE0B00C59D93 /* XCRemoteSwiftPackageReference "MHUI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AD87A26D2F715087006CC661 /* Products */;
@@ -396,6 +400,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		ADB88DCE2F89BE0B00C59D93 /* XCRemoteSwiftPackageReference "MHUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/muhiro12/MHUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		B00000012F7200010000000E /* XCRemoteSwiftPackageReference "SwiftUtilities" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/muhiro12/SwiftUtilities";
@@ -414,7 +426,7 @@
 		};
 		C00000012F72000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/muhiro12/MHPlatform.git";
+			repositoryURL = "https://github.com/muhiro12/MHPlatform";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.0;
@@ -423,6 +435,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		ADB88DCF2F89BE0B00C59D93 /* MHDesign */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADB88DCE2F89BE0B00C59D93 /* XCRemoteSwiftPackageReference "MHUI" */;
+			productName = MHDesign;
+		};
 		B00000012F7200010000000F /* SwiftUtilities */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B00000012F7200010000000E /* XCRemoteSwiftPackageReference "SwiftUtilities" */;
