@@ -1,16 +1,19 @@
+import MHDesign
 import SwiftUI
 import TipKit
 
 struct BatchImageResultSaveSectionView: View {
+    @Environment(\.mhDesignMetrics)
+    private var designMetrics
+
     @Bindable var model: BatchImageResultModel
-    let controlSpacing: Double
 
     private let saveDestinationTip = SaveDestinationTip()
 
     var body: some View {
         VStack(
             alignment: .leading,
-            spacing: controlSpacing
+            spacing: designMetrics.spacing.control
         ) {
             saveTitle
             exportAsZIPToggle
@@ -23,7 +26,7 @@ struct BatchImageResultSaveSectionView: View {
 private extension BatchImageResultSaveSectionView {
     var saveTitle: some View {
         Text("Save")
-            .font(.title3.weight(.semibold))
+            .batchTextStyle(.sectionTitle)
     }
 
     var exportAsZIPToggle: some View {

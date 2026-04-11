@@ -1,17 +1,12 @@
+import MHDesign
 import SwiftUI
 import TipKit
 
 struct BatchImageImportedPreviewView: View {
-    private enum Layout {
-        static let contentPadding = 20.0
-        static let contentSpacing = 24.0
-        static let gridSpacing = 12.0
-        static let headerSpacing = 8.0
-        static let thumbnailColumnMinimum = 130.0
-    }
-
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
+    @Environment(\.mhDesignMetrics)
+    private var designMetrics
 
     @State private var activePreviewItem: BatchImagePreviewItem?
 
@@ -21,41 +16,17 @@ struct BatchImageImportedPreviewView: View {
     let backToSettings: (() -> Void)?
     private let selectionPreviewTip = SelectionPreviewTip()
 
-    private let columns = [
-        GridItem(
-            .adaptive(minimum: Layout.thumbnailColumnMinimum),
-            spacing: Layout.gridSpacing
-        )
-    ]
-
     var body: some View {
-        ScrollView {
-            VStack(
-                alignment: .leading,
-                spacing: Layout.contentSpacing
-            ) {
-                header()
-
-                LazyVGrid(
-                    columns: columns,
-                    alignment: .leading,
-                    spacing: Layout.gridSpacing
-                ) {
-                    ForEach(importedImages) { image in
-                        ImportedBatchImageTile(
-                            image: image,
-                            imageTapAction: {
-                                activePreviewItem = .init(
-                                    importedImage: image
-                                )
-                            },
-                            projectedPixelSize: projectedPixelSize(for: image)
-                        )
-                    }
-                }
-            }
-            .padding(Layout.contentPadding)
+        VStack(
+            alignment: .leading,
+            spacing: designMetrics.spacing.section
+        ) {
+            previewsSection()
         }
+        .batchScreen(
+            title: nil as Text?,
+            subtitle: nil as Text?
+        )
         .fullScreenCover(item: $activePreviewItem) { item in
             BatchImageFullscreenPreviewView(
                 item: item
@@ -89,6 +60,15 @@ struct BatchImageImportedPreviewView: View {
 }
 
 private extension BatchImageImportedPreviewView {
+    var columns: [GridItem] {
+        [
+            GridItem(
+                .adaptive(minimum: BatchDesign.Grid.thumbnailColumnMinimum),
+                spacing: designMetrics.spacing.control
+            )
+        ]
+    }
+
     var selectionTitle: Text {
         if importedImages.count == 1 {
             Text("1 image selected")
@@ -97,36 +77,57 @@ private extension BatchImageImportedPreviewView {
         }
     }
 
-    func header() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.headerSpacing
-        ) {
-            titleView()
-
-            if let summaryText {
-                BatchStatusChip(
-                    text: summaryText,
-                    systemImage: "arrow.up.left.and.arrow.down.right",
-                    tone: .accent
+    @ViewBuilder
+    func previewsSection() -> some View {
+        if summaryText == nil,
+           projectedPixelSizeResolver == nil {
+            previewsGridSection()
+                .popoverTip(
+                    selectionPreviewTip,
+                    arrowEdge: .top
                 )
-            }
+        } else {
+            previewsGridSection()
         }
     }
 
     @ViewBuilder
-    func titleView() -> some View {
-        let title = selectionTitle
-            .font(.title2.weight(.semibold))
+    func previewsGridSection() -> some View {
+        let grid = LazyVGrid(
+            columns: columns,
+            alignment: .leading,
+            spacing: designMetrics.spacing.control
+        ) {
+            ForEach(importedImages) { image in
+                ImportedBatchImageTile(
+                    image: image,
+                    imageTapAction: {
+                        activePreviewItem = .init(
+                            importedImage: image
+                        )
+                    },
+                    projectedPixelSize: projectedPixelSize(for: image)
+                )
+            }
+        }
 
-        if summaryText == nil,
-           projectedPixelSizeResolver == nil {
-            title.popoverTip(
-                selectionPreviewTip,
-                arrowEdge: .top
-            )
+        if let summaryText {
+            BatchSection(
+                title: selectionTitle,
+                accessory: AnyView(
+                    BatchStatusChip(
+                        text: summaryText,
+                        systemImage: "arrow.up.left.and.arrow.down.right",
+                        tone: .accent
+                    )
+                )
+            ) {
+                grid
+            }
         } else {
-            title
+            BatchSection(title: selectionTitle) {
+                grid
+            }
         }
     }
 

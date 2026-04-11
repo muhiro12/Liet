@@ -1,49 +1,35 @@
+import MHDesign
 import SwiftUI
 import TipKit
 import UniformTypeIdentifiers
 
 struct BatchImageResultView: View {
-    private enum Layout {
-        static let contentPadding = 20.0
-        static let contentSpacing = 24.0
-        static let controlSpacing = 12.0
-        static let gridSpacing = 12.0
-        static let thumbnailColumnMinimum = 130.0
-    }
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
+    @Environment(\.mhDesignMetrics)
+    private var designMetrics
 
     @Bindable var model: BatchImageResultModel
     let backToSettings: (() -> Void)?
-
-    @Environment(\.horizontalSizeClass)
-    private var horizontalSizeClass
 
     @State private var activePreviewItem: BatchImagePreviewItem?
 
     private let processedResultsTip = ProcessedResultsTip()
 
-    private let columns = [
-        GridItem(
-            .adaptive(minimum: Layout.thumbnailColumnMinimum),
-            spacing: Layout.gridSpacing
-        )
-    ]
-
     var body: some View {
-        ScrollView {
-            VStack(
-                alignment: .leading,
-                spacing: Layout.contentSpacing
-            ) {
-                summarySection()
-                AdvertisementSection(.medium)
-                previewsSection()
-                BatchImageResultSaveSectionView(
-                    model: model,
-                    controlSpacing: Layout.controlSpacing
-                )
-            }
-            .padding(Layout.contentPadding)
+        VStack(
+            alignment: .leading,
+            spacing: designMetrics.spacing.section
+        ) {
+            summarySection()
+            AdvertisementSection(.medium)
+            previewsSection()
+            saveSection()
         }
+        .batchScreen(
+            title: nil as Text?,
+            subtitle: nil as Text?
+        )
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Results")
         .navigationBarTitleDisplayMode(.inline)
@@ -106,6 +92,15 @@ struct BatchImageResultView: View {
 }
 
 private extension BatchImageResultView {
+    var columns: [GridItem] {
+        [
+            GridItem(
+                .adaptive(minimum: BatchDesign.Grid.thumbnailColumnMinimum),
+                spacing: designMetrics.spacing.control
+            )
+        ]
+    }
+
     var errorPresented: Binding<Bool> {
         Binding(
             get: {
@@ -126,40 +121,43 @@ private extension BatchImageResultView {
             model.saveFeedback != nil
     }
 
+    @ViewBuilder
     func summarySection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.controlSpacing
-        ) {
-            resultTitleView()
-
-            if hasResultChips {
+        if hasResultChips {
+            BatchSection(
+                title: resultTitleText(model.processedImages.count)
+            ) {
                 ScrollView(
                     .horizontal,
                     showsIndicators: false
                 ) {
                     HStack(
-                        spacing: Layout.controlSpacing
+                        spacing: designMetrics.spacing.control
                     ) {
                         resultDetailChips()
                     }
                 }
             }
+            .popoverTip(
+                processedResultsTip,
+                arrowEdge: .top
+            )
+        } else {
+            resultTitleText(model.processedImages.count)
+                .batchTextStyle(.screenTitle)
+                .popoverTip(
+                    processedResultsTip,
+                    arrowEdge: .top
+                )
         }
     }
 
     func previewsSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.controlSpacing
-        ) {
-            Text("Processed images")
-                .font(.title3.weight(.semibold))
-
+        BatchSection(title: Text("Processed images")) {
             LazyVGrid(
                 columns: columns,
                 alignment: .leading,
-                spacing: Layout.gridSpacing
+                spacing: designMetrics.spacing.control
             ) {
                 ForEach(model.processedImages) { image in
                     ProcessedBatchImageTile(
@@ -176,6 +174,12 @@ private extension BatchImageResultView {
                 }
             }
         }
+    }
+
+    func saveSection() -> some View {
+        BatchImageResultSaveSectionView(model: model)
+            .batchSurfaceInset()
+            .batchSurface()
     }
 
     @ViewBuilder
@@ -211,15 +215,6 @@ private extension BatchImageResultView {
                 tone: .success
             )
         }
-    }
-
-    func resultTitleView() -> some View {
-        resultTitleText(model.processedImages.count)
-            .font(.title2.weight(.semibold))
-            .popoverTip(
-                processedResultsTip,
-                arrowEdge: .top
-            )
     }
 
     func resultTitleText(

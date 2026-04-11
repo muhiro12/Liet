@@ -1,12 +1,9 @@
+import MHDesign
 import SwiftUI
 
 struct ImportedBatchImageTile: View {
-    private enum Layout {
-        static let cornerRadius = 12.0
-        static let textSpacing = 4.0
-        static let imageHeight = 96.0
-        static let detailLineLimit = 3
-    }
+    @Environment(\.mhDesignMetrics)
+    private var designMetrics
 
     let image: ImportedBatchImage
     var imageTapAction: (() -> Void)?
@@ -15,24 +12,20 @@ struct ImportedBatchImageTile: View {
     var body: some View {
         VStack(
             alignment: .leading,
-            spacing: Layout.textSpacing
+            spacing: BatchDesign.ImportedTile.textSpacing
         ) {
             previewImage()
 
             Text(image.displayName)
-                .font(.caption.weight(.semibold))
+                .batchTextStyle(.caption)
                 .lineLimit(1)
 
-            Text(image.detailText)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                .lineLimit(Layout.detailLineLimit)
+            secondaryText(Text(image.detailText))
 
             if let projectedPixelSize {
-                projectedDetailText(for: projectedPixelSize)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(Layout.detailLineLimit)
+                secondaryText(
+                    projectedDetailText(for: projectedPixelSize)
+                )
             }
         }
     }
@@ -45,17 +38,26 @@ private extension ImportedBatchImageTile {
         Text("Output • \(Int(projectedPixelSize.width))×\(Int(projectedPixelSize.height))")
     }
 
+    func secondaryText(
+        _ text: Text
+    ) -> some View {
+        text
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+            .lineLimit(BatchDesign.ImportedTile.detailLineLimit)
+    }
+
     @ViewBuilder
     func previewImage() -> some View {
         let imageView = Image(uiImage: image.previewImage)
             .resizable()
             .aspectRatio(contentMode: .fill)
             .frame(maxWidth: .infinity)
-            .frame(height: Layout.imageHeight)
+            .frame(height: BatchDesign.ImportedTile.imageHeight)
             .accessibilityHidden(true)
             .clipShape(
                 RoundedRectangle(
-                    cornerRadius: Layout.cornerRadius,
+                    cornerRadius: designMetrics.radius.surface,
                     style: .continuous
                 )
             )

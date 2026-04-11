@@ -1,36 +1,20 @@
 // swiftlint:disable file_length type_contents_order
 import LietLibrary
+import MHDesign
 import PhotosUI
 import SwiftUI
 import TipKit
 import UIKit
 
 struct BatchBackgroundRemovalHomeView: View {
-    private enum Layout {
-        static let cardCornerRadius = 20.0
-        static let cardPadding = 18.0
-        static let cardSpacing = 16.0
-        static let contentPadding = 20.0
-        static let contentSpacing = 24.0
-        static let controlSpacing = 12.0
-        static let importStepNumber = 1
-        static let processingStepNumber = 2
-        static let processStepNumber = 3
-        static let processingSpringBlendDuration = 0.12
-        static let processingSpringDampingFraction = 0.88
-        static let processingSpringResponse = 0.42
-        static let sectionTransitionScale = 0.98
-        static let stepBadgeFillOpacity = 0.14
-        static let stepBadgePadding = 10.0
-        static let stepBadgeVerticalPadding = 6.0
-        static let stepBorderLineWidth = 1.0
-        static let stepBorderOpacity = 0.08
-    }
+    @Environment(\.mhDesignMetrics)
+    private var designMetrics
 
     @Bindable var model: BatchBackgroundRemovalHomeModel
     @Binding var selectedItems: [PhotosPickerItem]
     let reviewSelection: (() -> Void)?
     let backToChooser: (() -> Void)?
+
     @State private var isPresentingFileImporter = false
     @State private var suppressesSelectedItemsDidChange = false
 
@@ -40,24 +24,25 @@ struct BatchBackgroundRemovalHomeView: View {
     private let userPresetTip = UserPresetTip()
 
     var body: some View {
-        ScrollView {
-            VStack(
-                alignment: .leading,
-                spacing: Layout.contentSpacing
-            ) {
-                importStepSection()
+        VStack(
+            alignment: .leading,
+            spacing: designMetrics.spacing.section
+        ) {
+            importStepSection()
 
-                if model.showsProcessingStep {
-                    processingStepSection()
-                        .transition(processingStepTransition)
-                    processStepSection()
-                        .transition(processingStepTransition)
-                    AdvertisementSection(.small)
-                        .transition(processingStepTransition)
-                }
+            if model.showsProcessingStep {
+                processingStepSection()
+                    .transition(processingStepTransition)
+                processStepSection()
+                    .transition(processingStepTransition)
+                AdvertisementSection(.small)
+                    .transition(processingStepTransition)
             }
-            .padding(Layout.contentPadding)
         }
+        .batchScreen(
+            title: nil as Text?,
+            subtitle: nil as Text?
+        )
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Remove Background")
         .navigationBarTitleDisplayMode(.large)
@@ -209,8 +194,8 @@ private extension BatchBackgroundRemovalHomeView {
     }
 
     func importStepSection() -> some View {
-        stepCard(
-            number: Layout.importStepNumber,
+        BatchStepSection(
+            number: BatchDesign.Step.import,
             title: "Import"
         ) {
             selectionButtons()
@@ -220,8 +205,8 @@ private extension BatchBackgroundRemovalHomeView {
     }
 
     func processingStepSection() -> some View {
-        stepCard(
-            number: Layout.processingStepNumber,
+        BatchStepSection(
+            number: BatchDesign.Step.processing,
             title: "Processing Settings"
         ) {
             settingsSourceSection()
@@ -232,11 +217,11 @@ private extension BatchBackgroundRemovalHomeView {
     }
 
     func processStepSection() -> some View {
-        stepCard(
-            number: Layout.processStepNumber,
+        BatchStepSection(
+            number: BatchDesign.Step.process,
             title: "Process"
         ) {
-            processActionSection()
+            processButton()
         }
     }
 
@@ -265,10 +250,10 @@ private extension BatchBackgroundRemovalHomeView {
     ) -> some View {
         VStack(
             alignment: .leading,
-            spacing: Layout.controlSpacing
+            spacing: designMetrics.spacing.inline
         ) {
             Text(title)
-                .font(.subheadline.weight(.medium))
+                .batchTextStyle(.bodyStrong)
 
             content()
         }
@@ -278,7 +263,7 @@ private extension BatchBackgroundRemovalHomeView {
         settingsSection(title: "File Naming") {
             VStack(
                 alignment: .leading,
-                spacing: Layout.cardSpacing
+                spacing: designMetrics.spacing.control
             ) {
                 namingTemplateSection()
                 customNamingPrefixSection()
@@ -290,10 +275,10 @@ private extension BatchBackgroundRemovalHomeView {
     func namingTemplateSection() -> some View {
         VStack(
             alignment: .leading,
-            spacing: Layout.controlSpacing
+            spacing: designMetrics.spacing.inline
         ) {
             Text("Template")
-                .font(.subheadline.weight(.medium))
+                .batchTextStyle(.bodyStrong)
 
             Picker("Template", selection: namingTemplateBinding) {
                 Text("IMG")
@@ -330,10 +315,10 @@ private extension BatchBackgroundRemovalHomeView {
     func numberingStyleSection() -> some View {
         VStack(
             alignment: .leading,
-            spacing: Layout.controlSpacing
+            spacing: designMetrics.spacing.inline
         ) {
             Text("Numbering")
-                .font(.subheadline.weight(.medium))
+                .batchTextStyle(.bodyStrong)
 
             Picker("Numbering", selection: numberingStyleBinding) {
                 Text("001")
@@ -354,7 +339,7 @@ private extension BatchBackgroundRemovalHomeView {
     func backgroundRemovalControls() -> some View {
         VStack(
             alignment: .leading,
-            spacing: Layout.cardSpacing
+            spacing: designMetrics.spacing.control
         ) {
             adjustmentSlider(
                 title: "Strength",
@@ -382,7 +367,7 @@ private extension BatchBackgroundRemovalHomeView {
         }
     }
 
-    private func dimensionInputSection(
+    func dimensionInputSection(
         title: Text,
         placeholder: String,
         text: Binding<String>,
@@ -390,10 +375,10 @@ private extension BatchBackgroundRemovalHomeView {
     ) -> some View {
         VStack(
             alignment: .leading,
-            spacing: Layout.controlSpacing
+            spacing: designMetrics.spacing.inline
         ) {
             title
-                .font(.subheadline.weight(.medium))
+                .batchTextStyle(.bodyStrong)
 
             TextField(placeholder, text: text)
                 .keyboardType(keyboardType)
@@ -401,7 +386,7 @@ private extension BatchBackgroundRemovalHomeView {
         }
     }
 
-    private func adjustmentSlider(
+    func adjustmentSlider(
         title: LocalizedStringKey,
         value: Binding<Double>,
         range: ClosedRange<Double>,
@@ -409,11 +394,11 @@ private extension BatchBackgroundRemovalHomeView {
     ) -> some View {
         VStack(
             alignment: .leading,
-            spacing: Layout.controlSpacing
+            spacing: designMetrics.spacing.inline
         ) {
             HStack {
                 Text(title)
-                    .font(.subheadline.weight(.medium))
+                    .batchTextStyle(.bodyStrong)
                 Spacer()
                 Text(valueText)
                     .font(.footnote.monospacedDigit())
@@ -429,7 +414,7 @@ private extension BatchBackgroundRemovalHomeView {
 
     func selectionButtons() -> some View {
         VStack(
-            spacing: Layout.controlSpacing
+            spacing: designMetrics.spacing.control
         ) {
             photosSelectionButton()
             filesSelectionButton()
@@ -467,10 +452,10 @@ private extension BatchBackgroundRemovalHomeView {
 
     func selectionStatusRow() -> some View {
         HStack(
-            spacing: Layout.controlSpacing
+            spacing: designMetrics.spacing.control
         ) {
             selectedImageCountText(model.importedImages.count)
-                .font(.subheadline.weight(.medium))
+                .batchTextStyle(.bodyStrong)
 
             Spacer()
 
@@ -526,15 +511,6 @@ private extension BatchBackgroundRemovalHomeView {
                 userPresetTip,
                 arrowEdge: .top
             )
-        }
-    }
-
-    func processActionSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.controlSpacing
-        ) {
-            processButton()
         }
     }
 
@@ -601,76 +577,18 @@ private extension BatchBackgroundRemovalHomeView {
         }
     }
 
-    func stepCard<Content: View>(
-        number: Int,
-        title: LocalizedStringKey,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: Layout.cardSpacing
-        ) {
-            stepHeader(
-                number: number,
-                title: title
-            )
-
-            content()
-        }
-        .padding(Layout.cardPadding)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(
-                cornerRadius: Layout.cardCornerRadius,
-                style: .continuous
-            )
-            .fill(Color(uiColor: .secondarySystemBackground))
-        )
-        .overlay {
-            RoundedRectangle(
-                cornerRadius: Layout.cardCornerRadius,
-                style: .continuous
-            )
-            .strokeBorder(
-                Color.primary.opacity(Layout.stepBorderOpacity),
-                lineWidth: Layout.stepBorderLineWidth
-            )
-        }
-    }
-
-    func stepHeader(
-        number: Int,
-        title: LocalizedStringKey
-    ) -> some View {
-        HStack(
-            spacing: Layout.controlSpacing
-        ) {
-            Text("Step \(number)")
-                .font(.caption.weight(.semibold))
-                .padding(.horizontal, Layout.stepBadgePadding)
-                .padding(.vertical, Layout.stepBadgeVerticalPadding)
-                .background(
-                    Capsule(style: .continuous)
-                        .fill(Color.accentColor.opacity(Layout.stepBadgeFillOpacity))
-                )
-
-            Text(title)
-                .font(.title3.weight(.semibold))
-        }
-    }
-
     var processingAnimation: Animation {
         .spring(
-            response: Layout.processingSpringResponse,
-            dampingFraction: Layout.processingSpringDampingFraction,
-            blendDuration: Layout.processingSpringBlendDuration
+            response: BatchDesign.Animation.processingSpringResponse,
+            dampingFraction: BatchDesign.Animation.processingSpringDampingFraction,
+            blendDuration: BatchDesign.Animation.processingSpringBlendDuration
         )
     }
 
     var processingStepTransition: AnyTransition {
         .opacity.combined(
             with: .scale(
-                scale: Layout.sectionTransitionScale,
+                scale: BatchDesign.Animation.sectionTransitionScale,
                 anchor: .top
             )
         )

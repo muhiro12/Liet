@@ -1,13 +1,9 @@
+import MHDesign
 import SwiftUI
 
 struct ProcessedBatchImageTile: View {
-    private enum Layout {
-        static let cornerRadius = 12.0
-        static let textSpacing = 6.0
-        static let imageHeight = 112.0
-        static let detailLineLimit = 2
-        static let filenameSpacing = 6.0
-    }
+    @Environment(\.mhDesignMetrics)
+    private var designMetrics
 
     let image: ProcessedBatchImage
     var imageTapAction: (() -> Void)?
@@ -17,7 +13,7 @@ struct ProcessedBatchImageTile: View {
     var body: some View {
         VStack(
             alignment: .leading,
-            spacing: Layout.textSpacing
+            spacing: BatchDesign.ProcessedTile.textSpacing
         ) {
             previewImage()
             filenameEditor()
@@ -33,11 +29,11 @@ private extension ProcessedBatchImageTile {
             .resizable()
             .aspectRatio(contentMode: .fill)
             .frame(maxWidth: .infinity)
-            .frame(height: Layout.imageHeight)
+            .frame(height: BatchDesign.ProcessedTile.imageHeight)
             .accessibilityHidden(true)
             .clipShape(
                 RoundedRectangle(
-                    cornerRadius: Layout.cornerRadius,
+                    cornerRadius: designMetrics.radius.surface,
                     style: .continuous
                 )
             )
@@ -60,7 +56,7 @@ private extension ProcessedBatchImageTile {
     func filenameEditor() -> some View {
         HStack(
             alignment: .firstTextBaseline,
-            spacing: Layout.filenameSpacing
+            spacing: BatchDesign.ProcessedTile.filenameSpacing
         ) {
             TextField(
                 image.defaultOutputStem,
@@ -69,14 +65,16 @@ private extension ProcessedBatchImageTile {
             .textFieldStyle(.roundedBorder)
 
             Text(".\(image.outputFilenameExtension)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .batchTextStyle(
+                    .caption,
+                    color: .secondary
+                )
         }
     }
 
     func resolvedFilenameText() -> some View {
         Text(resolvedFilename)
-            .font(.caption.weight(.semibold))
+            .batchTextStyle(.caption)
             .lineLimit(1)
     }
 
@@ -84,6 +82,6 @@ private extension ProcessedBatchImageTile {
         Text(image.detailText)
             .font(.caption2)
             .foregroundStyle(.secondary)
-            .lineLimit(Layout.detailLineLimit)
+            .lineLimit(BatchDesign.ProcessedTile.detailLineLimit)
     }
 }

@@ -1,21 +1,17 @@
+// swiftlint:disable one_declaration_per_file file_types_order
+import MHDesign
 import SwiftUI
 
 struct BatchStatusChip: View {
-    enum Tone {
+    enum Tone: Equatable {
         case accent
         case neutral
         case success
         case warning
     }
 
-    private enum Layout {
-        static let accentBackgroundOpacity = 0.14
-        static let borderOpacity = 0.14
-        static let horizontalPadding = 10.0
-        static let neutralBorderOpacity = 0.08
-        static let verticalPadding = 6.0
-        static let warningBackgroundOpacity = 0.16
-    }
+    @Environment(\.mhDesignMetrics)
+    private var designMetrics
 
     private let systemImage: String?
     private let text: Text
@@ -23,21 +19,28 @@ struct BatchStatusChip: View {
 
     var body: some View {
         chipContent
-            .font(.caption.weight(.medium))
+            .batchTextStyle(.caption, color: foregroundColor)
             .lineLimit(1)
             .fixedSize(horizontal: true, vertical: false)
-            .padding(.horizontal, Layout.horizontalPadding)
-            .padding(.vertical, Layout.verticalPadding)
+            .textCase(.uppercase)
+            .padding(.horizontal, designMetrics.spacing.control)
+            .padding(.vertical, designMetrics.spacing.inline)
             .background(
-                Capsule(style: .continuous)
-                    .fill(backgroundColor)
+                backgroundColor,
+                in: RoundedRectangle(
+                    cornerRadius: designMetrics.radius.control,
+                    style: .continuous
+                )
             )
             .overlay {
-                Capsule(style: .continuous)
-                    .strokeBorder(
-                        borderColor,
-                        lineWidth: 1
-                    )
+                RoundedRectangle(
+                    cornerRadius: designMetrics.radius.control,
+                    style: .continuous
+                )
+                .stroke(
+                    borderColor,
+                    lineWidth: 1
+                )
             }
     }
 
@@ -55,30 +58,48 @@ struct BatchStatusChip: View {
     }
 
     private var backgroundColor: Color {
-        switch tone {
-        case .accent:
-            Color.accentColor.opacity(Layout.accentBackgroundOpacity)
-        case .neutral:
-            Color(uiColor: .secondarySystemFill)
-        case .success:
-            Color.green.opacity(Layout.borderOpacity)
-        case .warning:
-            Color.orange.opacity(Layout.warningBackgroundOpacity)
-        }
+        foregroundColor.opacity(fillOpacity)
     }
 
     private var borderColor: Color {
-        switch tone {
-        case .accent:
-            Color.accentColor.opacity(Layout.borderOpacity)
-        case .neutral:
-            Color.primary.opacity(Layout.neutralBorderOpacity)
-        case .success:
-            Color.green.opacity(Layout.borderOpacity)
-        case .warning:
-            Color.orange.opacity(Layout.borderOpacity)
+        foregroundColor.opacity(borderOpacity)
+    }
+
+    private var borderOpacity: Double {
+        if tone == .neutral {
+            BatchStatusChipDefaults.neutralBorderOpacity
+        } else {
+            BatchStatusChipDefaults.emphasizedBorderOpacity
         }
     }
+
+    private var fillOpacity: Double {
+        if tone == .neutral {
+            BatchStatusChipDefaults.neutralFillOpacity
+        } else {
+            BatchStatusChipDefaults.emphasizedFillOpacity
+        }
+    }
+
+    private var foregroundColor: Color {
+        switch tone {
+        case .accent:
+            .accentColor
+        case .neutral:
+            .secondary
+        case .success:
+            .green
+        case .warning:
+            .orange
+        }
+    }
+}
+
+private enum BatchStatusChipDefaults {
+    static let emphasizedBorderOpacity = 0.14
+    static let emphasizedFillOpacity = 0.08
+    static let neutralBorderOpacity = 0.10
+    static let neutralFillOpacity = 0.06
 }
 
 extension BatchStatusChip {
@@ -102,3 +123,4 @@ extension BatchStatusChip {
         self.tone = tone
     }
 }
+// swiftlint:enable one_declaration_per_file file_types_order

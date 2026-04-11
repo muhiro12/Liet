@@ -11,6 +11,7 @@ struct BatchImageEmptyDetailView: View {
             "Select images to start",
             systemImage: "photo.on.rectangle.angled"
         )
+        .batchEmptyStateLayout()
         .navigationTitle("Preview")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

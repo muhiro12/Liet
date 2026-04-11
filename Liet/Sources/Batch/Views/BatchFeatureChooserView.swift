@@ -1,49 +1,31 @@
+import MHDesign
 import SwiftUI
 
 struct BatchFeatureChooserView: View {
-    private enum Layout {
-        static let cardCornerRadius = 20.0
-        static let cardPadding = 18.0
-        static let cardSpacing = 14.0
-        static let featureDescriptionSpacing = 6.0
-        static let contentPadding = 20.0
-        static let contentSpacing = 24.0
-        static let featureIconWidth = 32.0
-        static let headerSpacing = 8.0
-        static let stepBorderLineWidth = 1.0
-        static let stepBorderOpacity = 0.08
-    }
+    @Environment(\.mhDesignMetrics)
+    private var designMetrics
 
     let selectFeature: (BatchFeatureKind) -> Void
 
     var body: some View {
-        ScrollView {
+        VStack(
+            alignment: .leading,
+            spacing: designMetrics.spacing.section
+        ) {
             VStack(
-                alignment: .leading,
-                spacing: Layout.contentSpacing
+                spacing: designMetrics.spacing.control
             ) {
-                VStack(
-                    alignment: .leading,
-                    spacing: Layout.headerSpacing
-                ) {
-                    Text("Choose a feature")
-                        .font(.title2.weight(.semibold))
-                    Text("Resize a whole batch or create transparent PNG copies with separate settings.")
-                        .foregroundStyle(.secondary)
+                ForEach(BatchFeatureKind.allCases) { feature in
+                    featureButton(feature)
                 }
-
-                VStack(
-                    spacing: Layout.cardSpacing
-                ) {
-                    ForEach(BatchFeatureKind.allCases) { feature in
-                        featureButton(feature)
-                    }
-                }
-
-                AdvertisementSection(.small)
             }
-            .padding(Layout.contentPadding)
+
+            AdvertisementSection(.small)
         }
+        .batchScreen(
+            title: Text("Choose a feature"),
+            subtitle: Text("Resize a whole batch or create transparent PNG copies with separate settings.")
+        )
         .navigationTitle("Liet")
         .navigationBarTitleDisplayMode(.large)
     }
@@ -65,51 +47,37 @@ private extension BatchFeatureChooserView {
         _ feature: BatchFeatureKind
     ) -> some View {
         HStack(
-            spacing: Layout.cardSpacing
+            alignment: .top,
+            spacing: designMetrics.layout.rowAccessorySpacing
         ) {
             Image(systemName: feature.systemImage)
                 .font(.title2.weight(.semibold))
-                .frame(width: Layout.featureIconWidth)
-                .foregroundStyle(.accent)
+                .frame(width: BatchDesign.FeatureChooser.featureIconWidth)
+                .foregroundStyle(.tint)
 
             VStack(
                 alignment: .leading,
-                spacing: Layout.featureDescriptionSpacing
+                spacing: designMetrics.spacing.inline
             ) {
                 featureTitle(feature)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+                    .batchTextStyle(.sectionTitle)
                 featureSubtitle(feature)
-                    .font(.subheadline)
                     .multilineTextAlignment(.leading)
-                    .foregroundStyle(.secondary)
+                    .batchTextStyle(
+                        .supporting,
+                        color: .secondary
+                    )
             }
 
-            Spacer()
+            Spacer(minLength: designMetrics.spacing.control)
 
             Image(systemName: "chevron.right")
                 .font(.footnote.weight(.semibold))
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(.secondary)
         }
-        .padding(Layout.cardPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(
-                cornerRadius: Layout.cardCornerRadius,
-                style: .continuous
-            )
-            .fill(Color(uiColor: .secondarySystemBackground))
-        )
-        .overlay {
-            RoundedRectangle(
-                cornerRadius: Layout.cardCornerRadius,
-                style: .continuous
-            )
-            .strokeBorder(
-                Color.primary.opacity(Layout.stepBorderOpacity),
-                lineWidth: Layout.stepBorderLineWidth
-            )
-        }
+        .batchSurfaceInset()
+        .batchSurface()
     }
 
     func featureTitle(
