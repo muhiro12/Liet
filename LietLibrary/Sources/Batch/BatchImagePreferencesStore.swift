@@ -1,14 +1,7 @@
-import Foundation
 import MHPlatformCore
 
 /// Loads and saves persisted batch-image preferences through `MHPreferenceStore`.
 public struct BatchImagePreferencesStore {
-    private enum StorageKeys {
-        static let preferences = MHCodablePreferenceKey<PersistedBatchImagePreferences>(
-            storageKey: "B7q1N4xP"
-        )
-    }
-
     private let preferenceStore: MHPreferenceStore
 
     /// Creates a store backed by the supplied typed preference store.
@@ -21,7 +14,7 @@ public struct BatchImagePreferencesStore {
     /// Returns the current persisted preferences when available.
     public func load() -> PersistedBatchImagePreferences? {
         preferenceStore.codable(
-            for: StorageKeys.preferences
+            for: LietPreferenceKeys.BatchImage.preferences
         )
     }
 
@@ -31,7 +24,7 @@ public struct BatchImagePreferencesStore {
     ) {
         preferenceStore.setCodable(
             preferences,
-            for: StorageKeys.preferences
+            for: LietPreferenceKeys.BatchImage.preferences
         )
     }
 }

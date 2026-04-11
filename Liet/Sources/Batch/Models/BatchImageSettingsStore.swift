@@ -3,8 +3,6 @@ import LietLibrary
 import MHPlatform
 
 struct BatchImageSettingsStore {
-    nonisolated static let appGroupIdentifier = AppGroup.id
-
     private let loadHandler: () -> PersistedBatchImagePreferences?
     private let saveHandler: (PersistedBatchImagePreferences) -> Void
 
@@ -29,13 +27,7 @@ struct BatchImageSettingsStore {
 
 extension BatchImageSettingsStore {
     static func live() -> Self {
-        guard let userDefaults = UserDefaults(
-            suiteName: appGroupIdentifier
-        ) else {
-            preconditionFailure("Failed to resolve App Group user defaults.")
-        }
-
-        return appStorage(userDefaults: userDefaults)
+        appStorage(userDefaults: AppGroup.userDefaults())
     }
 
     static func appStorage(

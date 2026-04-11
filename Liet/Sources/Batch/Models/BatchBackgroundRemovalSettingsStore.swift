@@ -3,8 +3,6 @@ import LietLibrary
 import MHPlatform
 
 struct BatchBackgroundRemovalSettingsStore {
-    nonisolated static let appGroupIdentifier = AppGroup.id
-
     private let loadHandler: () -> PersistedBatchBackgroundRemovalPreferences?
     private let saveHandler: (PersistedBatchBackgroundRemovalPreferences) -> Void
 
@@ -29,13 +27,7 @@ struct BatchBackgroundRemovalSettingsStore {
 
 extension BatchBackgroundRemovalSettingsStore {
     static func live() -> Self {
-        guard let userDefaults = UserDefaults(
-            suiteName: appGroupIdentifier
-        ) else {
-            preconditionFailure("Failed to resolve App Group user defaults.")
-        }
-
-        return appStorage(userDefaults: userDefaults)
+        appStorage(userDefaults: AppGroup.userDefaults())
     }
 
     static func appStorage(

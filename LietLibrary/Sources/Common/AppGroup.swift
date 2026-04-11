@@ -20,4 +20,14 @@ public enum AppGroup {
         }
         return url
     }()
+
+    /// Resolves the shared `UserDefaults` suite from the app group.
+    public static func userDefaults() -> UserDefaults {
+        guard let userDefaults = UserDefaults(
+            suiteName: id
+        ) else {
+            preconditionFailure("Failed to resolve App Group user defaults.")
+        }
+        return userDefaults
+    }
 }
