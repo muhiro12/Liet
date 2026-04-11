@@ -177,9 +177,9 @@ private extension BatchImageResultView {
     }
 
     func saveSection() -> some View {
-        BatchImageResultSaveSectionView(model: model)
-            .batchSurfaceInset()
-            .batchSurface()
+        BatchSection(title: Text("Save")) {
+            BatchImageResultSaveSectionView(model: model)
+        }
     }
 
     @ViewBuilder

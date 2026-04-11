@@ -8,24 +8,32 @@ struct BatchFeatureChooserView: View {
     let selectFeature: (BatchFeatureKind) -> Void
 
     var body: some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.section
-        ) {
-            VStack(
-                spacing: designMetrics.spacing.control
-            ) {
+        List {
+            Section {
+                VStack(
+                    alignment: .leading,
+                    spacing: designMetrics.spacing.inline
+                ) {
+                    Text("Choose a feature")
+                        .font(.headline)
+                    Text("Resize a whole batch or create transparent PNG copies with separate settings.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.vertical, designMetrics.spacing.inline)
+            }
+
+            Section {
                 ForEach(BatchFeatureKind.allCases) { feature in
                     featureButton(feature)
                 }
             }
 
-            AdvertisementSection(.small)
+            Section {
+                AdvertisementSection(.small)
+            }
         }
-        .batchScreen(
-            title: Text("Choose a feature"),
-            subtitle: Text("Resize a whole batch or create transparent PNG copies with separate settings.")
-        )
+        .listStyle(.insetGrouped)
         .navigationTitle("Liet")
         .navigationBarTitleDisplayMode(.large)
     }
@@ -47,11 +55,11 @@ private extension BatchFeatureChooserView {
         _ feature: BatchFeatureKind
     ) -> some View {
         HStack(
-            alignment: .top,
+            alignment: .center,
             spacing: designMetrics.layout.rowAccessorySpacing
         ) {
             Image(systemName: feature.systemImage)
-                .font(.title2.weight(.semibold))
+                .font(.title3.weight(.semibold))
                 .frame(width: BatchDesign.FeatureChooser.featureIconWidth)
                 .foregroundStyle(.tint)
 
@@ -60,13 +68,11 @@ private extension BatchFeatureChooserView {
                 spacing: designMetrics.spacing.inline
             ) {
                 featureTitle(feature)
-                    .batchTextStyle(.sectionTitle)
+                    .font(.headline)
                 featureSubtitle(feature)
                     .multilineTextAlignment(.leading)
-                    .batchTextStyle(
-                        .supporting,
-                        color: .secondary
-                    )
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
 
             Spacer(minLength: designMetrics.spacing.control)
@@ -76,8 +82,7 @@ private extension BatchFeatureChooserView {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .batchSurfaceInset()
-        .batchSurface()
+        .contentShape(Rectangle())
     }
 
     func featureTitle(

@@ -13,10 +13,9 @@ struct BatchStepSection<Content: View>: View {
         BatchSection(
             title: Text(title),
             accessory: AnyView(
-                BatchStatusChip(
-                    text: Text("Step \(number)"),
-                    tone: .accent
-                )
+                Text("Step \(number)")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
             )
         ) {
             VStack(

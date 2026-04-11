@@ -4,6 +4,7 @@ import SwiftUI
 import UIKit
 
 enum BatchDesignChrome {}
+
 enum BatchTextRole {
     case screenTitle
     case sectionTitle
@@ -15,20 +16,21 @@ enum BatchTextRole {
     var font: Font {
         switch self {
         case .screenTitle:
-            .title2.weight(.semibold)
-        case .sectionTitle:
             .title3.weight(.semibold)
+        case .sectionTitle:
+            .headline
         case .bodyStrong:
-            .body.weight(.medium)
+            .subheadline.weight(.semibold)
         case .supporting:
             .subheadline
         case .metadata:
             .footnote.weight(.medium)
         case .caption:
-            .footnote.weight(.medium)
+            .footnote
         }
     }
 }
+
 struct BatchSection<Content: View>: View {
     @Environment(\.mhDesignMetrics)
     private var designMetrics
@@ -39,19 +41,44 @@ struct BatchSection<Content: View>: View {
     private let title: Text
 
     var body: some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.group
-        ) {
-            BatchSectionHeader(
-                title: title,
-                supporting: supporting,
-                accessory: accessory
-            )
+        GroupBox {
+            VStack(
+                alignment: .leading,
+                spacing: designMetrics.spacing.control
+            ) {
+                content
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } label: {
+            HStack(
+                alignment: .firstTextBaseline,
+                spacing: designMetrics.layout.rowAccessorySpacing
+            ) {
+                VStack(
+                    alignment: .leading,
+                    spacing: designMetrics.spacing.inline
+                ) {
+                    title
+                        .batchTextStyle(.sectionTitle)
 
-            content
-                .batchSurfaceInset()
-                .batchSurface()
+                    if let supporting {
+                        supporting
+                            .batchTextStyle(
+                                .supporting,
+                                color: .secondary
+                            )
+                    }
+                }
+
+                Spacer(
+                    minLength: designMetrics.layout.rowAccessorySpacing
+                )
+
+                if let accessory {
+                    accessory
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -70,43 +97,13 @@ struct BatchSection<Content: View>: View {
 
 private enum BatchChromeDefaults {
     static let minimumCompactHorizontalMargin: CGFloat = 8
-    static let surfaceBorderLineWidth: CGFloat = 1
-    static let surfaceBorderOpacity = 0.24
 }
 
-private struct BatchCueBlock<Content: View>: View {
-    @Environment(\.mhDesignMetrics)
-    private var designMetrics
-
-    let cueHeight: CGFloat
-    let cueWidth: CGFloat
-    let content: Content
-
-    var body: some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.inline
-        ) {
-            Capsule()
-                .fill(.tint)
-                .frame(
-                    width: cueWidth,
-                    height: cueHeight
-                )
-
-            content
-        }
-    }
-
-    init(
-        cueWidth: CGFloat,
-        cueHeight: CGFloat,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.cueHeight = cueHeight
-        self.cueWidth = cueWidth
-        self.content = content()
-    }
+private struct BatchResolvedScreenStyle {
+    let contentSpacing: CGFloat
+    let horizontalMargin: CGFloat
+    let readableContentWidth: CGFloat?
+    let verticalPadding: CGFloat
 }
 
 private struct BatchEmptyStateLayoutModifier: ViewModifier {
@@ -121,12 +118,12 @@ private struct BatchEmptyStateLayoutModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(
                 .horizontal,
                 isCompactWidth
-                    ? designMetrics.layout.compactSurfaceInsetHorizontal
-                    : designMetrics.spacing.group
+                    ? designMetrics.layout.compactScreenHorizontalMargin
+                    : designMetrics.layout.screenHorizontalMargin
             )
             .padding(
                 .vertical,
@@ -135,13 +132,6 @@ private struct BatchEmptyStateLayoutModifier: ViewModifier {
                     : designMetrics.spacing.section
             )
     }
-}
-
-private struct BatchResolvedScreenStyle {
-    let contentSpacing: CGFloat
-    let horizontalMargin: CGFloat
-    let readableContentWidth: CGFloat?
-    let verticalPadding: CGFloat
 }
 
 private struct BatchScreenModifier: ViewModifier {
@@ -170,7 +160,7 @@ private struct BatchScreenModifier: ViewModifier {
                 spacing: style.contentSpacing
             ) {
                 if title != nil || subtitle != nil {
-                    BatchScreenTitleBlock(
+                    BatchScreenHeader(
                         title: title,
                         subtitle: subtitle
                     )
@@ -234,7 +224,7 @@ private struct BatchScreenModifier: ViewModifier {
     }
 }
 
-private struct BatchScreenTitleBlock: View {
+private struct BatchScreenHeader: View {
     @Environment(\.mhDesignMetrics)
     private var designMetrics
 
@@ -242,128 +232,26 @@ private struct BatchScreenTitleBlock: View {
     let subtitle: Text?
 
     var body: some View {
-        BatchCueBlock(
-            cueWidth: designMetrics.layout.screenCueWidth,
-            cueHeight: designMetrics.layout.screenCueHeight
+        VStack(
+            alignment: .leading,
+            spacing: designMetrics.spacing.inline
         ) {
-            VStack(
-                alignment: .leading,
-                spacing: designMetrics.spacing.group
-            ) {
-                if let title {
-                    title
-                        .batchTextStyle(.screenTitle)
-                }
-
-                if let subtitle {
-                    subtitle
-                        .batchTextStyle(
-                            .supporting,
-                            color: .secondary
-                        )
-                }
+            if let title {
+                title
+                    .batchTextStyle(.screenTitle)
             }
-        }
-    }
-}
 
-private struct BatchSectionHeader: View {
-    @Environment(\.mhDesignMetrics)
-    private var designMetrics
-
-    let title: Text
-    let supporting: Text?
-    let accessory: AnyView?
-
-    var body: some View {
-        BatchCueBlock(
-            cueWidth: designMetrics.layout.sectionCueWidth,
-            cueHeight: designMetrics.layout.sectionCueHeight
-        ) {
-            VStack(
-                alignment: .leading,
-                spacing: designMetrics.spacing.inline
-            ) {
-                HStack(
-                    alignment: .firstTextBaseline,
-                    spacing: designMetrics.layout.rowAccessorySpacing
-                ) {
-                    title
-                        .batchTextStyle(.sectionTitle)
-
-                    Spacer(
-                        minLength: designMetrics.layout.rowAccessorySpacing
+            if let subtitle {
+                subtitle
+                    .batchTextStyle(
+                        .supporting,
+                        color: .secondary
                     )
-
-                    if let accessory {
-                        accessory
-                    }
-                }
-
-                if let supporting {
-                    supporting
-                        .batchTextStyle(
-                            .supporting,
-                            color: .secondary
-                        )
-                }
             }
         }
-        .padding(.leading, designMetrics.spacing.inline)
     }
 }
 
-private struct BatchSurfaceInsetModifier: ViewModifier {
-    @Environment(\.horizontalSizeClass)
-    private var horizontalSizeClass
-    @Environment(\.mhDesignMetrics)
-    private var designMetrics
-
-    private var isCompactWidth: Bool {
-        horizontalSizeClass == .compact
-    }
-
-    func body(content: Content) -> some View {
-        content
-            .padding(
-                .horizontal,
-                isCompactWidth
-                    ? designMetrics.layout.compactSurfaceInsetHorizontal
-                    : designMetrics.layout.surfaceInsetHorizontal
-            )
-            .padding(
-                .vertical,
-                isCompactWidth
-                    ? designMetrics.layout.compactSurfaceInsetVertical
-                    : designMetrics.layout.surfaceInsetVertical
-            )
-    }
-}
-
-private struct BatchSurfaceModifier: ViewModifier {
-    @Environment(\.mhDesignMetrics)
-    private var designMetrics
-
-    func body(content: Content) -> some View {
-        let shape = RoundedRectangle(
-            cornerRadius: designMetrics.radius.surface,
-            style: .continuous
-        )
-
-        content
-            .background(
-                Color(uiColor: .secondarySystemBackground),
-                in: shape
-            )
-            .overlay {
-                shape.stroke(
-                    Color(uiColor: .separator)
-                        .opacity(BatchChromeDefaults.surfaceBorderOpacity),
-                    lineWidth: BatchChromeDefaults.surfaceBorderLineWidth
-                )
-            }
-    }
-}
 extension View {
     func batchEmptyStateLayout() -> some View {
         modifier(BatchEmptyStateLayoutModifier())
@@ -379,14 +267,6 @@ extension View {
                 title: title
             )
         )
-    }
-
-    func batchSurface() -> some View {
-        modifier(BatchSurfaceModifier())
-    }
-
-    func batchSurfaceInset() -> some View {
-        modifier(BatchSurfaceInsetModifier())
     }
 
     func batchTextStyle(

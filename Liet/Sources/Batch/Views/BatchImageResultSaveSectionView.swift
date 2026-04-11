@@ -15,7 +15,6 @@ struct BatchImageResultSaveSectionView: View {
             alignment: .leading,
             spacing: designMetrics.spacing.control
         ) {
-            saveTitle
             exportAsZIPToggle
             exportButton
             photosButton
@@ -24,11 +23,6 @@ struct BatchImageResultSaveSectionView: View {
 }
 
 private extension BatchImageResultSaveSectionView {
-    var saveTitle: some View {
-        Text("Save")
-            .batchTextStyle(.sectionTitle)
-    }
-
     var exportAsZIPToggle: some View {
         Toggle(
             "Export as ZIP",
