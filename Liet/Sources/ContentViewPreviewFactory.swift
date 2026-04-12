@@ -79,7 +79,6 @@ enum ContentViewPreviewFactory {
         .init(
             runtimeOnly: .init(
                 nativeAdUnitID: nil,
-                preferencesDefaults: .suite(AppGroup.id),
                 showsLicenses: false
             )
         )

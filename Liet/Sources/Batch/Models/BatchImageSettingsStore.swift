@@ -27,14 +27,14 @@ struct BatchImageSettingsStore {
 
 extension BatchImageSettingsStore {
     static func live() -> Self {
-        appStorage(userDefaults: AppGroup.userDefaults())
+        live(selection: AppGroup.preferencesDefaultsSelection)
     }
 
-    static func appStorage(
-        userDefaults: UserDefaults
+    static func live(
+        selection: MHUserDefaultsSelection
     ) -> Self {
         let preferenceStore = MHPreferenceStore(
-            userDefaults: userDefaults
+            userDefaults: selection.resolveUserDefaults()
         )
         let storage = BatchImagePreferencesStore(
             preferenceStore: preferenceStore

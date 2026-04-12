@@ -14,7 +14,6 @@ struct LietApp: App {
     @State private var bootstrap = MHAppRuntimeBootstrap(
         configuration: .init(
             nativeAdUnitID: LietAdMobConfiguration.nativeAdUnitID,
-            preferencesDefaults: .suite(AppGroup.id),
             showsLicenses: false
         )
     )
