@@ -8,7 +8,8 @@ ci_task_require_no_arguments "$@"
 ci_task_enter_repository "${BASH_SOURCE[0]}"
 repository_root=$CI_TASK_REPOSITORY_ROOT
 
-expected_mhplatform_remote="https://github.com/muhiro12/MHPlatform.git"
+expected_mhplatform_dependency_remote="https://github.com/muhiro12/MHPlatform.git"
+expected_mhplatform_project_remote="https://github.com/muhiro12/MHPlatform"
 expected_mhplatform_minimum_version="1.0.0"
 expected_swiftutilities_remote="https://github.com/muhiro12/SwiftUtilities"
 expected_swiftutilities_minimum_version="1.0.0"
@@ -80,14 +81,15 @@ extract_resolved_pin_block() {
 
 check_semver_dependency() {
   local label=$1
-  local remote_url=$2
-  local expected_range=$3
-  local minimum_version=$4
+  local dependency_remote_url=$2
+  local project_remote_url=$3
+  local expected_range=$4
+  local minimum_version=$5
   local manifest_block
   local resolved_block
   local project_block
 
-  manifest_block=$(extract_manifest_dependency_block "$remote_url")
+  manifest_block=$(extract_manifest_dependency_block "$dependency_remote_url")
   if [[ -z "$manifest_block" ]]; then
     record_failure "$package_manifest must reference the canonical $label remote."
   else
@@ -104,7 +106,7 @@ check_semver_dependency() {
     fi
   fi
 
-  resolved_block=$(extract_resolved_pin_block "$remote_url")
+  resolved_block=$(extract_resolved_pin_block "$dependency_remote_url")
   if [[ -z "$resolved_block" ]]; then
     record_failure "$package_resolved must resolve $label from the canonical remote."
   else
@@ -117,7 +119,7 @@ check_semver_dependency() {
   if [[ -z "$project_block" ]]; then
     record_failure "$project_file must define a $label remote package reference."
   else
-    if ! grep -q --fixed-strings "repositoryURL = \"$remote_url\";" <<<"$project_block"; then
+    if ! grep -q --fixed-strings "repositoryURL = \"$project_remote_url\";" <<<"$project_block"; then
       record_failure "$project_file must reference the canonical $label remote."
     fi
 
@@ -139,8 +141,8 @@ if rg -q '\.package\(\s*path:\s*"[^"]*SwiftUtilities' "$package_manifest"; then
   record_failure "$package_manifest must not use a local path dependency for SwiftUtilities."
 fi
 
-check_semver_dependency "MHPlatform" "$expected_mhplatform_remote" "\"1.0.0\"..<\"2.0.0\"" "$expected_mhplatform_minimum_version"
-check_semver_dependency "SwiftUtilities" "$expected_swiftutilities_remote" "\"1.0.0\"..<\"2.0.0\"" "$expected_swiftutilities_minimum_version"
+check_semver_dependency "MHPlatform" "$expected_mhplatform_dependency_remote" "$expected_mhplatform_project_remote" "\"1.0.0\"..<\"2.0.0\"" "$expected_mhplatform_minimum_version"
+check_semver_dependency "SwiftUtilities" "$expected_swiftutilities_remote" "$expected_swiftutilities_remote" "\"1.0.0\"..<\"2.0.0\"" "$expected_swiftutilities_minimum_version"
 
 if rg -q 'name:\s*"MHPlatform"' "$package_manifest"; then
   record_failure "LietLibrary must not depend on the umbrella MHPlatform product."
