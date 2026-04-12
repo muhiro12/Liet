@@ -1,5 +1,5 @@
 {
-  "originHash" : "8f66321301adb98a97e077f4f91229e3e59e001a851686a4b815be056f64d1b7",
+  "originHash" : "9c34621e8fc1a2f5896e70fb667c699181b61155b6d3f0a9c959d73118b1cff2",
   "pins" : [
     {
       "identity" : "googlemobileadswrapper",
@@ -22,10 +22,19 @@
     {
       "identity" : "mhplatform",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/muhiro12/MHPlatform.git",
+      "location" : "https://github.com/muhiro12/MHPlatform",
       "state" : {
-        "revision" : "8ae38bb43ec37c8370bcba9973ee43a727f59928",
-        "version" : "1.2.0"
+        "revision" : "6158136b1dbc068563002f82b942388ba1652dd1",
+        "version" : "1.6.0"
+      }
+    },
+    {
+      "identity" : "mhui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/muhiro12/MHUI.git",
+      "state" : {
+        "revision" : "4805a54bd4040392a8bd1ec9880ff65273f15212",
+        "version" : "1.1.0"
       }
     },
     {
@@ -53,6 +62,15 @@
       "state" : {
         "revision" : "13b248eaa73b7826f0efb1bcf455e251d65ecb1b",
         "version" : "3.1.0"
+      }
+    },
+    {
+      "identity" : "swiftlintplugins",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SimplyDanny/SwiftLintPlugins",
+      "state" : {
+        "revision" : "8a4640d14777685ba8f14e832373160498fbab92",
+        "version" : "0.63.2"
       }
     },
     {
