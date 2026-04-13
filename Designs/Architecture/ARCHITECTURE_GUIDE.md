@@ -61,8 +61,9 @@ Keep in `Liet`:
 ## Current Scaffold Status
 
 - `LietLibrary` now owns shared App Group constants plus MHPlatformCore-backed
-  batch preference persistence and legacy key migration.
-- `Liet` now boots through `MHAppRuntimeBootstrap(configuration:)` while
-  keeping Apple-framework adapters in the app target.
+  batch preference persistence through caller-owned descriptors.
+- `Liet` now boots through an app-owned `LietAppAssembly` that keeps
+  `MHAppRuntimeBootstrap(configuration:)` at the root boundary while
+  Apple-framework adapters remain in the app target.
 - New features should expand the shared library first when the logic is likely
   to be reused by more than one surface.

@@ -11,17 +11,12 @@ import SwiftUI
 
 @main
 struct LietApp: App {
-    @State private var bootstrap = MHAppRuntimeBootstrap(
-        configuration: .init(
-            nativeAdUnitID: LietAdMobConfiguration.nativeAdUnitID,
-            showsLicenses: false
-        )
-    )
+    @State private var assembly = LietAppAssembly.live()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .mhAppRuntimeBootstrap(bootstrap)
+                .mhAppRuntimeBootstrap(assembly.bootstrap)
         }
     }
 

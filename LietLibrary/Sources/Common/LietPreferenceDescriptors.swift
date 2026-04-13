@@ -1,8 +1,8 @@
 import MHPlatformCore
 
-/// Shared preference keys backed by the app group's `UserDefaults` suite.
-public enum LietPreferenceKeys {
-    /// Preference keys used by the batch-image workflow.
+/// Shared preference descriptors backed by the app group's `UserDefaults` suite.
+public enum LietPreferenceDescriptors {
+    /// Preference descriptors used by the batch-image workflow.
     public enum BatchImage {
         /// Persisted batch-image preference payload.
         public static let preferences = MHCodablePreferenceDescriptor<PersistedBatchImagePreferences>(
@@ -11,7 +11,7 @@ public enum LietPreferenceKeys {
         )
     }
 
-    /// Preference keys used by the batch background-removal workflow.
+    /// Preference descriptors used by the batch background-removal workflow.
     public enum BatchBackgroundRemoval {
         /// Persisted background-removal preference payload.
         public static let preferences = MHCodablePreferenceDescriptor<PersistedBatchBackgroundRemovalPreferences>(

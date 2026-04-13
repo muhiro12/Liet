@@ -27,9 +27,9 @@ results as new files to either Files or Photos.
   `TipKit`, `fileImporter`, and `fileExporter` stay in `Liet`.
 - **Platform package posture** - `Liet` adopts the `MHPlatform` umbrella,
   while `LietLibrary` adopts `MHPlatformCore`.
-- **Runtime bootstrap posture** - the app root uses
-  `MHAppRuntimeBootstrap(configuration:)` with `AppGroup.id` as the shared
-  preferences suite.
+- **Runtime bootstrap posture** - the app root owns a `LietAppAssembly` that
+  holds `MHAppRuntimeBootstrap(configuration:)`, while shared preference
+  descriptors continue using `AppGroup.preferencesDefaultsSelection`.
 - **Utility package posture** - both the app target and shared library adopt
   `SwiftUtilities` through the repository-managed 1.x semver range.
 - **Non-destructive processing** - source images are never overwritten.

@@ -75,13 +75,12 @@ enum ContentViewPreviewFactory {
     static let iPadPreviewWidth = 1_194.0
     static let iPadPreviewHeight = 834.0
 
+    @MainActor static var previewAssembly: LietAppAssembly {
+        .preview()
+    }
+
     @MainActor static var previewRuntime: MHAppRuntime {
-        .init(
-            runtimeOnly: .init(
-                nativeAdUnitID: nil,
-                showsLicenses: false
-            )
-        )
+        previewAssembly.bootstrap.runtime
     }
 }
 

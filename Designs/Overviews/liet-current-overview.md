@@ -1,6 +1,6 @@
 # Liet Current Product and Architecture Overview
 
-Current as of March 28, 2026.
+Current as of April 14, 2026.
 
 ## Purpose
 
@@ -53,10 +53,9 @@ remain in the app target.
 - Local-package-based shared library integration through `LietLibrary`.
 - Shared-library-owned pure state and planners for batch-image preferences,
   filename resolution, import filename selection, and processing decisions.
-- Shared-library-owned `MHPlatformCore` preference stores with v2 payload
-  storage and legacy App Group key migration.
-- App-root `MHPlatform` runtime bootstrap using the shared App Group
-  preferences suite.
+- Shared-library-owned `MHPlatformCore` preference stores backed by
+  caller-owned descriptors and the shared App Group defaults selection.
+- App-root `LietAppAssembly` ownership for the `MHPlatform` runtime bootstrap.
 - App-side adapter isolation for `PhotosUI`, `PhotoKit`, `ImageIO`, `TipKit`,
   and file export APIs.
 - Logic verification concentrated in `LietLibraryTests`, while the app target

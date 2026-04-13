@@ -13,4 +13,35 @@ struct LietLibraryTests {
             AppGroup.preferencesDefaultsSelection == .suite(AppGroup.id)
         )
     }
+
+    @Test
+    func batch_image_preferences_descriptor_uses_stable_storage_key() {
+        #expect(
+            LietPreferenceDescriptors.BatchImage.preferences.storageKey == "B7q1N4xP"
+        )
+    }
+
+    @Test
+    func batch_image_preferences_descriptor_uses_app_group_defaults_selection() {
+        #expect(
+            LietPreferenceDescriptors.BatchImage.preferences.defaultSelection ==
+                AppGroup.preferencesDefaultsSelection
+        )
+    }
+
+    @Test
+    func batch_background_removal_preferences_descriptor_uses_stable_storage_key() {
+        #expect(
+            LietPreferenceDescriptors.BatchBackgroundRemoval.preferences.storageKey ==
+                "H3m8R2vK"
+        )
+    }
+
+    @Test
+    func batch_background_removal_preferences_descriptor_uses_app_group_defaults_selection() {
+        #expect(
+            LietPreferenceDescriptors.BatchBackgroundRemoval.preferences.defaultSelection ==
+                AppGroup.preferencesDefaultsSelection
+        )
+    }
 }

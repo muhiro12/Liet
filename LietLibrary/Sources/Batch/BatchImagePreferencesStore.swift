@@ -14,7 +14,7 @@ public struct BatchImagePreferencesStore {
     /// Returns the current persisted preferences when available.
     public func load() -> PersistedBatchImagePreferences? {
         preferenceStore.codable(
-            for: LietPreferenceKeys.BatchImage.preferences
+            for: LietPreferenceDescriptors.BatchImage.preferences
         )
     }
 
@@ -24,7 +24,7 @@ public struct BatchImagePreferencesStore {
     ) {
         preferenceStore.setCodable(
             preferences,
-            for: LietPreferenceKeys.BatchImage.preferences
+            for: LietPreferenceDescriptors.BatchImage.preferences
         )
     }
 }
