@@ -96,8 +96,9 @@ post-clone CI setup.
   step to run after Swift edits and before the final verification gate.
 - `bash ci_scripts/tasks/verify_task_completion.sh` is the non-destructive
   verification gate for Codex task completion.
-- `bash ci_scripts/tasks/verify_pre_commit.sh` reruns the same non-destructive
-  verification gate for Git `pre-commit` and manual final rechecks.
+- `bash ci_scripts/tasks/verify_pre_push.sh` reruns the same non-destructive
+  verification gate for optional Git `pre-push` hooks and manual final
+  rechecks.
 - `bash ci_scripts/tasks/verify_repository_state.sh` checks the current
   repository state and still writes CI run artifacts.
 - `bash ci_scripts/tasks/test_shared_library.sh` runs the primary logic test
