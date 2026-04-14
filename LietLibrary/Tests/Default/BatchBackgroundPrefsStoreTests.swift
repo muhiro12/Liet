@@ -28,7 +28,7 @@ struct BatchBackgroundPrefsStoreTests {
 
         #expect(
             context.userDefaults.object(
-                forKey: "H3m8R2vK"
+                forKey: LietUserDefaultsKeys.AppGroup.batchBackgroundRemovalPreferences.rawValue
             ) != nil
         )
         #expect(store.load() == preferences)

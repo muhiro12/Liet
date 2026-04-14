@@ -6,7 +6,7 @@ public enum LietPreferenceDescriptors {
     public enum BatchImage {
         /// Persisted batch-image preference payload.
         public static let preferences = MHCodablePreferenceDescriptor<PersistedBatchImagePreferences>(
-            storageKey: "B7q1N4xP",
+            storageKey: LietUserDefaultsKeys.AppGroup.batchImagePreferences.rawValue,
             defaultSelection: AppGroup.preferencesDefaultsSelection
         )
     }
@@ -15,7 +15,7 @@ public enum LietPreferenceDescriptors {
     public enum BatchBackgroundRemoval {
         /// Persisted background-removal preference payload.
         public static let preferences = MHCodablePreferenceDescriptor<PersistedBatchBackgroundRemovalPreferences>(
-            storageKey: "H3m8R2vK",
+            storageKey: LietUserDefaultsKeys.AppGroup.batchBackgroundRemovalPreferences.rawValue,
             defaultSelection: AppGroup.preferencesDefaultsSelection
         )
     }

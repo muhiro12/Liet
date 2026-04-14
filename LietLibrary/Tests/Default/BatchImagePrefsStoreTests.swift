@@ -26,7 +26,11 @@ struct BatchImagePrefsStoreTests {
 
         store.save(preferences)
 
-        #expect(context.userDefaults.object(forKey: "B7q1N4xP") != nil)
+        #expect(
+            context.userDefaults.object(
+                forKey: LietUserDefaultsKeys.AppGroup.batchImagePreferences.rawValue
+            ) != nil
+        )
         #expect(store.load() == preferences)
     }
 }

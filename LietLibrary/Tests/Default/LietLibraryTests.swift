@@ -17,7 +17,8 @@ struct LietLibraryTests {
     @Test
     func batch_image_preferences_descriptor_uses_stable_storage_key() {
         #expect(
-            LietPreferenceDescriptors.BatchImage.preferences.storageKey == "B7q1N4xP"
+            LietPreferenceDescriptors.BatchImage.preferences.storageKey ==
+                LietUserDefaultsKeys.AppGroup.batchImagePreferences.rawValue
         )
     }
 
@@ -33,7 +34,7 @@ struct LietLibraryTests {
     func batch_background_removal_preferences_descriptor_uses_stable_storage_key() {
         #expect(
             LietPreferenceDescriptors.BatchBackgroundRemoval.preferences.storageKey ==
-                "H3m8R2vK"
+                LietUserDefaultsKeys.AppGroup.batchBackgroundRemovalPreferences.rawValue
         )
     }
 
