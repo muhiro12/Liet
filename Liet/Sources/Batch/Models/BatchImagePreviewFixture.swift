@@ -29,6 +29,8 @@ enum BatchImagePreviewFixture {
     )
     static let firstSelectionIndex = 1
     static let secondSelectionIndex = 2
+    static let transparentSubjectCornerRadiusRatio = 0.08
+    static let transparentSubjectInsetRatio = 0.18
     static let importedImages: [ImportedBatchImage] = [
         makeImportedImage(
             filename: "preview-landscape.jpg",
@@ -67,14 +69,16 @@ enum BatchImagePreviewFixture {
             format: .png,
             originalFormat: .jpeg,
             size: landscapeSize,
-            color: .systemTeal
+            color: .systemTeal,
+            isTransparent: true
         ),
         makeProcessedImage(
             filename: "IMG_002.png",
             format: .png,
             originalFormat: .png,
             size: portraitSize,
-            color: .systemOrange
+            color: .systemOrange,
+            isTransparent: true
         )
     ]
 
@@ -99,6 +103,18 @@ enum BatchImagePreviewFixture {
     static var processedFullscreenPreviewImage: UIImage {
         fullScreenPreviewImage(
             for: processedPreviewItem
+        )
+    }
+
+    static var transparentProcessedPreviewItem: BatchImagePreviewItem {
+        .init(
+            processedImage: backgroundRemovedImages[0]
+        )
+    }
+
+    static var transparentFullscreenPreviewImage: UIImage {
+        fullScreenPreviewImage(
+            for: transparentProcessedPreviewItem
         )
     }
 }
@@ -138,11 +154,13 @@ private extension BatchImagePreviewFixture {
         format: ImageFileFormat,
         originalFormat: ImageFileFormat,
         size: CGSize,
-        color: UIColor
+        color: UIColor,
+        isTransparent: Bool = false
     ) -> ProcessedBatchImage {
         let previewImage = makePreviewImage(
             size: size,
-            color: color
+            color: color,
+            isTransparent: isTransparent
         )
         let fileURL = makePreviewFileURL(
             filename: filename,
@@ -165,22 +183,38 @@ private extension BatchImagePreviewFixture {
 
     static func makePreviewImage(
         size: CGSize,
-        color: UIColor
+        color: UIColor,
+        isTransparent: Bool = false
     ) -> UIImage {
         let format = UIGraphicsImageRendererFormat.default()
-        format.opaque = true
+        format.opaque = !isTransparent
 
         return UIGraphicsImageRenderer(
             size: size,
             format: format
         ).image { context in
-            color.setFill()
-            context.fill(
-                CGRect(
-                    origin: .zero,
-                    size: size
-                )
+            let fullBounds = CGRect(
+                origin: .zero,
+                size: size
             )
+
+            if isTransparent {
+                UIColor.clear.setFill()
+                context.fill(fullBounds)
+
+                color.setFill()
+                UIBezierPath(
+                    roundedRect: transparentSubjectRect(
+                        in: fullBounds
+                    ),
+                    cornerRadius: transparentSubjectCornerRadius(
+                        in: fullBounds
+                    )
+                ).fill()
+            } else {
+                color.setFill()
+                context.fill(fullBounds)
+            }
         }
     }
 
@@ -220,5 +254,23 @@ private extension BatchImagePreviewFixture {
         }
 
         return image
+    }
+
+    static func transparentSubjectRect(
+        in bounds: CGRect
+    ) -> CGRect {
+        bounds.insetBy(
+            dx: bounds.width * transparentSubjectInsetRatio,
+            dy: bounds.height * transparentSubjectInsetRatio
+        )
+    }
+
+    static func transparentSubjectCornerRadius(
+        in bounds: CGRect
+    ) -> CGFloat {
+        min(
+            bounds.width,
+            bounds.height
+        ) * transparentSubjectCornerRadiusRatio
     }
 }

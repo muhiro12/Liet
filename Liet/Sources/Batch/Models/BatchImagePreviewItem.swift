@@ -6,6 +6,7 @@ struct BatchImagePreviewItem: Identifiable {
     let detailText: String
     let imageURL: URL
     let pixelSize: CGSize
+    let showsTransparencyBackground: Bool
 }
 
 extension BatchImagePreviewItem {
@@ -17,7 +18,8 @@ extension BatchImagePreviewItem {
             displayName: importedImage.displayName,
             detailText: importedImage.detailText,
             imageURL: importedImage.sourceURL,
-            pixelSize: importedImage.pixelSize
+            pixelSize: importedImage.pixelSize,
+            showsTransparencyBackground: importedImage.previewImage.batchHasAlphaChannel
         )
     }
 
@@ -30,7 +32,8 @@ extension BatchImagePreviewItem {
             displayName: displayName ?? processedImage.outputFilename,
             detailText: processedImage.detailText,
             imageURL: processedImage.outputURL,
-            pixelSize: processedImage.pixelSize
+            pixelSize: processedImage.pixelSize,
+            showsTransparencyBackground: processedImage.previewImage.batchHasAlphaChannel
         )
     }
 }

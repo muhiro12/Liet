@@ -102,7 +102,8 @@ private extension BatchImageFullscreenPreviewView {
         case let .loaded(image):
             BatchImageZoomableScrollView(
                 image: image,
-                maximumZoomScale: BatchDesign.Fullscreen.maximumZoomScale
+                maximumZoomScale: BatchDesign.Fullscreen.maximumZoomScale,
+                showsTransparencyBackground: item.showsTransparencyBackground
             ) {
                 dismiss()
             }
@@ -179,5 +180,12 @@ private extension BatchImageFullscreenPreviewView {
     BatchImageFullscreenPreviewView(
         item: BatchImagePreviewFixture.processedPreviewItem,
         initialPreviewImage: BatchImagePreviewFixture.processedFullscreenPreviewImage
+    )
+}
+
+#Preview("Transparent Processed Fullscreen") {
+    BatchImageFullscreenPreviewView(
+        item: BatchImagePreviewFixture.transparentProcessedPreviewItem,
+        initialPreviewImage: BatchImagePreviewFixture.transparentFullscreenPreviewImage
     )
 }

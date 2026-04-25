@@ -22,6 +22,11 @@ enum BatchDesign {
         static let textSpacing = 6.0
     }
 
+    enum TransparencyPreview {
+        static let fullscreenTileSize = 18.0
+        static let thumbnailTileSize = 6.0
+    }
+
     enum Fullscreen {
         static let closeButtonBackgroundOpacity = 0.5
         static let closeButtonImageSize = 22.0

@@ -15,6 +15,7 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
         static let centeringDivisor = 2.0
         static let minimumZoomScale: CGFloat = 1
 
+        let contentView = UIView()
         let imageView = UIImageView()
         let backgroundTapRecognizer: UITapGestureRecognizer
 
@@ -23,6 +24,7 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
         private let backgroundTapAction: () -> Void
         private var lastBoundsSize: CGSize = .zero
         private var imageIdentifier: ObjectIdentifier?
+        private var showsTransparencyBackground = false
 
         init(
             maximumZoomScale: CGFloat,
@@ -55,6 +57,23 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
             return imageChanged
         }
 
+        func setTransparencyBackground(
+            _ shouldShow: Bool
+        ) {
+            guard showsTransparencyBackground != shouldShow else {
+                return
+            }
+
+            showsTransparencyBackground = shouldShow
+            contentView.backgroundColor = if shouldShow {
+                BatchImagePreviewBackground.patternColor(
+                    tileSize: BatchDesign.TransparencyPreview.fullscreenTileSize
+                )
+            } else {
+                .clear
+            }
+        }
+
         func updateLayout(
             for scrollView: UIScrollView,
             resetZoomScale: Bool
@@ -73,7 +92,7 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
 
             let needsLayoutUpdate = boundsChanged ||
                 resetZoomScale ||
-                imageView.frame.size == .zero
+                contentView.frame.size == .zero
 
             if needsLayoutUpdate {
                 let fittedSize = fittedImageSize(
@@ -81,10 +100,11 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
                     containerSize: scrollView.bounds.size
                 )
 
-                imageView.frame = CGRect(
+                contentView.frame = CGRect(
                     origin: .zero,
                     size: fittedSize
                 )
+                imageView.frame = contentView.bounds
                 scrollView.contentSize = fittedSize
             }
 
@@ -99,7 +119,7 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
         func viewForZooming(
             in _: UIScrollView
         ) -> UIView? {
-            imageView
+            contentView
         }
 
         func scrollViewDidZoom(
@@ -123,15 +143,15 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
                 return
             }
 
-            let imageFrame = imageView.convert(
-                imageView.bounds,
+            let contentFrame = contentView.convert(
+                contentView.bounds,
                 to: scrollView
             )
             let tapLocation = recognizer.location(
                 in: scrollView
             )
 
-            guard !imageFrame.contains(tapLocation) else {
+            guard !contentFrame.contains(tapLocation) else {
                 return
             }
 
@@ -182,6 +202,7 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
 
     let image: UIImage
     let maximumZoomScale: CGFloat
+    let showsTransparencyBackground: Bool
     let backgroundTapAction: () -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -203,11 +224,16 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
 
+        let contentView = context.coordinator.contentView
+        contentView.backgroundColor = .clear
+        contentView.clipsToBounds = true
+
         let imageView = context.coordinator.imageView
         imageView.backgroundColor = .clear
         imageView.contentMode = .scaleAspectFit
 
-        scrollView.addSubview(imageView)
+        contentView.addSubview(imageView)
+        scrollView.addSubview(contentView)
         scrollView.addGestureRecognizer(
             context.coordinator.backgroundTapRecognizer
         )
@@ -226,6 +252,7 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
         context: Context
     ) {
         let imageChanged = context.coordinator.setImage(image)
+        context.coordinator.setTransparencyBackground(showsTransparencyBackground)
         context.coordinator.maximumZoomScale = maximumZoomScale
         context.coordinator.updateLayout(
             for: scrollView,

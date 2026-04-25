@@ -25,18 +25,20 @@ struct ProcessedBatchImageTile: View {
 
 private extension ProcessedBatchImageTile {
     func previewImage() -> some View {
-        let imageView = Image(uiImage: image.previewImage)
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(maxWidth: .infinity)
-            .frame(height: BatchDesign.ProcessedTile.imageHeight)
-            .accessibilityHidden(true)
-            .clipShape(
-                RoundedRectangle(
-                    cornerRadius: designMetrics.radius.surface,
-                    style: .continuous
-                )
+        let imageView = BatchImagePreviewSurface(
+            image: image.previewImage,
+            showsTransparencyBackground: image.previewImage.batchHasAlphaChannel,
+            tileSize: BatchDesign.TransparencyPreview.thumbnailTileSize,
+            contentMode: .fill
+        )
+        .frame(maxWidth: .infinity)
+        .frame(height: BatchDesign.ProcessedTile.imageHeight)
+        .clipShape(
+            RoundedRectangle(
+                cornerRadius: designMetrics.radius.surface,
+                style: .continuous
             )
+        )
 
         return Group {
             if let imageTapAction {

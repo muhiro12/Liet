@@ -49,18 +49,20 @@ private extension ImportedBatchImageTile {
 
     @ViewBuilder
     func previewImage() -> some View {
-        let imageView = Image(uiImage: image.previewImage)
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(maxWidth: .infinity)
-            .frame(height: BatchDesign.ImportedTile.imageHeight)
-            .accessibilityHidden(true)
-            .clipShape(
-                RoundedRectangle(
-                    cornerRadius: designMetrics.radius.surface,
-                    style: .continuous
-                )
+        let imageView = BatchImagePreviewSurface(
+            image: image.previewImage,
+            showsTransparencyBackground: image.previewImage.batchHasAlphaChannel,
+            tileSize: BatchDesign.TransparencyPreview.thumbnailTileSize,
+            contentMode: .fill
+        )
+        .frame(maxWidth: .infinity)
+        .frame(height: BatchDesign.ImportedTile.imageHeight)
+        .clipShape(
+            RoundedRectangle(
+                cornerRadius: designMetrics.radius.surface,
+                style: .continuous
             )
+        )
 
         if let imageTapAction {
             Button(
