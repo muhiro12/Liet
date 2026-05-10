@@ -18,11 +18,9 @@ struct AdvertisementSection {
 }
 
 extension AdvertisementSection: View {
-    @ViewBuilder var body: some View {
-        if appRuntime.adsAvailability == .available {
-            appRuntime.nativeAdView(size: size.runtimeSize)
-                .frame(maxWidth: .infinity)
-        }
+    var body: some View {
+        appRuntime.nativeAdView(size: size.runtimeSize)
+            .frame(maxWidth: .infinity)
     }
 }
 
