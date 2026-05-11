@@ -35,7 +35,7 @@ private extension ProcessedBatchImageTile {
         .frame(height: BatchDesign.ProcessedTile.imageHeight)
         .clipShape(
             RoundedRectangle(
-                cornerRadius: designMetrics.radius.surface,
+                cornerRadius: designMetrics.cornerRadius.surface,
                 style: .continuous
             )
         )

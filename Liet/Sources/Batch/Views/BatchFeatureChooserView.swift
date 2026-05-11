@@ -56,7 +56,7 @@ private extension BatchFeatureChooserView {
     ) -> some View {
         HStack(
             alignment: .center,
-            spacing: designMetrics.layout.rowAccessorySpacing
+            spacing: designMetrics.spacing.control
         ) {
             Image(systemName: feature.systemImage)
                 .font(.title3.weight(.semibold))

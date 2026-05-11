@@ -59,7 +59,7 @@ private extension ImportedBatchImageTile {
         .frame(height: BatchDesign.ImportedTile.imageHeight)
         .clipShape(
             RoundedRectangle(
-                cornerRadius: designMetrics.radius.surface,
+                cornerRadius: designMetrics.cornerRadius.surface,
                 style: .continuous
             )
         )

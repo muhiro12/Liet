@@ -89,7 +89,7 @@ struct BatchSection<Content: View>: View {
         } label: {
             HStack(
                 alignment: .firstTextBaseline,
-                spacing: designMetrics.layout.rowAccessorySpacing
+                spacing: designMetrics.spacing.control
             ) {
                 VStack(
                     alignment: .leading,
@@ -108,7 +108,7 @@ struct BatchSection<Content: View>: View {
                 }
 
                 Spacer(
-                    minLength: designMetrics.layout.rowAccessorySpacing
+                    minLength: designMetrics.spacing.control
                 )
 
                 if let accessory {
@@ -134,6 +134,7 @@ struct BatchSection<Content: View>: View {
 
 private enum BatchChromeDefaults {
     static let minimumCompactHorizontalMargin: CGFloat = 8
+    static let narrowWidthThreshold: CGFloat = 360
 }
 
 private extension BatchImagePreviewBackground {
@@ -236,13 +237,13 @@ private struct BatchEmptyStateLayoutModifier: ViewModifier {
             .padding(
                 .horizontal,
                 isCompactWidth
-                    ? designMetrics.layout.compactScreenHorizontalMargin
-                    : designMetrics.layout.screenHorizontalMargin
+                    ? designMetrics.layout.screen.compactContentInsetHorizontal
+                    : designMetrics.layout.screen.contentInsetHorizontal
             )
             .padding(
                 .vertical,
                 isCompactWidth
-                    ? designMetrics.spacing.group
+                    ? designMetrics.spacing.content
                     : designMetrics.spacing.section
             )
     }
@@ -307,33 +308,33 @@ private struct BatchScreenModifier: ViewModifier {
 
     private func resolvedStyle(for width: CGFloat) -> BatchResolvedScreenStyle {
         let isCompactWidth = width < designMetrics.layout.compactWidthThreshold
-        let usesNarrowFallback = width < designMetrics.layout.narrowWidthThreshold
+        let usesNarrowFallback = width < BatchChromeDefaults.narrowWidthThreshold
 
         let horizontalMargin: CGFloat
         if isCompactWidth {
             if usesNarrowFallback {
                 horizontalMargin = max(
                     BatchChromeDefaults.minimumCompactHorizontalMargin,
-                    designMetrics.layout.compactScreenHorizontalMargin - designMetrics.spacing.inline
+                    designMetrics.layout.screen.compactContentInsetHorizontal - designMetrics.spacing.inline
                 )
             } else {
-                horizontalMargin = designMetrics.layout.compactScreenHorizontalMargin
+                horizontalMargin = designMetrics.layout.screen.compactContentInsetHorizontal
             }
         } else {
-            horizontalMargin = designMetrics.layout.screenHorizontalMargin
+            horizontalMargin = designMetrics.layout.screen.contentInsetHorizontal
         }
 
         return .init(
             contentSpacing: isCompactWidth
-                ? designMetrics.layout.compactScreenContentSpacing
-                : designMetrics.layout.screenContentSpacing,
+                ? designMetrics.layout.screen.compactContentSpacing
+                : designMetrics.layout.screen.contentSpacing,
             horizontalMargin: horizontalMargin,
             readableContentWidth: isCompactWidth
                 ? nil
                 : designMetrics.layout.readableContentWidth,
             verticalPadding: isCompactWidth
-                ? designMetrics.layout.compactScreenVerticalPadding
-                : designMetrics.layout.screenVerticalPadding
+                ? designMetrics.layout.screen.compactContentInsetVertical
+                : designMetrics.layout.screen.contentInsetVertical
         )
     }
 }
