@@ -1,7 +1,12 @@
 # AGENTS.md
 
-This document defines the **global agent behavior contract** shared across projects.  
-It contains only strict, minimal rules that agents must always follow.
+This document defines the repository-specific agent behavior contract for
+Liet.
+
+Keep this file self-contained enough for agents working from a fresh clone.
+Repeat portable rules here when they are required to work safely in this
+repository; keep local-machine-only routing, broad development philosophy, and
+cross-repository principles outside the repository.
 
 ## Agent Philosophy
 
@@ -95,19 +100,26 @@ tasks.filter { $0.isCompleted }
 
 ## Build and Test Entry Point
 
-Agents MUST use one of these standardized entrypoints:
+Agents MUST prefer XcodeBuildMCP for Apple build, test, run, Simulator,
+runtime log, screenshot, and UI snapshot verification.
 
-```sh
-bash ci_scripts/tasks/verify_task_completion.sh
-bash ci_scripts/tasks/verify_repository_state.sh
-```
+Before the first XcodeBuildMCP build, test, or run call in a session, run
+XcodeBuildMCP `session_show_defaults`. If defaults do not point at this
+repository, set them for the current session before continuing.
+
+For app compile checks, use XcodeBuildMCP `build_sim` with the `Liet` scheme.
+For shared-library tests, use XcodeBuildMCP `test_sim` with the `LietLibrary`
+scheme. For runtime or UI-sensitive checks, use XcodeBuildMCP `build_run_sim`,
+`launch_app_sim`, `snapshot_ui`, and `screenshot` as appropriate.
 
 Agents may run `bash ci_scripts/tasks/check_environment.sh --profile verify`
 first to diagnose missing local prerequisites.
 When Swift files are edited, agents should run
 `bash ci_scripts/tasks/format_swift.sh` before the final verification gate.
-`bash ci_scripts/tasks/verify_task_completion.sh` is the non-destructive
-verification gate.
+Use `bash ci_scripts/tasks/verify_task_completion.sh` when the task needs the
+retained aggregate shell gate or when MCP coverage is unavailable.
+Use `bash ci_scripts/tasks/verify_repository_state.sh` when only change-based
+repository-state checks are needed.
 `bash ci_scripts/tasks/verify_pre_push.sh` reruns the same non-destructive
 verification shell for optional Git `pre-push` hooks and manual final checks.
 SwiftLint is resolved from the `SimplyDanny/SwiftLintPlugins` package declared
