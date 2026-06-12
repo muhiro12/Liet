@@ -8,16 +8,46 @@ this repository.
 Related document:
 [shared-service-design.md](./shared-service-design.md)
 
-Related decision:
-[0005-adapter-failure-surfacing-contract.md](../Decisions/0005-adapter-failure-surfacing-contract.md)
+Related decisions:
+
+- `Designs/Decisions/0005-adapter-failure-surfacing-contract.md`
+- `Designs/Decisions/0006-stage-mcp-first-and-operations-boundaries.md`
+
+## Public Business Boundary
+
+Future delivery surfaces should call reusable business use cases through public
+`*Operations` facades in `LietLibrary` when that boundary clarifies the API.
+
+Liet currently has one app delivery surface. Current batch planners, preference
+stores, naming helpers, value types, and App Group contracts remain valid
+library collaborators until an Operations facade describes a clearer
+cross-surface business use case.
 
 ## Responsibility Boundaries
 
-| Layer | Owns | Must not own |
-| --- | --- | --- |
-| Domain (`LietLibrary`) | Reusable business logic, future shared models, predicates, planners, pure helpers, shared app-group constants, shared preference persistence | Apple-framework side effects, app lifecycle wiring, SwiftUI presentation |
-| Adapter (`Liet`, future widgets, future App Intents) | Parameter parsing, platform API calls, `MHPlatform` runtime/bootstrap wiring, follow-up orchestration based on domain outcomes | Duplicated domain branching or long-lived business rules |
-| View (SwiftUI) | Focus state, sheets, navigation state, screen-scoped `@Observable` presentation models, display-only formatting | Domain validation branching, persistence rules, reusable calculations |
+### Domain (`LietLibrary`)
+
+Owns reusable business logic, future public `*Operations` facades, future
+shared models, predicates, planners, pure helpers, shared App Group constants,
+and shared preference persistence.
+
+Must not own Apple-framework side effects, app lifecycle wiring, or SwiftUI
+presentation.
+
+### Adapter (`Liet`, Future Widgets, Future App Intents)
+
+Owns parameter parsing, platform API calls, `MHPlatform` runtime/bootstrap
+wiring, and follow-up orchestration based on library outcomes.
+
+Must not own duplicated domain branching or long-lived business rules.
+
+### View (SwiftUI)
+
+Owns focus state, sheets, navigation state, screen-scoped `@Observable`
+presentation models, and display-only formatting.
+
+Must not own domain validation branching, persistence rules, or reusable
+calculations.
 
 ## View Rules
 
@@ -38,7 +68,12 @@ Not allowed in views:
 
 ## Canonical Mutation Flow
 
-`View -> Workflow/Adapter (Liet target) -> LietLibrary service/store -> persistence write -> Observation updates`
+```text
+View -> Workflow/Adapter (Liet target)
+    -> LietLibrary service/store
+    -> persistence write
+    -> Observation updates
+```
 
 Adapters may orchestrate platform side effects after mutation completion, but
 mutation rules and changed-entity decisions should come from `LietLibrary`.
@@ -67,3 +102,6 @@ Keep in `Liet`:
   Apple-framework adapters remain in the app target.
 - New features should expand the shared library first when the logic is likely
   to be reused by more than one surface.
+- New public `*Operations` facades should be added when a future delivery
+  surface needs a stable shared business entry point. Do not rename current
+  planners or stores only for suffix parity.

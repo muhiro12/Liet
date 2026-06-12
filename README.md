@@ -32,6 +32,11 @@ results as new files to either Files or Photos.
   descriptors continue using `AppGroup.preferencesDefaultsSelection`.
 - **Utility package posture** - both the app target and shared library adopt
   `SwiftUtilities` through the repository-managed 1.x semver range.
+- **Operations staging** - future cross-surface business use cases should enter
+  `LietLibrary` through public `*Operations` facades when that boundary
+  clarifies the behavior. Current batch planners, stores, and value types
+  remain valid library collaborators until an Operations facade adds a real
+  delivery-surface boundary.
 - **Non-destructive processing** - source images are never overwritten.
   Processed images are always written as new files in a temporary workspace
   before the user exports or saves them.
@@ -85,35 +90,42 @@ results as new files to either Files or Photos.
 
 ## Build and Test
 
-Use the helper scripts in `ci_scripts/` as needed. The repository contract is:
-Direct entrypoints live in `ci_scripts/tasks/`, shared shell helpers live in
-`ci_scripts/lib/`, and `ci_scripts/ci_post_clone.sh` is reserved for external
-post-clone CI setup.
+Use Xcode and XcodeBuildMCP for Apple build, test, run, Simulator, runtime log,
+screenshot, and UI snapshot verification. Xcode Cloud owns formal CI builds,
+tests, and archives.
 
-- `bash ci_scripts/tasks/check_environment.sh --profile <format|build|verify>`
-  diagnoses missing local prerequisites before you start a tool-dependent flow.
+The remaining helper scripts in `ci_scripts/` support retained repository
+rules and compatibility checks. Direct entrypoints live in `ci_scripts/tasks/`,
+shared shell helpers live in `ci_scripts/lib/`, and
+`ci_scripts/ci_post_clone.sh` is reserved for external post-clone CI setup.
+
+- XcodeBuildMCP owns Apple build, test, run, Simulator, runtime log,
+  screenshot, and UI snapshot evidence.
+- `bash ci_scripts/tasks/check_environment.sh --profile <profile>` diagnoses
+  missing local prerequisites before you start a tool-dependent flow. Use
+  `format`, `build`, `rules`, or `verify`.
 - `bash ci_scripts/tasks/format_swift.sh` is the explicit SwiftLint autofix
-  step to run after Swift edits and before the final verification gate.
-- `bash ci_scripts/tasks/verify_task_completion.sh` is the non-destructive
-  verification gate for Codex task completion.
-- `bash ci_scripts/tasks/verify_pre_push.sh` reruns the same non-destructive
-  verification gate for optional Git `pre-push` hooks and manual final
-  rechecks.
-- `bash ci_scripts/tasks/verify_repository_state.sh` checks the current
-  repository state and still writes CI run artifacts.
-- `bash ci_scripts/tasks/test_shared_library.sh` runs the primary logic test
-  surface in `LietLibraryTests`.
-- `bash ci_scripts/tasks/build_app.sh` builds the app target when app-side
-  changes need a compile check.
+  step to run after Swift edits.
+- `bash ci_scripts/tasks/check_repository_rules.sh` runs retained SwiftLint and
+  static architecture checks that are not naturally covered by XcodeBuildMCP.
+- `bash ci_scripts/tasks/verify_task_completion.sh`,
+  `bash ci_scripts/tasks/verify_pre_push.sh`, and
+  `bash ci_scripts/tasks/verify_repository_state.sh` remain compatibility
+  wrappers when MCP coverage is unavailable or an aggregate shell gate is
+  explicitly needed.
+- `bash ci_scripts/tasks/test_shared_library.sh` and
+  `bash ci_scripts/tasks/build_app.sh` remain direct shell wrappers for legacy
+  or fallback use. Prefer XcodeBuildMCP `test_sim` and `build_sim` for standard
+  evidence.
 
 SwiftLint is resolved from the `SimplyDanny/SwiftLintPlugins` package declared
 in `Liet.xcodeproj`. The repository scripts do not require a separately
 installed `swiftlint` binary on your `PATH`.
 
-Before running the full verify gate, diagnose the local prerequisites:
+Before running retained repository rules, diagnose the local prerequisites:
 
 ```sh
-bash ci_scripts/tasks/check_environment.sh --profile verify
+bash ci_scripts/tasks/check_environment.sh --profile rules
 ```
 
 After Swift edits, run the explicit autofix step:
@@ -122,21 +134,21 @@ After Swift edits, run the explicit autofix step:
 bash ci_scripts/tasks/format_swift.sh
 ```
 
-Then run the non-destructive full recheck:
+Then run retained repository rules:
 
 ```sh
-bash ci_scripts/tasks/verify_task_completion.sh
+bash ci_scripts/tasks/check_repository_rules.sh
 ```
 
-If you only need library tests:
+For app compile checks, use XcodeBuildMCP `build_sim` with the `Liet` scheme.
+For shared-library tests, use XcodeBuildMCP `test_sim` with the `LietLibrary`
+scheme. For runtime or UI-sensitive checks, use XcodeBuildMCP `build_run_sim`,
+`launch_app_sim`, `snapshot_ui`, and `screenshot`.
+
+If you need fallback shell wrappers:
 
 ```sh
 bash ci_scripts/tasks/test_shared_library.sh
-```
-
-If you only need an app compile check:
-
-```sh
 bash ci_scripts/tasks/build_app.sh
 ```
 

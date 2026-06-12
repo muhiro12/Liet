@@ -9,21 +9,45 @@ across the iOS app and any future companion surfaces.
 ## Core Principles
 
 - `LietLibrary` is the source of truth for shared business logic.
+- Future cross-surface business use cases should enter through public
+  `*Operations` facades when that boundary clarifies the behavior.
 - `Liet` owns SwiftUI presentation and adapters for Apple frameworks.
 - Future `AppIntent` types are adapters, not a second domain layer.
 - Views keep presentation state and navigation, but reusable business
-  decisions and mutations belong in shared services.
+  decisions and mutations belong in shared library APIs.
 - `LietLibrary` remains a single module unless there is a stronger reason than
   file organization alone.
 
 ## Responsibility Boundaries
 
-| Concern | Lives in | Examples |
-| --- | --- | --- |
-| Shared domain logic | `LietLibrary` | future models, predicates, calculators, planners, mutation services, shared identifiers, shared preference stores |
-| Apple-framework adapters | `Liet` | App Intents, notifications, widget reloads, deep links, review flows |
-| App-side platform support | `Liet/Sources/Common/Platform` | future runtime assembly, route pipeline setup, environment injection, `MHPlatform` bootstrap wiring |
-| Presentation orchestration | `Liet` | SwiftUI views, navigation state, screen coordinators, presentation models |
+### Shared Domain Logic
+
+Lives in `LietLibrary`.
+
+Examples include future `*Operations` facades, current batch planners,
+preference stores, naming helpers, shared identifiers, future models, and
+predicates.
+
+### Apple-Framework Adapters
+
+Live in `Liet`.
+
+Examples include App Intents, notifications, widget reloads, deep links, and
+review flows.
+
+### App-Side Platform Support
+
+Lives in `Liet/Sources/Common/Platform`.
+
+Examples include future runtime assembly, route pipeline setup, environment
+injection, and `MHPlatform` bootstrap wiring.
+
+### Presentation Orchestration
+
+Lives in `Liet`.
+
+Examples include SwiftUI views, navigation state, screen coordinators, and
+presentation models.
 
 ## MHPlatform Adoption
 
@@ -35,14 +59,50 @@ across the iOS app and any future companion surfaces.
 - This repository intentionally uses the SwiftUtilities 1.x semver range
   `1.0.0..<2.0.0`.
 
+## Operations Migration
+
+Liet adopts the Incomes/Cookle Operations direction as a staged boundary, not a
+rename campaign.
+
+- Add or extend `*Operations` when a delivery surface needs a public business
+  use case from `LietLibrary`.
+- Keep current batch planners, preference stores, naming helpers, and value
+  types as valid library collaborators until an Operations facade clarifies a
+  surface-facing use case.
+- If a view, future App Intent, widget, shortcut, or companion target starts
+  recreating reusable parsing, validation, naming, preference, or processing
+  planning rules, treat that as a missing Operations boundary.
+- Keep Apple-only image import, rendering, background removal, Photos saving,
+  file export, runtime assembly, and TipKit behavior in `Liet` adapters.
+
+## Canonical Shared APIs
+
+The current shared entry points and contracts are:
+
+- `BatchImagePreferencesState`
+- `BatchBackgroundRemovalPreferencesState`
+- `BatchImageProcessingPlanner`
+- `BatchBackgroundRemovalPlanner`
+- `BatchImageFilenamePlanner`
+- `BatchImageImportFilenamePolicy`
+- `ProcessedImageNaming`
+- `BatchImagePreferencesStore`
+- `BatchBackgroundRemovalPreferencesStore`
+- `LietPreferenceDescriptors`
+- `AppGroup`
+
+Future delivery surfaces should prefer `*Operations` facades when a shared API
+becomes a surface-facing business use case.
+
 ## Placement Rules
 
 1. If an operation is reusable across more than one surface, add or extend a
-   library service first.
+   library `*Operations` facade first when that facade clarifies the business
+   use case.
 2. If an operation depends on Apple-only frameworks, keep it in `Liet` and
    make it call library APIs.
 3. If a view or intent starts recreating parsing, validation, or mutation
-   rules, treat that as a missing library API.
+   rules, treat that as a missing library API or Operations facade.
 4. Keep platform-specific types out of `LietLibrary`. Convert them at the
    boundary into library models or value types.
 5. If glue code is app-only but reused by multiple app entry points, factor it
@@ -52,6 +112,6 @@ across the iOS app and any future companion surfaces.
 ## Refactoring Heuristic
 
 When a business rule is duplicated, the default fix is to move the rule into
-`LietLibrary` rather than duplicating it in another view, intent, or target.
-When duplicated code is still Apple-framework glue, the default fix is to
-extract it into `Liet/Sources/Common/Platform`.
+`LietLibrary` and expose it through a `*Operations` facade when the rule is a
+surface-facing business use case. When duplicated code is still Apple-framework
+glue, the default fix is to extract it into `Liet/Sources/Common/Platform`.

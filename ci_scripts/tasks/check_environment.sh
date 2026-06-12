@@ -6,7 +6,7 @@ source "$script_directory/../lib/task_utils.sh"
 
 usage() {
   cat <<'EOF' >&2
-Usage: bash ci_scripts/tasks/check_environment.sh --profile <format|build|verify>
+Usage: bash ci_scripts/tasks/check_environment.sh --profile <format|build|rules|verify>
 EOF
 }
 
@@ -18,7 +18,7 @@ fi
 
 profile=$2
 case "$profile" in
-  format | build | verify)
+  format | build | rules | verify)
     ;;
   *)
     usage
@@ -102,6 +102,9 @@ case "$profile" in
   verify)
     check_swiftlint_environment
     check_build_environment
+    ;;
+  rules)
+    check_swiftlint_environment
     ;;
 esac
 

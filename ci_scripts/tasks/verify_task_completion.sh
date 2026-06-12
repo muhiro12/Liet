@@ -17,7 +17,7 @@ else
 fi
 
 bash "$repository_root/ci_scripts/tasks/check_environment.sh" --profile verify
-CI_SKIP_ENV_CHECK=1 bash "$repository_root/ci_scripts/tasks/lint_swift.sh"
+CI_SKIP_ENV_CHECK=1 bash "$repository_root/ci_scripts/tasks/check_repository_rules.sh"
 CI_SKIP_ENV_CHECK=1 bash "$repository_root/ci_scripts/tasks/verify_repository_state.sh"
 
 after_worktree_state=$(git status --short --untracked-files=all)
