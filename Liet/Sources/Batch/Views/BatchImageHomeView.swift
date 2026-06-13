@@ -1,5 +1,3 @@
-// swiftlint:disable type_contents_order
-import LietLibrary
 import MHDesign
 import PhotosUI
 import SwiftUI
@@ -42,20 +40,14 @@ struct BatchImageHomeView: View {
             )
 
             if model.showsProcessingStep {
-                processingStepSection()
-                    .transition(processingStepTransition)
-                BatchImageProcessStepSection(
-                    isProcessing: model.isProcessing,
-                    canProcess: model.canProcess,
-                    runProcessingTip: runProcessingTip
-                ) {
-                    Task {
-                        model.processImages()
-                    }
-                }
+                BatchImageProcessingStepsView(
+                    model: model,
+                    processingSetupTip: processingSetupTip,
+                    runProcessingTip: runProcessingTip,
+                    resizeMethodTip: resizeMethodTip,
+                    userPresetTip: userPresetTip
+                )
                 .transition(processingStepTransition)
-                AdvertisementSection(.small)
-                    .transition(processingStepTransition)
             }
         }
         .batchScreen(
@@ -129,179 +121,6 @@ private extension BatchImageHomeView {
         )
     }
 
-    var resizeWidthBinding: Binding<String> {
-        Binding(
-            get: {
-                model.resizeWidthText
-            },
-            set: { newValue in
-                model.setResizeWidthText(newValue)
-            }
-        )
-    }
-
-    var resizeHeightBinding: Binding<String> {
-        Binding(
-            get: {
-                model.resizeHeightText
-            },
-            set: { newValue in
-                model.setResizeHeightText(newValue)
-            }
-        )
-    }
-
-    var referencePixelsBinding: Binding<String> {
-        Binding(
-            get: {
-                model.referencePixelsText
-            },
-            set: { newValue in
-                model.setReferencePixelsText(newValue)
-            }
-        )
-    }
-
-    var referenceDimensionBinding: Binding<BatchResizeReferenceDimension> {
-        Binding(
-            get: {
-                model.referenceDimension
-            },
-            set: { newValue in
-                model.setReferenceDimension(newValue)
-            }
-        )
-    }
-
-    var keepsAspectRatioBinding: Binding<Bool> {
-        Binding(
-            get: {
-                model.keepsAspectRatio
-            },
-            set: { newValue in
-                model.setKeepsAspectRatio(newValue)
-            }
-        )
-    }
-
-    var namingTemplateBinding: Binding<BatchImageNamingTemplate> {
-        Binding(
-            get: {
-                model.namingTemplate
-            },
-            set: { newValue in
-                model.setNamingTemplate(newValue)
-            }
-        )
-    }
-
-    var customNamingPrefixBinding: Binding<String> {
-        Binding(
-            get: {
-                model.customNamingPrefixText
-            },
-            set: { newValue in
-                model.setCustomNamingPrefixText(newValue)
-            }
-        )
-    }
-
-    var numberingStyleBinding: Binding<BatchImageNumberingStyle> {
-        Binding(
-            get: {
-                model.numberingStyle
-            },
-            set: { newValue in
-                model.setNumberingStyle(newValue)
-            }
-        )
-    }
-
-    var settingsSourceBinding: Binding<BatchImageHomeModel.SettingsSource> {
-        Binding(
-            get: {
-                model.settingsSource
-            },
-            set: { newValue in
-                model.settingsSource = newValue
-            }
-        )
-    }
-
-    func processingStepSection() -> some View {
-        BatchStepSection(
-            number: BatchDesign.Step.processing,
-            title: "Processing Settings"
-        ) {
-            settingsSourceSection()
-            outputSizeSection()
-            fileNamingSection()
-
-            if model.showsCompressionSection {
-                compressionSection()
-                    .transition(optionalProcessingSectionTransition)
-            }
-
-            userPresetSection()
-        }
-    }
-
-    func outputSizeSection() -> some View {
-        BatchSettingsSection(title: "Output Size") {
-            BatchResizeOutputSizeView(
-                keepsAspectRatio: keepsAspectRatioBinding,
-                referenceDimension: referenceDimensionBinding,
-                referencePixels: referencePixelsBinding,
-                resizeWidth: resizeWidthBinding,
-                resizeHeight: resizeHeightBinding,
-                exactResizeStrategy: $model.exactResizeStrategy,
-                resizeMethodTip: resizeMethodTip
-            )
-        }
-    }
-
-    func settingsSourceSection() -> some View {
-        BatchSettingsSection(title: "Starting Point") {
-            BatchSettingsSourcePickerView(
-                selection: settingsSourceBinding,
-                hasUserPresetSettings: model.hasUserPresetSettings,
-                processingSetupTip: processingSetupTip
-            )
-        }
-    }
-
-    func fileNamingSection() -> some View {
-        BatchSettingsSection(title: "File Naming") {
-            BatchFileNamingSectionView(
-                namingTemplate: namingTemplateBinding,
-                customNamingPrefix: customNamingPrefixBinding,
-                numberingStyle: numberingStyleBinding,
-                showsCustomNamingPrefixField: model.showsCustomNamingPrefixField,
-                hasValidNaming: model.hasValidNaming
-            )
-        }
-    }
-
-    func compressionSection() -> some View {
-        BatchSettingsSection(title: "Compression") {
-            BatchCompressionPickerView(
-                compression: $model.compression,
-                showsMixedCompressionHint: model.showsMixedCompressionHint
-            )
-        }
-    }
-
-    func userPresetSection() -> some View {
-        BatchSettingsSection(title: "User Preset") {
-            BatchUserPresetButtonView(
-                canSavePreset: model.canSaveCurrentAsUserPreset,
-                userPresetTip: userPresetTip
-            ) {
-                model.saveCurrentAsUserPreset()
-            }
-        }
-    }
-
     var processingAnimation: Animation {
         .spring(
             response: BatchDesign.Animation.processingSpringResponse,
@@ -318,14 +137,4 @@ private extension BatchImageHomeView {
             )
         )
     }
-
-    var optionalProcessingSectionTransition: AnyTransition {
-        .opacity.combined(
-            with: .scale(
-                scale: BatchDesign.Animation.sectionTransitionScale,
-                anchor: .top
-            )
-        )
-    }
 }
-// swiftlint:enable type_contents_order
