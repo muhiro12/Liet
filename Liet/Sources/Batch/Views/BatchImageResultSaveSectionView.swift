@@ -92,7 +92,7 @@ private extension BatchImageResultSaveSectionView {
 
     @ViewBuilder var photosButtonLabel: some View {
         if model.isSavingToPhotos {
-            ProgressView()
+            ProgressView("Saving to Photos")
                 .frame(maxWidth: .infinity)
         } else {
             Label("Photos", systemImage: "photo.on.rectangle")

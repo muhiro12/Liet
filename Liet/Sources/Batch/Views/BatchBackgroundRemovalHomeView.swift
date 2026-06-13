@@ -521,7 +521,7 @@ private extension BatchBackgroundRemovalHomeView {
             }
         } label: {
             if model.isProcessing {
-                ProgressView()
+                ProgressView("Processing")
                     .frame(maxWidth: .infinity)
             } else {
                 Label("Process", systemImage: "play.fill")

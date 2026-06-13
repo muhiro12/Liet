@@ -19,14 +19,22 @@ struct ContentView: View {
             columnVisibility: $columnVisibility,
             preferredCompactColumn: $preferredCompactColumn
         ) {
-            sidebarView(
+            ContentSidebarView(
+                selectedFeature: selectedFeature,
                 resizeModel: resizeModel,
-                backgroundRemovalModel: backgroundRemovalModel
+                backgroundRemovalModel: backgroundRemovalModel,
+                resizeSelectedItems: $resizeSelectedItems,
+                backgroundRemovalSelectedItems: $backgroundRemovalSelectedItems,
+                reviewSelection: showImportedPreview,
+                selectFeature: selectFeature,
+                backToChooser: showFeatureChooser
             )
         } detail: {
-            detailView(
+            ContentDetailView(
+                selectedFeature: selectedFeature,
                 resizeModel: resizeModel,
-                backgroundRemovalModel: backgroundRemovalModel
+                backgroundRemovalModel: backgroundRemovalModel,
+                backToSettings: showSidebarColumn
             )
         }
         .onChange(of: resizeModel.resultModel?.id) { _, resultID in
@@ -87,96 +95,6 @@ struct ContentView: View {
 }
 
 private extension ContentView {
-    @ViewBuilder
-    func sidebarView(
-        resizeModel: BatchImageHomeModel,
-        backgroundRemovalModel: BatchBackgroundRemovalHomeModel
-    ) -> some View {
-        switch selectedFeature {
-        case .resizeImages:
-            BatchImageHomeView(
-                model: resizeModel,
-                selectedItems: $resizeSelectedItems,
-                reviewSelection: showImportedPreview,
-                backToChooser: showFeatureChooser
-            )
-        case .removeBackground:
-            BatchBackgroundRemovalHomeView(
-                model: backgroundRemovalModel,
-                selectedItems: $backgroundRemovalSelectedItems,
-                reviewSelection: showImportedPreview,
-                backToChooser: showFeatureChooser
-            )
-        case nil:
-            BatchFeatureChooserView(selectFeature: selectFeature)
-        }
-    }
-
-    @ViewBuilder
-    func detailView(
-        resizeModel: BatchImageHomeModel,
-        backgroundRemovalModel: BatchBackgroundRemovalHomeModel
-    ) -> some View {
-        switch selectedFeature {
-        case .resizeImages:
-            resizeDetailView(
-                resizeModel: resizeModel
-            )
-        case .removeBackground:
-            backgroundRemovalDetailView(
-                backgroundRemovalModel: backgroundRemovalModel
-            )
-        case nil:
-            BatchFeatureEmptyDetailView()
-        }
-    }
-
-    @ViewBuilder
-    func resizeDetailView(
-        resizeModel: BatchImageHomeModel
-    ) -> some View {
-        if let resultModel = resizeModel.resultModel {
-            BatchImageResultView(
-                model: resultModel,
-                backToSettings: showSidebarColumn
-            )
-        } else if resizeModel.importedImages.isEmpty {
-            BatchImageEmptyDetailView(
-                backToSettings: showSidebarColumn
-            )
-        } else {
-            BatchImageImportedPreviewView(
-                importedImages: resizeModel.importedImages,
-                summaryText: resizeModel.selectionSummaryText,
-                projectedPixelSizeResolver: resizeModel.projectedPixelSize(for:),
-                backToSettings: showSidebarColumn
-            )
-        }
-    }
-
-    @ViewBuilder
-    func backgroundRemovalDetailView(
-        backgroundRemovalModel: BatchBackgroundRemovalHomeModel
-    ) -> some View {
-        if let resultModel = backgroundRemovalModel.resultModel {
-            BatchImageResultView(
-                model: resultModel,
-                backToSettings: showSidebarColumn
-            )
-        } else if backgroundRemovalModel.importedImages.isEmpty {
-            BatchImageEmptyDetailView(
-                backToSettings: showSidebarColumn
-            )
-        } else {
-            BatchImageImportedPreviewView(
-                importedImages: backgroundRemovalModel.importedImages,
-                summaryText: backgroundRemovalModel.selectionSummaryText,
-                projectedPixelSizeResolver: backgroundRemovalModel.projectedPixelSize(for:),
-                backToSettings: showSidebarColumn
-            )
-        }
-    }
-
     func selectFeature(
         _ feature: BatchFeatureKind
     ) {

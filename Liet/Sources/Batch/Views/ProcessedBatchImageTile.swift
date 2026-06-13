@@ -24,6 +24,7 @@ struct ProcessedBatchImageTile: View {
 }
 
 private extension ProcessedBatchImageTile {
+    @ViewBuilder
     func previewImage() -> some View {
         let imageView = BatchImagePreviewSurface(
             image: image.previewImage,
@@ -40,18 +41,16 @@ private extension ProcessedBatchImageTile {
             )
         )
 
-        return Group {
-            if let imageTapAction {
-                Button(
-                    action: imageTapAction
-                ) {
-                    imageView
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Preview \(resolvedFilename)")
-            } else {
+        if let imageTapAction {
+            Button(
+                action: imageTapAction
+            ) {
                 imageView
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Preview \(resolvedFilename)")
+        } else {
+            imageView
         }
     }
 
