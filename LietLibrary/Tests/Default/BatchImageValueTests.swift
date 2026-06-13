@@ -87,14 +87,6 @@ struct BatchImageValueTests {
                 numberingStyle: .zeroPaddedThreeDigits
             ).filenameStem(for: 3)
         )
-        let normalizedStemFilename = ProcessedImageNaming.makeFilename(
-            stem: "receipt.png",
-            outputFormat: .jpeg
-        )
-        let blankStemFilename = ProcessedImageNaming.makeFilename(
-            stem: "",
-            outputFormat: .jpeg
-        )
         let invalidCustomNaming = BatchImageNaming(
             template: .custom,
             customPrefix: "   ",
