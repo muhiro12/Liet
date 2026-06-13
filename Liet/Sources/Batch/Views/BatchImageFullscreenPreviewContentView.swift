@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BatchImageFullscreenPreviewContentView: View {
     let previewPhase: BatchImageFullscreenPreviewPhase
+    let imageAccessibilityLabel: String
     let showsTransparencyBackground: Bool
     let dismissPreview: () -> Void
 
@@ -16,6 +17,7 @@ struct BatchImageFullscreenPreviewContentView: View {
             case let .loaded(image):
                 BatchImageZoomableScrollView(
                     image: image,
+                    imageAccessibilityLabel: imageAccessibilityLabel,
                     maximumZoomScale: BatchDesign.Fullscreen.maximumZoomScale,
                     showsTransparencyBackground: showsTransparencyBackground,
                     backgroundTapAction: dismissPreview

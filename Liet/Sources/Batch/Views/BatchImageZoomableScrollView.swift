@@ -74,6 +74,14 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
             }
         }
 
+        func setImageAccessibilityLabel(
+            _ label: String
+        ) {
+            imageView.isAccessibilityElement = true
+            imageView.accessibilityLabel = label
+            imageView.accessibilityTraits = .image
+        }
+
         func updateLayout(
             for scrollView: UIScrollView,
             resetZoomScale: Bool
@@ -201,6 +209,7 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
     }
 
     let image: UIImage
+    let imageAccessibilityLabel: String
     let maximumZoomScale: CGFloat
     let showsTransparencyBackground: Bool
     let backgroundTapAction: () -> Void
@@ -252,6 +261,7 @@ struct BatchImageZoomableScrollView: UIViewRepresentable {
         context: Context
     ) {
         let imageChanged = context.coordinator.setImage(image)
+        context.coordinator.setImageAccessibilityLabel(imageAccessibilityLabel)
         context.coordinator.setTransparencyBackground(showsTransparencyBackground)
         context.coordinator.maximumZoomScale = maximumZoomScale
         context.coordinator.updateLayout(

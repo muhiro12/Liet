@@ -20,6 +20,7 @@ struct BatchImageFullscreenPreviewView: View {
                 BatchImageFullscreenCloseButtonRow(dismissPreview: dismissPreview)
                 BatchImageFullscreenPreviewContentView(
                     previewPhase: previewPhase,
+                    imageAccessibilityLabel: item.displayName,
                     showsTransparencyBackground: item.showsTransparencyBackground,
                     dismissPreview: dismissPreview
                 )
