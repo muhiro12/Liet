@@ -28,6 +28,8 @@ struct BatchAdjustmentSliderView: View {
                 value: $value,
                 in: range
             )
+            .accessibilityLabel(Text(title))
+            .accessibilityValue(valueText)
         }
     }
 }
