@@ -28,13 +28,32 @@ struct BatchImageHomeView: View {
             alignment: .leading,
             spacing: designMetrics.spacing.section
         ) {
-            importStepSection()
+            BatchImageImportStepSection(
+                selectedItems: $selectedItems,
+                isPresentingFileImporter: $isPresentingFileImporter,
+                isImporting: model.isImporting,
+                importedImageCount: model.importedImages.count,
+                importFailureCount: model.importFailureCount,
+                reviewSelection: reviewSelection,
+                clearSelection: {
+                    model.clearSelection()
+                },
+                selectImagesTip: selectImagesTip
+            )
 
             if model.showsProcessingStep {
                 processingStepSection()
                     .transition(processingStepTransition)
-                processStepSection()
-                    .transition(processingStepTransition)
+                BatchImageProcessStepSection(
+                    isProcessing: model.isProcessing,
+                    canProcess: model.canProcess,
+                    runProcessingTip: runProcessingTip
+                ) {
+                    Task {
+                        model.processImages()
+                    }
+                }
+                .transition(processingStepTransition)
                 AdvertisementSection(.small)
                     .transition(processingStepTransition)
             }
@@ -209,26 +228,6 @@ private extension BatchImageHomeView {
         )
     }
 
-    func importStepSection() -> some View {
-        BatchStepSection(
-            number: BatchDesign.Step.import,
-            title: "Import"
-        ) {
-            BatchImageImportControlsView(
-                selectedItems: $selectedItems,
-                isPresentingFileImporter: $isPresentingFileImporter,
-                isImporting: model.isImporting,
-                importedImageCount: model.importedImages.count,
-                importFailureCount: model.importFailureCount,
-                reviewSelection: reviewSelection,
-                clearSelection: {
-                    model.clearSelection()
-                },
-                selectImagesTip: selectImagesTip
-            )
-        }
-    }
-
     func processingStepSection() -> some View {
         BatchStepSection(
             number: BatchDesign.Step.processing,
@@ -244,23 +243,6 @@ private extension BatchImageHomeView {
             }
 
             userPresetSection()
-        }
-    }
-
-    func processStepSection() -> some View {
-        BatchStepSection(
-            number: BatchDesign.Step.process,
-            title: "Process"
-        ) {
-            BatchProcessButtonView(
-                isProcessing: model.isProcessing,
-                canProcess: model.canProcess,
-                runProcessingTip: runProcessingTip
-            ) {
-                Task {
-                    model.processImages()
-                }
-            }
         }
     }
 
