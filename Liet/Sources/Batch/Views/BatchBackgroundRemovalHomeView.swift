@@ -242,7 +242,7 @@ private extension BatchBackgroundRemovalHomeView {
     }
 
     func settingsSourceSection() -> some View {
-        settingsSection(title: "Starting Point") {
+        BatchSettingsSection(title: "Starting Point") {
             BatchSettingsSourcePickerView(
                 selection: settingsSourceBinding,
                 hasUserPresetSettings: model.hasUserPresetSettings,
@@ -251,23 +251,8 @@ private extension BatchBackgroundRemovalHomeView {
         }
     }
 
-    func settingsSection<Content: View>(
-        title: LocalizedStringKey,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.inline
-        ) {
-            Text(title)
-                .batchTextStyle(.bodyStrong)
-
-            content()
-        }
-    }
-
     func fileNamingSection() -> some View {
-        settingsSection(title: "File Naming") {
+        BatchSettingsSection(title: "File Naming") {
             BatchFileNamingSectionView(
                 namingTemplate: namingTemplateBinding,
                 customNamingPrefix: customNamingPrefixBinding,
@@ -279,7 +264,7 @@ private extension BatchBackgroundRemovalHomeView {
     }
 
     func backgroundRemovalSection() -> some View {
-        settingsSection(title: "Background Removal") {
+        BatchSettingsSection(title: "Background Removal") {
             BatchBackgroundRemovalSettingsView(
                 strength: strengthBinding,
                 edgeSmoothing: edgeSmoothingBinding,
@@ -289,7 +274,7 @@ private extension BatchBackgroundRemovalHomeView {
     }
 
     func userPresetSection() -> some View {
-        settingsSection(title: "User Preset") {
+        BatchSettingsSection(title: "User Preset") {
             BatchUserPresetButtonView(
                 canSavePreset: model.canSaveCurrentAsUserPreset,
                 userPresetTip: userPresetTip

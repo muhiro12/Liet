@@ -1,4 +1,4 @@
-// swiftlint:disable file_length type_contents_order
+// swiftlint:disable type_contents_order
 import LietLibrary
 import MHDesign
 import PhotosUI
@@ -279,7 +279,7 @@ private extension BatchImageHomeView {
     }
 
     func outputSizeSection() -> some View {
-        settingsSection(title: "Output Size") {
+        BatchSettingsSection(title: "Output Size") {
             BatchResizeOutputSizeView(
                 keepsAspectRatio: keepsAspectRatioBinding,
                 referenceDimension: referenceDimensionBinding,
@@ -293,7 +293,7 @@ private extension BatchImageHomeView {
     }
 
     func settingsSourceSection() -> some View {
-        settingsSection(title: "Starting Point") {
+        BatchSettingsSection(title: "Starting Point") {
             BatchSettingsSourcePickerView(
                 selection: settingsSourceBinding,
                 hasUserPresetSettings: model.hasUserPresetSettings,
@@ -302,23 +302,8 @@ private extension BatchImageHomeView {
         }
     }
 
-    func settingsSection<Content: View>(
-        title: LocalizedStringKey,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.inline
-        ) {
-            Text(title)
-                .batchTextStyle(.bodyStrong)
-
-            content()
-        }
-    }
-
     func fileNamingSection() -> some View {
-        settingsSection(title: "File Naming") {
+        BatchSettingsSection(title: "File Naming") {
             BatchFileNamingSectionView(
                 namingTemplate: namingTemplateBinding,
                 customNamingPrefix: customNamingPrefixBinding,
@@ -330,7 +315,7 @@ private extension BatchImageHomeView {
     }
 
     func compressionSection() -> some View {
-        settingsSection(title: "Compression") {
+        BatchSettingsSection(title: "Compression") {
             BatchCompressionPickerView(
                 compression: $model.compression,
                 showsMixedCompressionHint: model.showsMixedCompressionHint
@@ -339,7 +324,7 @@ private extension BatchImageHomeView {
     }
 
     func userPresetSection() -> some View {
-        settingsSection(title: "User Preset") {
+        BatchSettingsSection(title: "User Preset") {
             BatchUserPresetButtonView(
                 canSavePreset: model.canSaveCurrentAsUserPreset,
                 userPresetTip: userPresetTip
@@ -398,4 +383,4 @@ private extension BatchImageHomeView {
         )
     }
 }
-// swiftlint:enable file_length type_contents_order
+// swiftlint:enable type_contents_order
