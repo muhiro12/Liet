@@ -47,7 +47,7 @@ extension BatchBackgroundRemovalProcessor {
 
         for image in images {
             do {
-                let plan = BatchBackgroundRemovalPlanner.makePlan(
+                let plan = BatchBackgroundRemovalOperations.makePlan(
                     for: .init(
                         originalPixelSize: image.pixelSize,
                         selectionIndex: image.selectionIndex

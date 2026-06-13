@@ -44,13 +44,6 @@ SwiftLint is resolved from the `SimplyDanny/SwiftLintPlugins` package declared
 in `Liet.xcodeproj`, not from a separately installed `swiftlint` binary.
 Xcode Cloud owns formal CI builds, tests, and archives.
 
-Compatibility scripts such as `verify_task_completion.sh`,
-`verify_repository_state.sh`, `build_app.sh`, and `test_shared_library.sh`
-remain available when MCP coverage is unavailable or a retained aggregate shell
-gate is explicitly needed. They may write disposable CI artifacts under
-`.build/ci/runs/<RUN_ID>/` and shared data under `.build/ci/shared/`. Only the
-newest 5 run directories are retained.
-
 ## Release UI Smoke Audit
 
 Release UI smoke auditing is separate from the standard verification entrypoint.

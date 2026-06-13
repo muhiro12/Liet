@@ -23,7 +23,7 @@ final class BatchImageResultModel: Identifiable {
     let jpegFallbackCount: Int
     let ignoredCompressionCount: Int
 
-    private var filenamePlanner: BatchImageFilenamePlanner = .init()
+    private var filenameOperations: BatchImageFilenameOperations = .init()
     var fileExportMode: FileExportMode = .files
     var isExportingArchive = false
     var isExportingFiles = false
@@ -67,8 +67,8 @@ extension BatchImageResultModel {
     }
 
     var exportItems: [ProcessedImageExportItem] {
-        let resolvedFilenames = filenamePlanner.resolvedFilenames(
-            for: processedImages.map(filenamePlannerItem(for:))
+        let resolvedFilenames = filenameOperations.resolvedFilenames(
+            for: processedImages.map(filenameOperationsItem(for:))
         )
 
         return processedImages.map { image in
@@ -133,8 +133,8 @@ extension BatchImageResultModel {
     func editableFilenameStem(
         for image: ProcessedBatchImage
     ) -> String {
-        filenamePlanner.editableFilenameStem(
-            for: filenamePlannerItem(for: image)
+        filenameOperations.editableFilenameStem(
+            for: filenameOperationsItem(for: image)
         )
     }
 
@@ -142,18 +142,18 @@ extension BatchImageResultModel {
         _ filenameStem: String,
         for image: ProcessedBatchImage
     ) {
-        filenamePlanner.setEditableFilenameStem(
+        filenameOperations.setEditableFilenameStem(
             filenameStem,
-            for: filenamePlannerItem(for: image)
+            for: filenameOperationsItem(for: image)
         )
     }
 
     func resolvedFilename(
         for image: ProcessedBatchImage
     ) -> String {
-        filenamePlanner.resolvedFilename(
-            for: filenamePlannerItem(for: image),
-            within: processedImages.map(filenamePlannerItem(for:))
+        filenameOperations.resolvedFilename(
+            for: filenameOperationsItem(for: image),
+            within: processedImages.map(filenameOperationsItem(for:))
         )
     }
 
@@ -200,9 +200,9 @@ private extension BatchImageResultModel {
         }
     }
 
-    func filenamePlannerItem(
+    func filenameOperationsItem(
         for image: ProcessedBatchImage
-    ) -> BatchImageFilenamePlanner.Item {
+    ) -> BatchImageFilenameOperations.Item {
         .init(
             id: image.id,
             defaultStem: image.defaultOutputStem,

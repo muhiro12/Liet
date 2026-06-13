@@ -560,7 +560,7 @@ private extension BatchImageHomeModel {
     func supportsLossyCompression(
         for image: ImportedBatchImage
     ) -> Bool {
-        let outputFormat = BatchImageProcessingPlanner.resolvedOutputFormat(
+        let outputFormat = BatchImageProcessingOperations.resolvedOutputFormat(
             for: image.originalFormat,
             heicEncoderAvailable: BatchImageProcessor.heicEncoderAvailable
         )

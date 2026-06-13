@@ -1,11 +1,11 @@
 import Foundation
 
 /// Shared output naming rules for processed images.
-public enum ProcessedImageNaming {
+enum ProcessedImageNaming {
     static let fallbackStem = "image"
 
     /// Builds a unique output filename from an explicit stem.
-    public static func makeFilename(
+    static func makeFilename(
         stem: String,
         outputFormat: ImageFileFormat,
         existingFilenames: Set<String> = []

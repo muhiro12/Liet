@@ -122,7 +122,7 @@ extension BatchImageProcessor {
         referenceDimension: BatchResizeReferenceDimension,
         referencePixels: Int
     ) -> CGSize {
-        BatchImageProcessingPlanner.fitWithinPixelSize(
+        BatchImageProcessingOperations.fitWithinPixelSize(
             originalPixelSize: originalPixelSize,
             referenceDimension: referenceDimension,
             referencePixels: referencePixels
@@ -133,7 +133,7 @@ extension BatchImageProcessor {
         widthPixels: Int,
         heightPixels: Int
     ) -> CGSize {
-        BatchImageProcessingPlanner.exactCanvasPixelSize(
+        BatchImageProcessingOperations.exactCanvasPixelSize(
             widthPixels: widthPixels,
             heightPixels: heightPixels
         )
@@ -184,7 +184,7 @@ extension BatchImageProcessor {
         settings: BatchImageSettings,
         outputFormat: ImageFileFormat
     ) -> Bool {
-        BatchImageProcessingPlanner.shouldCopyOriginal(
+        BatchImageProcessingOperations.shouldCopyOriginal(
             originalFormat: image.originalFormat,
             originalPixelSize: image.pixelSize,
             settings: settings,

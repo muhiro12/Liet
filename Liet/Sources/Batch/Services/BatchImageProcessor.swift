@@ -31,7 +31,7 @@ extension BatchImageProcessor {
         for originalFormat: ImageFileFormat,
         heicEncoderAvailable: Bool = Self.heicEncoderAvailable
     ) -> ImageFileFormat {
-        BatchImageProcessingPlanner.resolvedOutputFormat(
+        BatchImageProcessingOperations.resolvedOutputFormat(
             for: originalFormat,
             heicEncoderAvailable: heicEncoderAvailable
         )
@@ -41,7 +41,7 @@ extension BatchImageProcessor {
         originalPixelSize: CGSize,
         resizeMode: BatchResizeMode
     ) -> CGSize {
-        BatchImageProcessingPlanner.projectedPixelSize(
+        BatchImageProcessingOperations.projectedPixelSize(
             originalPixelSize: originalPixelSize,
             resizeMode: resizeMode
         )
@@ -99,7 +99,7 @@ extension BatchImageProcessor {
 
         for image in images {
             do {
-                let plan = BatchImageProcessingPlanner.makePlan(
+                let plan = BatchImageProcessingOperations.makePlan(
                     for: .init(
                         originalFormat: image.originalFormat,
                         originalPixelSize: image.pixelSize,

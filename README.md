@@ -13,9 +13,9 @@ results as new files to either Files or Photos.
 
 - **Liet** - the iOS app target that owns the SwiftUI flow and Apple-framework
   adapters for image import, image processing, file export, and photo saving.
-- **LietLibrary** - the shared library target that owns reusable batch-image
-  settings, persistence state, import naming policy, processing planners, and
-  output naming.
+- **LietLibrary** - the shared library target that owns public batch-image
+  `*Operations` facades, reusable settings, persistence state, and internal
+  planning, naming, import, archive, and preference collaborators.
 - **LietLibraryTests** - the primary logic verification surface for
   platform-neutral batch-image behavior.
 
@@ -32,11 +32,10 @@ results as new files to either Files or Photos.
   descriptors continue using `AppGroup.preferencesDefaultsSelection`.
 - **Utility package posture** - both the app target and shared library adopt
   `SwiftUtilities` through the repository-managed 1.x semver range.
-- **Operations staging** - future cross-surface business use cases should enter
-  `LietLibrary` through public `*Operations` facades when that boundary
-  clarifies the behavior. Current batch planners, stores, and value types
-  remain valid library collaborators until an Operations facade adds a real
-  delivery-surface boundary.
+- **Operations boundary** - delivery surfaces enter reusable batch-image use
+  cases through public `*Operations` facades. Lower-level planners, stores,
+  naming helpers, archive builders, and import policies remain internal
+  library collaborators.
 - **Non-destructive processing** - source images are never overwritten.
   Processed images are always written as new files in a temporary workspace
   before the user exports or saves them.
@@ -59,7 +58,7 @@ results as new files to either Files or Photos.
   output is unavailable on the current runtime.
 - Save processed results either to the Files app or to the Photos app.
 - Persist last used settings plus one manually saved user preset through
-  `LietLibrary` stores backed by `MHPlatformCore` preference persistence.
+  `LietLibrary` Operations backed by `MHPlatformCore` preference persistence.
 
 ## Current limitations
 
@@ -95,15 +94,15 @@ screenshot, and UI snapshot verification. Xcode Cloud owns formal CI builds,
 tests, and archives.
 
 The remaining helper scripts in `ci_scripts/` support retained repository
-rules and compatibility checks. Direct entrypoints live in `ci_scripts/tasks/`,
-shared shell helpers live in `ci_scripts/lib/`, and
+rules. Direct entrypoints live in `ci_scripts/tasks/`, shared shell helpers
+live in `ci_scripts/lib/`, and
 `ci_scripts/ci_post_clone.sh` is reserved for external post-clone CI setup.
 
 - XcodeBuildMCP owns Apple build, test, run, Simulator, runtime log,
   screenshot, and UI snapshot evidence.
 - `bash ci_scripts/tasks/check_environment.sh --profile <profile>` diagnoses
   missing local prerequisites before you start a tool-dependent flow. Use
-  `format`, `build`, `rules`, or `verify`.
+  `swiftlint` or `rules`.
 - `bash ci_scripts/tasks/format_swift.sh` is the explicit SwiftLint autofix
   step to run after Swift edits.
 - `bash ci_scripts/tasks/check_repository_rules.sh` runs retained SwiftLint and
@@ -112,15 +111,6 @@ shared shell helpers live in `ci_scripts/lib/`, and
   gate. Use the global `$xcode-ui-smoke-auditor` skill and the
   [release UI smoke audit guide](Designs/Architecture/release-ui-smoke-audit.md)
   when a release or UI-sensitive change needs live Simulator evidence.
-- `bash ci_scripts/tasks/verify_task_completion.sh`,
-  `bash ci_scripts/tasks/verify_pre_push.sh`, and
-  `bash ci_scripts/tasks/verify_repository_state.sh` remain compatibility
-  wrappers when MCP coverage is unavailable or an aggregate shell gate is
-  explicitly needed.
-- `bash ci_scripts/tasks/test_shared_library.sh` and
-  `bash ci_scripts/tasks/build_app.sh` remain direct shell wrappers for legacy
-  or fallback use. Prefer XcodeBuildMCP `test_sim` and `build_sim` for standard
-  evidence.
 
 SwiftLint is resolved from the `SimplyDanny/SwiftLintPlugins` package declared
 in `Liet.xcodeproj`. The repository scripts do not require a separately
@@ -149,16 +139,7 @@ For shared-library tests, use XcodeBuildMCP `test_sim` with the `LietLibrary`
 scheme. For runtime or UI-sensitive checks, use XcodeBuildMCP `build_run_sim`,
 `launch_app_sim`, `snapshot_ui`, and `screenshot`.
 
-If you need fallback shell wrappers:
-
-```sh
-bash ci_scripts/tasks/test_shared_library.sh
-bash ci_scripts/tasks/build_app.sh
-```
-
 ## CI artifact layout
 
-CI helper scripts write all generated artifacts under `.build/ci/`.
-Run-scoped outputs are stored in `.build/ci/runs/<RUN_ID>/` (summary, commands,
-meta, logs, results, work), while shared caches and build state live in
+CI helper scripts write disposable shared cache and build state under
 `.build/ci/shared/` (`cache/`, `DerivedData/`, `tmp/`, `home/`).

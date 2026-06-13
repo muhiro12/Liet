@@ -9,8 +9,8 @@ across the iOS app and any future companion surfaces.
 ## Core Principles
 
 - `LietLibrary` is the source of truth for shared business logic.
-- Future cross-surface business use cases should enter through public
-  `*Operations` facades when that boundary clarifies the behavior.
+- Delivery surfaces enter reusable business use cases through public
+  `*Operations` facades.
 - `Liet` owns SwiftUI presentation and adapters for Apple frameworks.
 - Future `AppIntent` types are adapters, not a second domain layer.
 - Views keep presentation state and navigation, but reusable business
@@ -24,9 +24,9 @@ across the iOS app and any future companion surfaces.
 
 Lives in `LietLibrary`.
 
-Examples include future `*Operations` facades, current batch planners,
-preference stores, naming helpers, shared identifiers, future models, and
-predicates.
+Examples include public `*Operations` facades, reusable settings, shared
+identifiers, future models, predicates, and internal planners, preference
+stores, naming helpers, import policies, and archive builders.
 
 ### Apple-Framework Adapters
 
@@ -61,14 +61,13 @@ presentation models.
 
 ## Operations Migration
 
-Liet adopts the Incomes/Cookle Operations direction as a staged boundary, not a
-rename campaign.
+Liet adopts the Incomes/Cookle Operations direction as the app-to-library
+business boundary, not a domain-copying campaign.
 
-- Add or extend `*Operations` when a delivery surface needs a public business
-  use case from `LietLibrary`.
-- Keep current batch planners, preference stores, naming helpers, and value
-  types as valid library collaborators until an Operations facade clarifies a
-  surface-facing use case.
+- Add or extend `*Operations` when a delivery surface needs a public batch
+  business use case from `LietLibrary`.
+- Keep lower-level planners, preference stores, naming helpers, import
+  policies, and archive builders internal to `LietLibrary`.
 - If a view, future App Intent, widget, shortcut, or companion target starts
   recreating reusable parsing, validation, naming, preference, or processing
   planning rules, treat that as a missing Operations boundary.
@@ -81,18 +80,18 @@ The current shared entry points and contracts are:
 
 - `BatchImagePreferencesState`
 - `BatchBackgroundRemovalPreferencesState`
-- `BatchImageProcessingPlanner`
-- `BatchBackgroundRemovalPlanner`
-- `BatchImageFilenamePlanner`
-- `BatchImageImportFilenamePolicy`
-- `ProcessedImageNaming`
-- `BatchImagePreferencesStore`
-- `BatchBackgroundRemovalPreferencesStore`
+- `BatchImageProcessingOperations`
+- `BatchBackgroundRemovalOperations`
+- `BatchImageFilenameOperations`
+- `BatchImageImportOperations`
+- `BatchImageArchiveOperations`
+- `BatchImagePreferencesOperations`
+- `BackgroundRemovalPreferencesOperations`
 - `LietPreferenceDescriptors`
 - `AppGroup`
 
-Future delivery surfaces should prefer `*Operations` facades when a shared API
-becomes a surface-facing business use case.
+Future delivery surfaces should continue through `*Operations` facades when a
+shared API becomes a surface-facing business use case.
 
 ## Placement Rules
 

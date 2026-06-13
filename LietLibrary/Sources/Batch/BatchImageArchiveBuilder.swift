@@ -1,7 +1,10 @@
 import Foundation
 
 /// Builds a simple ZIP archive for processed batch-image exports.
-public struct BatchImageArchiveBuilder: Sendable {
+struct BatchImageArchiveBuilder: Sendable {
+    typealias Entry = BatchImageArchiveOperations.Entry
+    typealias BuildError = BatchImageArchiveOperations.BuildError
+
     private enum ZIPFormat {
         static let bitsPerByte = 8
         static let centralDirectoryHeaderSignature: UInt32 = 0x02014B50
@@ -23,39 +26,9 @@ public struct BatchImageArchiveBuilder: Sendable {
         let centralDirectoryRecord: Data
         let localFileRecord: Data
     }
-
-    /// One file that should be stored inside the archive.
-    public struct Entry: Equatable, Sendable {
-        /// The filename to write inside the archive.
-        public let filename: String
-        /// The file contents to store for the filename.
-        public let data: Data
-
-        /// Creates an archive entry from a filename and file contents.
-        public init(
-            filename: String,
-            data: Data
-        ) {
-            self.filename = filename
-            self.data = data
-        }
-    }
-
-    /// Errors that can occur while building an archive.
-    public enum BuildError: Error, Equatable, Sendable {
-        case archiveTooLarge
-        case entryTooLarge
-        case filenameTooLong
-        case tooManyEntries
-    }
-
-    /// Creates a ZIP archive builder.
-    public init() {
-        // Intentionally empty.
-    }
 }
 
-public extension BatchImageArchiveBuilder {
+extension BatchImageArchiveBuilder {
     /// Returns ZIP archive data for the provided entries, preserving entry order.
     func makeArchiveData(
         for entries: [Entry]

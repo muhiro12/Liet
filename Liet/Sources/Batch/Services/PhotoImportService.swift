@@ -122,7 +122,7 @@ extension PhotoImportService {
             normalizedItemIdentifier
         )
 
-        return BatchImageImportFilenamePolicy.preferredOriginalFilename(
+        return BatchImageImportOperations.preferredOriginalFilename(
             from: candidates
         )
     }
@@ -130,7 +130,7 @@ extension PhotoImportService {
     nonisolated static func originalFilename(
         from transferredFileURL: URL?
     ) -> String? {
-        BatchImageImportFilenamePolicy.originalFilename(
+        BatchImageImportOperations.originalFilename(
             fromTransferredFilename: transferredFileURL?.lastPathComponent
         )
     }

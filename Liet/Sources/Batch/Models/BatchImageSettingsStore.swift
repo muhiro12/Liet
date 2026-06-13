@@ -36,16 +36,16 @@ extension BatchImageSettingsStore {
         let preferenceStore = MHPreferenceStore(
             userDefaults: selection.resolveUserDefaults()
         )
-        let storage = BatchImagePreferencesStore(
+        let operations = BatchImagePreferencesOperations(
             preferenceStore: preferenceStore
         )
 
         return .init(
             loadHandler: {
-                storage.load()
+                operations.loadPreferences()
             },
             saveHandler: { preferences in
-                storage.save(preferences)
+                operations.savePreferences(preferences)
             }
         )
     }

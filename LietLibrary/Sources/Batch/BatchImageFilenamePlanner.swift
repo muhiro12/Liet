@@ -1,39 +1,20 @@
 import Foundation
 
-/// Resolves editable output stems into unique filenames for batch results.
-public struct BatchImageFilenamePlanner: Equatable, Sendable {
-    /// A result item that needs a resolved output filename.
-    public struct Item: Identifiable, Equatable, Sendable {
-        /// Stable identity used to track per-item custom stems.
-        public let id: UUID
-        /// The default stem derived from the generated output name.
-        public let defaultStem: String
-        /// The output format that defines the exported filename extension.
-        public let outputFormat: ImageFileFormat
-
-        /// Creates a result item for filename planning.
-        public init(
-            id: UUID,
-            defaultStem: String,
-            outputFormat: ImageFileFormat
-        ) {
-            self.id = id
-            self.defaultStem = defaultStem
-            self.outputFormat = outputFormat
-        }
-    }
+/// Internal filename planner used by `BatchImageFilenameOperations`.
+struct BatchImageFilenamePlanner: Equatable, Sendable {
+    typealias Item = BatchImageFilenameOperations.Item
 
     private var customFilenameStems: [UUID: String]
 
     /// Creates a planner with any previously edited custom stems.
-    public init(
+    init(
         customFilenameStems: [UUID: String] = [:]
     ) {
         self.customFilenameStems = customFilenameStems
     }
 }
 
-public extension BatchImageFilenamePlanner {
+extension BatchImageFilenamePlanner {
     /// Returns the editable stem currently shown for an item.
     func editableFilenameStem(
         for item: Item

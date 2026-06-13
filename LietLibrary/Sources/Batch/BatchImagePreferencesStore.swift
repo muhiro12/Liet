@@ -1,25 +1,25 @@
 import MHPlatformCore
 
 /// Loads and saves persisted batch-image preferences through `MHPreferenceStore`.
-public struct BatchImagePreferencesStore {
+struct BatchImagePreferencesStore {
     private let preferenceStore: MHPreferenceStore
 
     /// Creates a store backed by the supplied typed preference store.
-    public init(
+    init(
         preferenceStore: MHPreferenceStore
     ) {
         self.preferenceStore = preferenceStore
     }
 
     /// Returns the current persisted preferences when available.
-    public func load() -> PersistedBatchImagePreferences? {
+    func load() -> PersistedBatchImagePreferences? {
         preferenceStore.codable(
             for: LietPreferenceDescriptors.BatchImage.preferences
         )
     }
 
     /// Persists the current preferences to the opaque storage slot.
-    public func save(
+    func save(
         _ preferences: PersistedBatchImagePreferences
     ) {
         preferenceStore.setCodable(

@@ -15,21 +15,20 @@ Related decisions:
 
 ## Public Business Boundary
 
-Future delivery surfaces should call reusable business use cases through public
-`*Operations` facades in `LietLibrary` when that boundary clarifies the API.
+Delivery surfaces call reusable business use cases through public
+`*Operations` facades in `LietLibrary`.
 
-Liet currently has one app delivery surface. Current batch planners, preference
-stores, naming helpers, value types, and App Group contracts remain valid
-library collaborators until an Operations facade describes a clearer
-cross-surface business use case.
+Liet currently has one app delivery surface. Lower-level batch planners,
+preference stores, naming helpers, import policies, and archive builders remain
+internal library collaborators behind the Operations boundary.
 
 ## Responsibility Boundaries
 
 ### Domain (`LietLibrary`)
 
-Owns reusable business logic, future public `*Operations` facades, future
-shared models, predicates, planners, pure helpers, shared App Group constants,
-and shared preference persistence.
+Owns reusable business logic, public `*Operations` facades, future shared
+models, predicates, internal planners, pure helpers, shared App Group
+constants, and shared preference persistence.
 
 Must not own Apple-framework side effects, app lifecycle wiring, or SwiftUI
 presentation.
@@ -95,13 +94,12 @@ Keep in `Liet`:
 
 ## Current Scaffold Status
 
-- `LietLibrary` now owns shared App Group constants plus MHPlatformCore-backed
-  batch preference persistence through caller-owned descriptors.
+- `LietLibrary` owns shared App Group constants plus MHPlatformCore-backed
+  batch preference persistence exposed through public Operations.
 - `Liet` now boots through an app-owned `LietAppAssembly` that keeps
   `MHAppRuntimeBootstrap(configuration:)` at the root boundary while
   Apple-framework adapters remain in the app target.
 - New features should expand the shared library first when the logic is likely
   to be reused by more than one surface.
 - New public `*Operations` facades should be added when a future delivery
-  surface needs a stable shared business entry point. Do not rename current
-  planners or stores only for suffix parity.
+  surface needs another stable shared business entry point.

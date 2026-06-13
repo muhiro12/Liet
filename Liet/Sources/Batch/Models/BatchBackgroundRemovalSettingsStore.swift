@@ -36,16 +36,16 @@ extension BatchBackgroundRemovalSettingsStore {
         let preferenceStore = MHPreferenceStore(
             userDefaults: selection.resolveUserDefaults()
         )
-        let storage = BatchBackgroundRemovalPreferencesStore(
+        let operations = BackgroundRemovalPreferencesOperations(
             preferenceStore: preferenceStore
         )
 
         return .init(
             loadHandler: {
-                storage.load()
+                operations.loadPreferences()
             },
             saveHandler: { preferences in
-                storage.save(preferences)
+                operations.savePreferences(preferences)
             }
         )
     }

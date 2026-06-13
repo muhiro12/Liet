@@ -15,6 +15,7 @@ fi
 CI_SKIP_ENV_CHECK=1 bash "$repository_root/ci_scripts/tasks/lint_swift.sh"
 bash "$repository_root/ci_scripts/tasks/check_mhplatform_boundaries.sh"
 bash "$repository_root/ci_scripts/tasks/check_liet_architecture_boundaries.sh"
+bash "$repository_root/ci_scripts/tasks/check_operations_boundaries.sh"
 bash "$repository_root/ci_scripts/tasks/check_test_posture.sh"
 bash "$repository_root/ci_scripts/tasks/check_models_directory_consistency.sh"
 

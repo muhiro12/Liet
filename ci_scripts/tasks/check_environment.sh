@@ -6,7 +6,7 @@ source "$script_directory/../lib/task_utils.sh"
 
 usage() {
   cat <<'EOF' >&2
-Usage: bash ci_scripts/tasks/check_environment.sh --profile <format|build|rules|verify>
+Usage: bash ci_scripts/tasks/check_environment.sh --profile <swiftlint|rules>
 EOF
 }
 
@@ -18,7 +18,7 @@ fi
 
 profile=$2
 case "$profile" in
-  format | build | rules | verify)
+  swiftlint | rules)
     ;;
   *)
     usage
@@ -27,7 +27,6 @@ case "$profile" in
 esac
 
 ci_task_enter_repository "${BASH_SOURCE[0]}"
-repository_root=$CI_TASK_REPOSITORY_ROOT
 
 failures=()
 next_steps=()
@@ -80,31 +79,17 @@ check_swiftlint_environment() {
   fi
 }
 
-check_build_environment() {
-  local entitlements_path="Liet/Configurations/Liet.entitlements"
-
-  ensure_command "xcodebuild" "Install Xcode and ensure xcodebuild is available from the command line."
-  ensure_command "xcrun" "Install Xcode command line tools and ensure xcrun is available."
-
-  if [[ ! -f "$entitlements_path" ]]; then
-    record_failure "Missing file: $entitlements_path"
-    record_next_step "Restore $entitlements_path so the shared app group contract remains intact."
-  fi
+check_rules_environment() {
+  check_swiftlint_environment
+  ensure_command "rg" "Install ripgrep so repository rule checks can scan source files."
 }
 
 case "$profile" in
-  format)
+  swiftlint)
     check_swiftlint_environment
-    ;;
-  build)
-    check_build_environment
-    ;;
-  verify)
-    check_swiftlint_environment
-    check_build_environment
     ;;
   rules)
-    check_swiftlint_environment
+    check_rules_environment
     ;;
 esac
 

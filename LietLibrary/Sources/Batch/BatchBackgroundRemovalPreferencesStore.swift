@@ -1,25 +1,25 @@
 import MHPlatformCore
 
 /// Loads and saves persisted background-removal preferences through `MHPreferenceStore`.
-public struct BatchBackgroundRemovalPreferencesStore {
+struct BatchBackgroundRemovalPreferencesStore {
     private let preferenceStore: MHPreferenceStore
 
     /// Creates a store backed by the supplied typed preference store.
-    public init(
+    init(
         preferenceStore: MHPreferenceStore
     ) {
         self.preferenceStore = preferenceStore
     }
 
     /// Returns the current persisted preferences when available.
-    public func load() -> PersistedBatchBackgroundRemovalPreferences? {
+    func load() -> PersistedBatchBackgroundRemovalPreferences? {
         preferenceStore.codable(
             for: LietPreferenceDescriptors.BatchBackgroundRemoval.preferences
         )
     }
 
     /// Persists the current preferences to the opaque storage slot.
-    public func save(
+    func save(
         _ preferences: PersistedBatchBackgroundRemovalPreferences
     ) {
         preferenceStore.setCodable(

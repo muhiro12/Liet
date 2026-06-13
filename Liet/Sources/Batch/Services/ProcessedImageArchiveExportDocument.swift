@@ -30,14 +30,14 @@ struct ProcessedImageArchiveExportDocument: FileDocument {
     ) throws -> FileWrapper {
         do {
             let archiveEntries = try exportItems.map { exportItem in
-                BatchImageArchiveBuilder.Entry(
+                BatchImageArchiveOperations.Entry(
                     filename: exportItem.filename,
                     data: try Data(
                         contentsOf: exportItem.fileURL
                     )
                 )
             }
-            let archiveData = try BatchImageArchiveBuilder().makeArchiveData(
+            let archiveData = try BatchImageArchiveOperations.makeArchiveData(
                 for: archiveEntries
             )
             let wrapper = FileWrapper(
