@@ -4,7 +4,6 @@ import MHDesign
 import PhotosUI
 import SwiftUI
 import TipKit
-import UIKit
 
 struct BatchBackgroundRemovalHomeView: View {
     @Environment(\.mhDesignMetrics)
@@ -198,9 +197,18 @@ private extension BatchBackgroundRemovalHomeView {
             number: BatchDesign.Step.import,
             title: "Import"
         ) {
-            selectionButtons()
-            selectionStatusRow()
-            importFeedback()
+            BatchImageImportControlsView(
+                selectedItems: $selectedItems,
+                isPresentingFileImporter: $isPresentingFileImporter,
+                isImporting: model.isImporting,
+                importedImageCount: model.importedImages.count,
+                importFailureCount: model.importFailureCount,
+                reviewSelection: reviewSelection,
+                clearSelection: {
+                    model.clearSelection()
+                },
+                selectImagesTip: selectImagesTip
+            )
         }
     }
 
@@ -221,25 +229,24 @@ private extension BatchBackgroundRemovalHomeView {
             number: BatchDesign.Step.process,
             title: "Process"
         ) {
-            processButton()
+            BatchProcessButtonView(
+                isProcessing: model.isProcessing,
+                canProcess: model.canProcess,
+                runProcessingTip: runProcessingTip
+            ) {
+                Task {
+                    model.processImages()
+                }
+            }
         }
     }
 
     func settingsSourceSection() -> some View {
         settingsSection(title: "Starting Point") {
-            Picker("Starting Point", selection: settingsSourceBinding) {
-                Text("Last Used")
-                    .tag(BatchBackgroundRemovalHomeModel.SettingsSource.lastUsed)
-                Text("User Preset")
-                    .tag(BatchBackgroundRemovalHomeModel.SettingsSource.userPreset)
-                    .disabled(!model.hasUserPresetSettings)
-                Text("Custom")
-                    .tag(BatchBackgroundRemovalHomeModel.SettingsSource.custom)
-            }
-            .pickerStyle(.segmented)
-            .popoverTip(
-                processingSetupTip,
-                arrowEdge: .top
+            BatchSettingsSourcePickerView(
+                selection: settingsSourceBinding,
+                hasUserPresetSettings: model.hasUserPresetSettings,
+                processingSetupTip: processingSetupTip
             )
         }
     }
@@ -261,72 +268,13 @@ private extension BatchBackgroundRemovalHomeView {
 
     func fileNamingSection() -> some View {
         settingsSection(title: "File Naming") {
-            VStack(
-                alignment: .leading,
-                spacing: designMetrics.spacing.control
-            ) {
-                namingTemplateSection()
-                customNamingPrefixSection()
-                numberingStyleSection()
-            }
-        }
-    }
-
-    func namingTemplateSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.inline
-        ) {
-            Text("Template")
-                .batchTextStyle(.bodyStrong)
-
-            Picker("Template", selection: namingTemplateBinding) {
-                Text("IMG")
-                    .tag(BatchImageNamingTemplate.img)
-                Text("Processed")
-                    .tag(BatchImageNamingTemplate.processed)
-                Text("Custom")
-                    .tag(BatchImageNamingTemplate.custom)
-            }
-            .pickerStyle(.segmented)
-        }
-    }
-
-    @ViewBuilder
-    func customNamingPrefixSection() -> some View {
-        if model.showsCustomNamingPrefixField {
-            dimensionInputSection(
-                title: Text("Custom prefix"),
-                placeholder: "prefix",
-                text: customNamingPrefixBinding,
-                keyboardType: .default
+            BatchFileNamingSectionView(
+                namingTemplate: namingTemplateBinding,
+                customNamingPrefix: customNamingPrefixBinding,
+                numberingStyle: numberingStyleBinding,
+                showsCustomNamingPrefixField: model.showsCustomNamingPrefixField,
+                hasValidNaming: model.hasValidNaming
             )
-
-            if !model.hasValidNaming {
-                BatchStatusChip(
-                    "Enter a custom prefix to enable processing",
-                    systemImage: "text.cursor",
-                    tone: .warning
-                )
-            }
-        }
-    }
-
-    func numberingStyleSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.inline
-        ) {
-            Text("Numbering")
-                .batchTextStyle(.bodyStrong)
-
-            Picker("Numbering", selection: numberingStyleBinding) {
-                Text("001")
-                    .tag(BatchImageNumberingStyle.zeroPaddedThreeDigits)
-                Text("1")
-                    .tag(BatchImageNumberingStyle.plain)
-            }
-            .pickerStyle(.segmented)
         }
     }
 
@@ -367,25 +315,6 @@ private extension BatchBackgroundRemovalHomeView {
         }
     }
 
-    func dimensionInputSection(
-        title: Text,
-        placeholder: String,
-        text: Binding<String>,
-        keyboardType: UIKeyboardType = .numberPad
-    ) -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.inline
-        ) {
-            title
-                .batchTextStyle(.bodyStrong)
-
-            TextField(placeholder, text: text)
-                .keyboardType(keyboardType)
-                .textFieldStyle(.roundedBorder)
-        }
-    }
-
     func adjustmentSlider(
         title: LocalizedStringKey,
         value: Binding<Double>,
@@ -412,128 +341,15 @@ private extension BatchBackgroundRemovalHomeView {
         }
     }
 
-    func selectionButtons() -> some View {
-        VStack(
-            spacing: designMetrics.spacing.control
-        ) {
-            photosSelectionButton()
-            filesSelectionButton()
-        }
-    }
-
-    func photosSelectionButton() -> some View {
-        PhotosPicker(
-            selection: $selectedItems,
-            maxSelectionCount: nil,
-            matching: .images,
-            preferredItemEncoding: .current
-        ) {
-            Label("Import from Photos", systemImage: "photo.on.rectangle.angled")
-                .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.borderedProminent)
-        .disabled(model.isImporting)
-        .popoverTip(
-            selectImagesTip,
-            arrowEdge: .top
-        )
-    }
-
-    func filesSelectionButton() -> some View {
-        Button {
-            isPresentingFileImporter = true
-        } label: {
-            Label("Import from Files", systemImage: "folder")
-                .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.bordered)
-        .disabled(model.isImporting)
-    }
-
-    func selectionStatusRow() -> some View {
-        HStack(
-            spacing: designMetrics.spacing.control
-        ) {
-            selectedImageCountText(model.importedImages.count)
-                .batchTextStyle(.bodyStrong)
-
-            Spacer()
-
-            if let reviewSelection,
-               !model.importedImages.isEmpty {
-                Button {
-                    reviewSelection()
-                } label: {
-                    Image(systemName: "eye")
-                }
-                .buttonStyle(.bordered)
-                .accessibilityLabel(Text("Review Selection"))
-            }
-
-            if !model.importedImages.isEmpty {
-                Button {
-                    selectedItems = []
-                    model.clearSelection()
-                } label: {
-                    Image(systemName: "xmark.circle")
-                }
-                .buttonStyle(.bordered)
-                .accessibilityLabel(Text("Clear"))
-            }
-        }
-    }
-
-    @ViewBuilder
-    func importFeedback() -> some View {
-        if model.isImporting {
-            ProgressView("Loading images...")
-        }
-
-        if let importFailureCount = model.importFailureCount {
-            BatchStatusChip(
-                text: importFailureText(importFailureCount),
-                systemImage: "exclamationmark.triangle.fill",
-                tone: .warning
-            )
-        }
-    }
-
     func userPresetSection() -> some View {
         settingsSection(title: "User Preset") {
-            Button {
+            BatchUserPresetButtonView(
+                canSavePreset: model.canSaveCurrentAsUserPreset,
+                userPresetTip: userPresetTip
+            ) {
                 model.saveCurrentAsUserPreset()
-            } label: {
-                Label("Save Preset", systemImage: "bookmark")
-            }
-            .buttonStyle(.bordered)
-            .disabled(!model.canSaveCurrentAsUserPreset)
-            .popoverTip(
-                userPresetTip,
-                arrowEdge: .top
-            )
-        }
-    }
-
-    func processButton() -> some View {
-        Button {
-            Task {
-                model.processImages()
-            }
-        } label: {
-            if model.isProcessing {
-                ProgressView("Processing")
-                    .frame(maxWidth: .infinity)
-            } else {
-                Label("Process", systemImage: "play.fill")
-                    .frame(maxWidth: .infinity)
             }
         }
-        .buttonStyle(.borderedProminent)
-        .disabled(!model.canProcess)
-        .popoverTip(
-            runProcessingTip,
-            arrowEdge: .top
-        )
     }
 
     func percentageText(
