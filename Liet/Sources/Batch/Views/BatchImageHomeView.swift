@@ -63,38 +63,40 @@ struct BatchImageHomeView: View {
                 model.replayTips()
             }
         }
-        .onChange(of: selectedItems) { _, newValue in
-            if suppressesSelectedItemsDidChange {
-                suppressesSelectedItemsDidChange = false
-                return
-            }
-
-            Task {
-                await model.importPhotos(from: newValue)
-            }
-        }
-        .fileImporter(
-            isPresented: $isPresentingFileImporter,
-            allowedContentTypes: PhotoImportService.supportedImportContentTypes,
-            allowsMultipleSelection: true
-        ) { result in
-            handleFileImportResult(result)
-        } onCancellation: {
-            // Keep the current selection unchanged when the picker is dismissed.
-        }
-        .alert("Error", isPresented: errorPresented) {
-            Button("OK", role: .cancel) {
-                model.activeAlert = nil
-            }
-        } message: {
-            if let activeAlert = model.activeAlert {
-                alertText(for: activeAlert)
-            }
-        }
+        .modifier(importInteractionModifier)
     }
 }
 
 private extension BatchImageHomeView {
+    var importInteractionModifier: BatchImageImportInteractionModifier {
+        BatchImageImportInteractionModifier(
+            selectedItems: $selectedItems,
+            isPresentingFileImporter: $isPresentingFileImporter,
+            suppressesSelectedItemsDidChange: $suppressesSelectedItemsDidChange,
+            errorPresented: errorPresented,
+            alertMessage: {
+                guard let activeAlert = model.activeAlert else {
+                    return nil
+                }
+
+                return alertText(for: activeAlert)
+            },
+            dismissAlert: {
+                model.activeAlert = nil
+            },
+            importPhotos: { items in
+                await model.importPhotos(from: items)
+            },
+            importFiles: { fileURLs in
+                model.importFiles(from: fileURLs)
+            },
+            handleImportFailure: {
+                model.importFailureCount = nil
+                model.activeAlert = .importSelectionFailed
+            }
+        )
+    }
+
     var errorPresented: Binding<Bool> {
         Binding(
             get: {
@@ -315,29 +317,6 @@ private extension BatchImageHomeView {
             ) {
                 model.saveCurrentAsUserPreset()
             }
-        }
-    }
-
-    func handleFileImportResult(
-        _ result: Result<[URL], any Error>
-    ) {
-        switch result {
-        case let .success(fileURLs):
-            guard !fileURLs.isEmpty else {
-                return
-            }
-
-            if !selectedItems.isEmpty {
-                suppressesSelectedItemsDidChange = true
-                selectedItems = []
-            }
-
-            Task {
-                model.importFiles(from: fileURLs)
-            }
-        case .failure:
-            model.importFailureCount = nil
-            model.activeAlert = .importSelectionFailed
         }
     }
 
