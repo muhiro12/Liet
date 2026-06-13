@@ -4,8 +4,6 @@ import TipKit
 import UniformTypeIdentifiers
 
 struct BatchImageResultView: View {
-    @Environment(\.horizontalSizeClass)
-    private var horizontalSizeClass
     @Environment(\.mhDesignMetrics)
     private var designMetrics
 
@@ -34,25 +32,8 @@ struct BatchImageResultView: View {
         .navigationTitle("Results")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            if let backToSettings,
-               horizontalSizeClass == .compact {
-                ToolbarItem(placement: .topBarLeading) {
-                    BatchToolbarIconButton(
-                        systemImage: "sidebar.leading",
-                        accessibilityLabel: "Back to Settings"
-                    ) {
-                        backToSettings()
-                    }
-                }
-            }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                BatchToolbarIconButton(
-                    systemImage: "questionmark.circle",
-                    accessibilityLabel: "Show Tips Again"
-                ) {
-                    model.replayTips()
-                }
+            BatchDetailToolbar(backToSettings: backToSettings) {
+                model.replayTips()
             }
         }
         .fileExporter(

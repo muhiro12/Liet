@@ -3,8 +3,6 @@ import SwiftUI
 import TipKit
 
 struct BatchImageImportedPreviewView: View {
-    @Environment(\.horizontalSizeClass)
-    private var horizontalSizeClass
     @Environment(\.mhDesignMetrics)
     private var designMetrics
 
@@ -35,25 +33,8 @@ struct BatchImageImportedPreviewView: View {
         .navigationTitle("Selection")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            if let backToSettings,
-               horizontalSizeClass == .compact {
-                ToolbarItem(placement: .topBarLeading) {
-                    BatchToolbarIconButton(
-                        systemImage: "sidebar.leading",
-                        accessibilityLabel: "Back to Settings"
-                    ) {
-                        backToSettings()
-                    }
-                }
-            }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                BatchToolbarIconButton(
-                    systemImage: "questionmark.circle",
-                    accessibilityLabel: "Show Tips Again"
-                ) {
-                    BatchImageTipSupport.resetTips()
-                }
+            BatchDetailToolbar(backToSettings: backToSettings) {
+                BatchImageTipSupport.resetTips()
             }
         }
     }
