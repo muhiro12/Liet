@@ -61,6 +61,17 @@ extension BatchImageResultModel {
         }
     }
 
+    var isActiveErrorPresented: Bool {
+        get {
+            activeError != nil
+        }
+        set {
+            if !newValue {
+                activeError = nil
+            }
+        }
+    }
+
     var exportFolderDocument: ProcessedImageFolderExportDocument {
         .init(
             exportItems: exportItems,

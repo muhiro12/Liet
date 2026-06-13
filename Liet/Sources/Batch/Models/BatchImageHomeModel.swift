@@ -133,6 +133,17 @@ extension BatchImageHomeModel {
         currentPreferencesState.hasUserPresetSettings
     }
 
+    var isActiveAlertPresented: Bool {
+        get {
+            activeAlert != nil
+        }
+        set {
+            if !newValue {
+                activeAlert = nil
+            }
+        }
+    }
+
     var referencePixels: Int? {
         currentPreferencesState.referencePixels
     }

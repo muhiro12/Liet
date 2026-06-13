@@ -6,7 +6,7 @@ struct BatchImageResultErrorAlertModifier: ViewModifier {
     func body(content: Content) -> some View {
         content.alert(
             alertTitle,
-            isPresented: errorPresented
+            isPresented: $model.isActiveErrorPresented
         ) {
             Button("OK", role: .cancel) {
                 model.activeError = nil
@@ -36,19 +36,6 @@ private extension BatchImageResultErrorAlertModifier {
         }
 
         return errorTitle(for: activeError)
-    }
-
-    var errorPresented: Binding<Bool> {
-        Binding(
-            get: {
-                model.activeError != nil
-            },
-            set: { isPresented in
-                if !isPresented {
-                    model.activeError = nil
-                }
-            }
-        )
     }
 
     func errorTitle(

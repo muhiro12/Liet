@@ -84,7 +84,7 @@ private extension BatchImageHomeView {
             selectedItems: $selectedItems,
             isPresentingFileImporter: $isPresentingFileImporter,
             suppressesSelectedItemsDidChange: $suppressesSelectedItemsDidChange,
-            errorPresented: errorPresented,
+            errorPresented: $model.isActiveAlertPresented,
             alertTitle: {
                 guard let activeAlert = model.activeAlert else {
                     return nil
@@ -111,19 +111,6 @@ private extension BatchImageHomeView {
             handleImportFailure: {
                 model.importFailureCount = nil
                 model.activeAlert = .importSelectionFailed
-            }
-        )
-    }
-
-    var errorPresented: Binding<Bool> {
-        Binding(
-            get: {
-                model.activeAlert != nil
-            },
-            set: { isPresented in
-                if !isPresented {
-                    model.activeAlert = nil
-                }
             }
         )
     }

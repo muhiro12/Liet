@@ -135,6 +135,17 @@ extension BatchBackgroundRemovalHomeModel {
         currentPreferencesState.hasUserPresetSettings
     }
 
+    var isActiveAlertPresented: Bool {
+        get {
+            activeAlert != nil
+        }
+        set {
+            if !newValue {
+                activeAlert = nil
+            }
+        }
+    }
+
     var editableNamingTemplate: BatchImageNamingTemplate {
         get {
             namingTemplate
