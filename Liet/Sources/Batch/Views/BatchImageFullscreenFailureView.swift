@@ -16,5 +16,6 @@ struct BatchImageFullscreenFailureView: View {
         }
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityElement(children: .combine)
     }
 }

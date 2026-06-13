@@ -14,6 +14,7 @@ struct BatchImageFullscreenPreviewContentView: View {
                     .controlSize(.large)
                     .tint(.white)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .accessibilityLabel("Loading image preview")
             case let .loaded(image):
                 BatchImageZoomableScrollView(
                     image: image,
