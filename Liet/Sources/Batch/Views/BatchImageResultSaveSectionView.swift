@@ -16,17 +16,19 @@ struct BatchImageResultSaveSectionView: View {
             spacing: designMetrics.spacing.control
         ) {
             BatchImageFileExportModeToggle(
-                exportsAsZIPArchive: $model.exportsAsZIPArchive
+                exportsAsZIPArchive: $model.exportsAsZIPArchive,
+                isDisabled: model.isOutputSaveInProgress
             )
             BatchImageFileExportButton(
                 fileExportMode: model.fileExportMode,
-                isExporting: model.isExportingFiles || model.isExportingArchive,
+                isDisabled: model.isOutputSaveInProgress,
                 saveDestinationTip: saveDestinationTip
             ) {
                 model.beginFileExport()
             }
             BatchSaveToPhotosButton(
-                isSaving: model.isSavingToPhotos
+                isSaving: model.isSavingToPhotos,
+                isDisabled: model.isOutputSaveInProgress
             ) {
                 await model.saveToPhotos()
             }

@@ -42,6 +42,12 @@ final class BatchImageResultModel: Identifiable {
 }
 
 extension BatchImageResultModel {
+    var isOutputSaveInProgress: Bool {
+        isExportingArchive ||
+            isExportingFiles ||
+            isSavingToPhotos
+    }
+
     var exportsAsZIPArchive: Bool {
         get {
             fileExportMode == .zipArchive
@@ -97,6 +103,10 @@ extension BatchImageResultModel {
     }
 
     func beginFileExport() {
+        guard !isOutputSaveInProgress else {
+            return
+        }
+
         saveFeedback = nil
         activeError = nil
         if fileExportMode == .zipArchive {
@@ -171,6 +181,10 @@ extension BatchImageResultModel {
     }
 
     func saveToPhotos() async {
+        guard !isOutputSaveInProgress else {
+            return
+        }
+
         saveFeedback = nil
         activeError = nil
         isSavingToPhotos = true

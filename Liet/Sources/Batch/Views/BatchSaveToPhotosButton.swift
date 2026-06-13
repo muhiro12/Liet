@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BatchSaveToPhotosButton: View {
     let isSaving: Bool
+    let isDisabled: Bool
     let saveToPhotos: () async -> Void
 
     var body: some View {
@@ -15,6 +16,6 @@ struct BatchSaveToPhotosButton: View {
             )
         }
         .buttonStyle(.bordered)
-        .disabled(isSaving)
+        .disabled(isDisabled)
     }
 }

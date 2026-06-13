@@ -3,7 +3,7 @@ import TipKit
 
 struct BatchImageFileExportButton: View {
     let fileExportMode: BatchImageResultModel.FileExportMode
-    let isExporting: Bool
+    let isDisabled: Bool
     let saveDestinationTip: SaveDestinationTip
     let beginFileExport: () -> Void
 
@@ -16,7 +16,7 @@ struct BatchImageFileExportButton: View {
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(.borderedProminent)
-        .disabled(isExporting)
+        .disabled(isDisabled)
         .popoverTip(
             saveDestinationTip,
             arrowEdge: .top
