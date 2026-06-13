@@ -2,38 +2,31 @@ import SwiftUI
 import UIKit
 
 struct BatchImageFullscreenPreviewView: View {
-    private enum PreviewPhase {
-        case loading
-        case loaded(UIImage)
-        case failed
-    }
-
     @Environment(\.dismiss)
     private var dismiss
 
     let item: BatchImagePreviewItem
     private let usesInjectedPreviewImage: Bool
 
-    @State private var previewPhase: PreviewPhase = .loading
+    @State private var previewPhase: BatchImageFullscreenPreviewPhase = .loading
 
     var body: some View {
         ZStack {
-            Button {
-                dismiss()
-            } label: {
-                Color.black
-                    .ignoresSafeArea()
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Close Preview")
+            BatchImageFullscreenDismissBackground(dismissPreview: dismissPreview)
 
             VStack(
                 spacing: BatchDesign.Fullscreen.contentVerticalSpacing
             ) {
-                closeButtonRow()
-                previewContent()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                metadataView()
+                BatchImageFullscreenCloseButtonRow(dismissPreview: dismissPreview)
+                BatchImageFullscreenPreviewContentView(
+                    previewPhase: previewPhase,
+                    showsTransparencyBackground: item.showsTransparencyBackground,
+                    dismissPreview: dismissPreview
+                )
+                BatchImageFullscreenMetadataView(
+                    displayName: item.displayName,
+                    detailText: item.detailText
+                )
             }
             .padding(.horizontal, BatchDesign.Fullscreen.contentHorizontalPadding)
             .padding(.bottom, BatchDesign.Fullscreen.metadataBottomPadding)
@@ -69,85 +62,15 @@ extension BatchImageFullscreenPreviewView {
 }
 
 private extension BatchImageFullscreenPreviewView {
-    func closeButtonRow() -> some View {
-        HStack {
-            Spacer()
-
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: BatchDesign.Fullscreen.closeButtonImageSize, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .padding(BatchDesign.Fullscreen.closeButtonPadding)
-                    .background(
-                        Circle()
-                            .fill(.black.opacity(BatchDesign.Fullscreen.closeButtonBackgroundOpacity))
-                    )
-            }
-            .padding(.top, BatchDesign.Fullscreen.closeButtonTopPadding)
-            .accessibilityLabel("Close Preview")
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    @ViewBuilder
-    func previewContent() -> some View {
-        switch previewPhase {
-        case .loading:
-            ProgressView()
-                .controlSize(.large)
-                .tint(.white)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        case let .loaded(image):
-            BatchImageZoomableScrollView(
-                image: image,
-                maximumZoomScale: BatchDesign.Fullscreen.maximumZoomScale,
-                showsTransparencyBackground: item.showsTransparencyBackground
-            ) {
-                dismiss()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        case .failed:
-            VStack(
-                spacing: BatchDesign.Fullscreen.detailSpacing
-            ) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.title2)
-                Text("Couldn't load the image preview.")
-                    .font(.headline)
-                Text("Close this viewer and try again.")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(BatchDesign.Fullscreen.secondaryTextOpacity))
-            }
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-    }
-
-    func metadataView() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: BatchDesign.Fullscreen.detailSpacing
-        ) {
-            Text(item.displayName)
-                .font(.headline)
-                .lineLimit(BatchDesign.Fullscreen.metadataLineLimit)
-
-            Text(item.detailText)
-                .font(.subheadline)
-                .foregroundStyle(.white.opacity(BatchDesign.Fullscreen.secondaryTextOpacity))
-                .lineLimit(BatchDesign.Fullscreen.metadataLineLimit)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, BatchDesign.Fullscreen.metadataHorizontalPadding)
+    func dismissPreview() {
+        dismiss()
     }
 
     func loadPreview() async {
         previewPhase = .loading
 
         let item = item
-        let loadedPhase: PreviewPhase = await withCheckedContinuation { continuation in
+        let loadedPhase: BatchImageFullscreenPreviewPhase = await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
                 do {
                     let image = try ImageIOImageSupport.fullScreenPreviewImage(
