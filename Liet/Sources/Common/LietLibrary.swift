@@ -6,4 +6,3 @@
 //
 
 @_exported import LietLibrary
-@_exported import SwiftUtilities

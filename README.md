@@ -30,8 +30,6 @@ results as new files to either Files or Photos.
 - **Runtime bootstrap posture** - the app root owns a `LietAppAssembly` that
   holds `MHAppRuntimeBootstrap(configuration:)`, while shared preference
   descriptors continue using `AppGroup.preferencesDefaultsSelection`.
-- **Utility package posture** - both the app target and shared library adopt
-  `SwiftUtilities` through the repository-managed 1.x semver range.
 - **Operations boundary** - delivery surfaces enter reusable batch-image use
   cases through public `*Operations` facades. Lower-level planners, stores,
   naming helpers, archive builders, and import policies remain internal

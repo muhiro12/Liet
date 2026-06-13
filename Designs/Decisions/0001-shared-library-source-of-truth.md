@@ -20,5 +20,4 @@ there. The module stays as one shared library for now.
 - Shared operations should be expressed through library services before they
   are reused elsewhere.
 - The iOS app and any future extensions should call the same shared APIs.
-- Compatibility wrappers may exist during migration, but new call sites should
-  target the canonical shared APIs.
+- Delivery-surface call sites should target the canonical shared APIs.

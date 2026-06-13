@@ -17,10 +17,6 @@ let package = Package( // swiftlint:disable:this prefixed_toplevel_constant
     ],
     dependencies: [
         .package(
-            url: "https://github.com/muhiro12/SwiftUtilities",
-            "1.0.0"..<"2.0.0"
-        ),
-        .package(
             url: "https://github.com/muhiro12/MHPlatform",
             "1.0.0"..<"2.0.0"
         )
@@ -29,10 +25,6 @@ let package = Package( // swiftlint:disable:this prefixed_toplevel_constant
         .target(
             name: "LietLibrary",
             dependencies: [
-                .product(
-                    name: "SwiftUtilities",
-                    package: "SwiftUtilities"
-                ),
                 .product(
                     name: "MHPlatformCore",
                     package: "MHPlatform"

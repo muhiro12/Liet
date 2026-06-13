@@ -1,13 +1,13 @@
 # Liet Current Product and Architecture Overview
 
-Current as of April 14, 2026.
+Current as of June 13, 2026.
 
 ## Purpose
 
 Liet is currently an iPhone batch image pre-processing product with separate
 resize and background-removal feature flows.
-The implementation keeps reusable batch-image state, naming rules, and
-processing planners in `LietLibrary`, while Apple-framework adapters and UI
+The implementation keeps reusable batch-image state and public batch
+`*Operations` facades in `LietLibrary`, while Apple-framework adapters and UI
 remain in the app target.
 
 ## Product Surface Summary
@@ -16,8 +16,9 @@ remain in the app target.
   Primary product surface for the two-screen SwiftUI flow, photo import,
   image processing, Files export, and Photos saving.
 - `LietLibrary`
-  Shared domain layer for batch settings, persisted preferences state, import
-  filename policy, processing planners, and processed file naming.
+  Shared domain layer for batch settings, persisted preferences state, public
+  `*Operations` facades, and internal planning, import naming, archive, and
+  processed file naming collaborators.
 - `LietLibraryTests`
   Primary logic verification surface for platform-neutral batch-image
   mutations, planning rules, persistence values, and naming behavior.
@@ -27,8 +28,6 @@ remain in the app target.
 - `Liet` intentionally adopts the full `MHPlatform` umbrella.
 - `LietLibrary` intentionally adopts `MHPlatformCore`.
 - This repository intentionally tracks MHPlatform with the 1.x semver range
-  `1.0.0..<2.0.0`.
-- This repository intentionally tracks SwiftUtilities with the 1.x semver range
   `1.0.0..<2.0.0`.
 
 ## Current End-User Features
@@ -51,17 +50,18 @@ remain in the app target.
 ## Current Engineering Features
 
 - Local-package-based shared library integration through `LietLibrary`.
-- Shared-library-owned pure state and planners for batch-image preferences,
-  filename resolution, import filename selection, and processing decisions.
+- Shared-library-owned Operations for batch-image preferences, filename
+  resolution, import filename selection, archive creation, and processing
+  decisions.
 - Shared-library-owned `MHPlatformCore` preference stores backed by
   caller-owned descriptors and the shared App Group defaults selection.
 - App-root `LietAppAssembly` ownership for the `MHPlatform` runtime bootstrap.
 - App-side adapter isolation for `PhotosUI`, `PhotoKit`, `ImageIO`, `TipKit`,
   and file export APIs.
 - Logic verification concentrated in `LietLibraryTests`, while the app target
-  is validated by build-only CI checks.
+  is validated through XcodeBuildMCP app build checks.
 - Partial-success batch processing so one failed image does not block the
   successful outputs.
-- Repo-managed verification shells under `ci_scripts/tasks`.
+- Retained repository rule scripts under `ci_scripts/tasks`.
 - Project-managed SwiftLint resolution through `SwiftLintPlugins`.
 - ADR and architecture documents aligned to the shared-library-first design.

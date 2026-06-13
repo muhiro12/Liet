@@ -69,7 +69,8 @@ Not allowed in views:
 
 ```text
 View -> Workflow/Adapter (Liet target)
-    -> LietLibrary service/store
+    -> LietLibrary Operations
+    -> internal library collaborator
     -> persistence write
     -> Observation updates
 ```

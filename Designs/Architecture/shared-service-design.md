@@ -56,8 +56,6 @@ presentation models.
   `MHPlatform` umbrella.
 - This repository intentionally uses the MHPlatform 1.x semver range
   `1.0.0..<2.0.0`.
-- This repository intentionally uses the SwiftUtilities 1.x semver range
-  `1.0.0..<2.0.0`.
 
 ## Operations Migration
 

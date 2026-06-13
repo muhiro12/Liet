@@ -11,8 +11,6 @@ repository_root=$CI_TASK_REPOSITORY_ROOT
 expected_mhplatform_dependency_remote="https://github.com/muhiro12/MHPlatform"
 expected_mhplatform_project_remote="https://github.com/muhiro12/MHPlatform"
 expected_mhplatform_minimum_version="1.0.0"
-expected_swiftutilities_remote="https://github.com/muhiro12/SwiftUtilities"
-expected_swiftutilities_minimum_version="1.0.0"
 package_manifest="LietLibrary/Package.swift"
 package_resolved="LietLibrary/Package.resolved"
 project_file="Liet.xcodeproj/project.pbxproj"
@@ -137,12 +135,7 @@ if rg -q '\.package\(\s*path:\s*"[^"]*MHPlatform' "$package_manifest"; then
   record_failure "$package_manifest must not use a local path dependency for MHPlatform."
 fi
 
-if rg -q '\.package\(\s*path:\s*"[^"]*SwiftUtilities' "$package_manifest"; then
-  record_failure "$package_manifest must not use a local path dependency for SwiftUtilities."
-fi
-
 check_semver_dependency "MHPlatform" "$expected_mhplatform_dependency_remote" "$expected_mhplatform_project_remote" "\"1.0.0\"..<\"2.0.0\"" "$expected_mhplatform_minimum_version"
-check_semver_dependency "SwiftUtilities" "$expected_swiftutilities_remote" "$expected_swiftutilities_remote" "\"1.0.0\"..<\"2.0.0\"" "$expected_swiftutilities_minimum_version"
 
 if rg -q 'name:\s*"MHPlatform"' "$package_manifest"; then
   record_failure "LietLibrary must not depend on the umbrella MHPlatform product."
@@ -152,8 +145,29 @@ if ! rg -q 'name:\s*"MHPlatformCore"' "$package_manifest"; then
   record_failure "LietLibrary must depend on the MHPlatformCore product."
 fi
 
-if ! rg -q 'name:\s*"SwiftUtilities"' "$package_manifest"; then
-  record_failure "LietLibrary must depend on the SwiftUtilities product."
+swiftutilities_dependency_matches=$(
+  rg \
+    --line-number \
+    'SwiftUtilities|github\.com/muhiro12/SwiftUtilities|productName = SwiftUtilities' \
+    "$package_manifest" \
+    "$project_file" || true
+)
+
+if [[ -n "$swiftutilities_dependency_matches" ]]; then
+  record_failure "Liet must not declare a direct SwiftUtilities package dependency:
+$swiftutilities_dependency_matches"
+fi
+
+swiftutilities_documentation_matches=$(
+  rg \
+    --line-number \
+    'SwiftUtilities' \
+    "${documentation_files[@]}" || true
+)
+
+if [[ -n "$swiftutilities_documentation_matches" ]]; then
+  record_failure "Documentation must not describe SwiftUtilities as a direct Liet dependency:
+$swiftutilities_documentation_matches"
 fi
 
 for module_name in "${core_safe_modules[@]}"; do
@@ -166,21 +180,27 @@ if rg -q --fixed-strings 'XCLocalSwiftPackageReference "MHPlatform"' "$project_f
   record_failure "Liet.xcodeproj must not use a local MHPlatform package reference."
 fi
 
-if rg -q --fixed-strings 'XCLocalSwiftPackageReference "SwiftUtilities"' "$project_file"; then
-  record_failure "Liet.xcodeproj must not use a local SwiftUtilities package reference."
-fi
-
 liet_target_block=$(extract_native_target_block 'Liet')
 if [[ -z "$liet_target_block" ]] || ! grep -q --fixed-strings 'MHPlatform' <<<"$liet_target_block"; then
   record_failure "Liet must remain the MHPlatform umbrella adopter."
 fi
 
-if [[ -z "$liet_target_block" ]] || ! grep -q --fixed-strings 'SwiftUtilities' <<<"$liet_target_block"; then
-  record_failure "Liet must keep the SwiftUtilities package dependency."
-fi
-
 if rg -q --fixed-strings 'PBXNativeTarget "LietTests"' "$project_file"; then
   record_failure "Liet.xcodeproj must not declare the removed LietTests target."
+fi
+
+swiftutilities_import_matches=$(
+  rg \
+    --line-number \
+    '^(@preconcurrency )?import SwiftUtilities$|^@_exported import SwiftUtilities$' \
+    Liet \
+    LietLibrary \
+    -g '*.swift' || true
+)
+
+if [[ -n "$swiftutilities_import_matches" ]]; then
+  record_failure "Liet sources must not import or re-export SwiftUtilities directly:
+$swiftutilities_import_matches"
 fi
 
 umbrella_import_matches=$(
