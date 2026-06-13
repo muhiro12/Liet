@@ -5,7 +5,7 @@ struct BatchImageResultErrorAlertModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content.alert(
-            "Error",
+            alertTitle,
             isPresented: errorPresented
         ) {
             Button("OK", role: .cancel) {
@@ -30,6 +30,14 @@ extension View {
 }
 
 private extension BatchImageResultErrorAlertModifier {
+    var alertTitle: Text {
+        guard let activeError = model.activeError else {
+            return Text("Action Failed")
+        }
+
+        return errorTitle(for: activeError)
+    }
+
     var errorPresented: Binding<Bool> {
         Binding(
             get: {
@@ -43,6 +51,16 @@ private extension BatchImageResultErrorAlertModifier {
         )
     }
 
+    func errorTitle(
+        for error: any Error
+    ) -> Text {
+        if let batchError = error as? BatchImageServiceError {
+            return batchServiceErrorTitle(for: batchError)
+        }
+
+        return Text("Action Failed")
+    }
+
     func errorText(
         for error: any Error
     ) -> Text {
@@ -51,6 +69,26 @@ private extension BatchImageResultErrorAlertModifier {
         }
 
         return Text(error.localizedDescription)
+    }
+
+    func batchServiceErrorTitle(
+        for error: BatchImageServiceError
+    ) -> Text {
+        switch error {
+        case .failedToCreateArchive,
+             .failedToCreateExportFolder,
+             .failedToEncodeImage:
+            Text("Export Failed")
+        case .failedToLoadImageData,
+             .failedToCreateImageSource,
+             .failedToReadImageProperties,
+             .failedToCreateThumbnail,
+             .failedToRemoveBackground:
+            Text("Processing Failed")
+        case .photoLibraryPermissionDenied,
+             .photoLibrarySaveFailed:
+            Text("Save to Photos Failed")
+        }
     }
 
     func batchServiceErrorText(
