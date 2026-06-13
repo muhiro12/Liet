@@ -15,80 +15,21 @@ struct BatchImageResultSaveSectionView: View {
             alignment: .leading,
             spacing: designMetrics.spacing.control
         ) {
-            exportAsZIPToggle
-            exportButton
-            photosButton
-        }
-    }
-}
-
-private extension BatchImageResultSaveSectionView {
-    var exportAsZIPToggle: some View {
-        Toggle(
-            "Export as ZIP",
-            isOn: exportsAsZIPBinding
-        )
-    }
-
-    var exportsAsZIPBinding: Binding<Bool> {
-        Binding(
-            get: {
-                model.fileExportMode == .zipArchive
-            },
-            set: { newValue in
-                model.fileExportMode = if newValue {
-                    .zipArchive
-                } else {
-                    .files
-                }
-            }
-        )
-    }
-
-    var exportButton: some View {
-        Button {
-            model.beginFileExport()
-        } label: {
-            Label(
-                fileExportButtonTitle,
-                systemImage: fileExportButtonSystemImage
+            BatchImageFileExportModeToggle(
+                fileExportMode: $model.fileExportMode
             )
-            .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.borderedProminent)
-        .popoverTip(
-            saveDestinationTip,
-            arrowEdge: .top
-        )
-    }
-
-    var fileExportButtonSystemImage: String {
-        if model.fileExportMode == .zipArchive {
-            "archivebox"
-        } else {
-            "folder"
-        }
-    }
-
-    var fileExportButtonTitle: String {
-        if model.fileExportMode == .zipArchive {
-            "Save ZIP to Files"
-        } else {
-            "Save to Files"
-        }
-    }
-
-    var photosButton: some View {
-        Button {
-            Task {
+            BatchImageFileExportButton(
+                fileExportMode: model.fileExportMode,
+                isExporting: model.isExportingFiles || model.isExportingArchive,
+                saveDestinationTip: saveDestinationTip
+            ) {
+                model.beginFileExport()
+            }
+            BatchSaveToPhotosButton(
+                isSaving: model.isSavingToPhotos
+            ) {
                 await model.saveToPhotos()
             }
-        } label: {
-            BatchSaveToPhotosButtonLabel(
-                isSaving: model.isSavingToPhotos
-            )
         }
-        .buttonStyle(.bordered)
-        .disabled(model.isSavingToPhotos)
     }
 }
