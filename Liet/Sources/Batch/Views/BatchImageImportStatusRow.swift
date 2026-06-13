@@ -27,7 +27,11 @@ private extension BatchImageImportStatusRow {
 
             Spacer(minLength: designMetrics.spacing.control)
 
-            actionButtons
+            BatchImageImportActionButtonsView(
+                importedImageCount: importedImageCount,
+                reviewSelection: reviewSelection,
+                clearSelection: clearSelection
+            )
         }
     }
 
@@ -43,30 +47,13 @@ private extension BatchImageImportStatusRow {
                 HStack(
                     spacing: designMetrics.spacing.control
                 ) {
-                    actionButtons
+                    BatchImageImportActionButtonsView(
+                        importedImageCount: importedImageCount,
+                        reviewSelection: reviewSelection,
+                        clearSelection: clearSelection
+                    )
                 }
             }
-        }
-    }
-
-    @ViewBuilder var actionButtons: some View {
-        if let reviewSelection,
-           importedImageCount > 0 {
-            Button {
-                reviewSelection()
-            } label: {
-                Label("Review", systemImage: "eye")
-            }
-            .buttonStyle(.bordered)
-        }
-
-        if importedImageCount > 0 {
-            Button {
-                clearSelection()
-            } label: {
-                Label("Clear", systemImage: "xmark.circle")
-            }
-            .buttonStyle(.bordered)
         }
     }
 
