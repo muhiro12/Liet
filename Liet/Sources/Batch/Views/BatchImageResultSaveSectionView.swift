@@ -72,9 +72,9 @@ private extension BatchImageResultSaveSectionView {
 
     var fileExportButtonTitle: String {
         if model.fileExportMode == .zipArchive {
-            "ZIP Archive"
+            "Save ZIP to Files"
         } else {
-            "Files"
+            "Save to Files"
         }
     }
 
@@ -95,7 +95,7 @@ private extension BatchImageResultSaveSectionView {
             ProgressView("Saving to Photos")
                 .frame(maxWidth: .infinity)
         } else {
-            Label("Photos", systemImage: "photo.on.rectangle")
+            Label("Save to Photos", systemImage: "photo.on.rectangle")
                 .frame(maxWidth: .infinity)
         }
     }
