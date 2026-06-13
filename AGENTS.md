@@ -56,4 +56,5 @@ newest 5 run directories are retained.
 Release UI smoke auditing is separate from the standard verification entrypoint.
 Keep it non-destructive by default: do not erase simulator data, reset
 containers, or add UI test targets solely for the audit unless explicitly
-requested.
+requested. Follow `Designs/Architecture/release-ui-smoke-audit.md` when a
+release or UI-sensitive change needs live Simulator evidence.

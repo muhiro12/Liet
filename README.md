@@ -108,6 +108,10 @@ shared shell helpers live in `ci_scripts/lib/`, and
   step to run after Swift edits.
 - `bash ci_scripts/tasks/check_repository_rules.sh` runs retained SwiftLint and
   static architecture checks that are not naturally covered by XcodeBuildMCP.
+- Release UI smoke auditing is intentionally separate from the normal verify
+  gate. Use the global `$xcode-ui-smoke-auditor` skill and the
+  [release UI smoke audit guide](Designs/Architecture/release-ui-smoke-audit.md)
+  when a release or UI-sensitive change needs live Simulator evidence.
 - `bash ci_scripts/tasks/verify_task_completion.sh`,
   `bash ci_scripts/tasks/verify_pre_push.sh`, and
   `bash ci_scripts/tasks/verify_repository_state.sh` remain compatibility
