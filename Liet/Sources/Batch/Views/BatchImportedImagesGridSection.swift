@@ -64,16 +64,17 @@ private extension BatchImportedImagesGridSection {
         if let summaryText {
             BatchSection(
                 title: selectionTitle,
-                accessory: AnyView(
+                accessory: {
                     BatchStatusChip(
                         text: summaryText,
                         systemImage: "arrow.up.left.and.arrow.down.right",
                         tone: .accent
                     )
-                )
-            ) {
-                grid
-            }
+                },
+                content: {
+                    grid
+                }
+            )
         } else {
             BatchSection(title: selectionTitle) {
                 grid

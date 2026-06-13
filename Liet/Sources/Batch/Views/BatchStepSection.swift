@@ -12,19 +12,20 @@ struct BatchStepSection<Content: View>: View {
     var body: some View {
         BatchSection(
             title: Text(title),
-            accessory: AnyView(
+            accessory: {
                 Text("Step \(number)")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
-            )
-        ) {
-            VStack(
-                alignment: .leading,
-                spacing: designMetrics.spacing.control
-            ) {
-                content()
+            },
+            content: {
+                VStack(
+                    alignment: .leading,
+                    spacing: designMetrics.spacing.control
+                ) {
+                    content()
+                }
             }
-        }
+        )
     }
 
     init(

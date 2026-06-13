@@ -1,11 +1,11 @@
 import MHDesign
 import SwiftUI
 
-struct BatchSection<Content: View>: View {
+struct BatchSection<Content: View, Accessory: View>: View {
     @Environment(\.mhDesignMetrics)
     private var designMetrics
 
-    private let accessory: AnyView?
+    private let accessory: Accessory?
     private let content: Content
     private let supporting: Text?
     private let title: Text
@@ -55,10 +55,23 @@ struct BatchSection<Content: View>: View {
     init(
         title: Text,
         supporting: Text? = nil,
-        accessory: AnyView? = nil,
+        @ViewBuilder accessory: () -> Accessory,
         @ViewBuilder content: () -> Content
     ) {
-        self.accessory = accessory
+        self.accessory = accessory()
+        self.content = content()
+        self.supporting = supporting
+        self.title = title
+    }
+}
+
+extension BatchSection where Accessory == EmptyView {
+    init(
+        title: Text,
+        supporting: Text? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.accessory = nil
         self.content = content()
         self.supporting = supporting
         self.title = title
