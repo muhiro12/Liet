@@ -208,6 +208,30 @@ extension BatchImageResultModel {
     }
 }
 
+extension BatchImageResultModel {
+    subscript(
+        filenameStemFor imageID: ProcessedBatchImage.ID
+    ) -> String {
+        get {
+            guard let image = processedImage(with: imageID) else {
+                return ""
+            }
+
+            return editableFilenameStem(for: image)
+        }
+        set {
+            guard let image = processedImage(with: imageID) else {
+                return
+            }
+
+            setEditableFilenameStem(
+                newValue,
+                for: image
+            )
+        }
+    }
+}
+
 private extension BatchImageResultModel {
     var exportFolderFilename: String {
         "Liet-Processed-Images"
@@ -235,5 +259,13 @@ private extension BatchImageResultModel {
             defaultStem: image.defaultOutputStem,
             outputFormat: image.outputFormat
         )
+    }
+
+    func processedImage(
+        with id: ProcessedBatchImage.ID
+    ) -> ProcessedBatchImage? {
+        processedImages.first { image in
+            image.id == id
+        }
     }
 }

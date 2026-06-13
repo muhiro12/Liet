@@ -29,7 +29,9 @@ struct BatchImageResultView: View {
                 resolvedFilename: { image in
                     model.resolvedFilename(for: image)
                 },
-                filenameStem: filenameStemBinding(for:),
+                filenameStem: { image in
+                    $model[filenameStemFor: image.id]
+                },
                 openPreview: openPreview(for:)
             )
             BatchImageResultSaveSection(model: model)
@@ -78,22 +80,6 @@ private extension BatchImageResultView {
         activePreviewItem = .init(
             processedImage: image,
             displayName: model.resolvedFilename(for: image)
-        )
-    }
-
-    func filenameStemBinding(
-        for image: ProcessedBatchImage
-    ) -> Binding<String> {
-        Binding(
-            get: {
-                model.editableFilenameStem(for: image)
-            },
-            set: { newValue in
-                model.setEditableFilenameStem(
-                    newValue,
-                    for: image
-                )
-            }
         )
     }
 }
