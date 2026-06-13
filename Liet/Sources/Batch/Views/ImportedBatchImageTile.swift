@@ -2,9 +2,6 @@ import MHDesign
 import SwiftUI
 
 struct ImportedBatchImageTile: View {
-    @Environment(\.mhDesignMetrics)
-    private var designMetrics
-
     let image: ImportedBatchImage
     var imageTapAction: (() -> Void)?
     var projectedPixelSize: CGSize?
@@ -14,7 +11,12 @@ struct ImportedBatchImageTile: View {
             alignment: .leading,
             spacing: BatchDesign.ImportedTile.textSpacing
         ) {
-            previewImage()
+            BatchImageThumbnailPreviewView(
+                image: image.previewImage,
+                height: BatchDesign.ImportedTile.imageHeight,
+                accessibilityLabel: "Preview \(image.displayName)",
+                imageTapAction: imageTapAction
+            )
 
             Text(image.displayName)
                 .batchTextStyle(.caption)
@@ -45,35 +47,5 @@ private extension ImportedBatchImageTile {
             .font(.caption2)
             .foregroundStyle(.secondary)
             .lineLimit(BatchDesign.ImportedTile.detailLineLimit)
-    }
-
-    @ViewBuilder
-    func previewImage() -> some View {
-        let imageView = BatchImagePreviewSurface(
-            image: image.previewImage,
-            showsTransparencyBackground: image.previewImage.batchHasAlphaChannel,
-            tileSize: BatchDesign.TransparencyPreview.thumbnailTileSize,
-            contentMode: .fill
-        )
-        .frame(maxWidth: .infinity)
-        .frame(height: BatchDesign.ImportedTile.imageHeight)
-        .clipShape(
-            RoundedRectangle(
-                cornerRadius: designMetrics.cornerRadius.surface,
-                style: .continuous
-            )
-        )
-
-        if let imageTapAction {
-            Button(
-                action: imageTapAction
-            ) {
-                imageView
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Preview \(image.displayName)")
-        } else {
-            imageView
-        }
     }
 }

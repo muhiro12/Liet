@@ -2,9 +2,6 @@ import MHDesign
 import SwiftUI
 
 struct ProcessedBatchImageTile: View {
-    @Environment(\.mhDesignMetrics)
-    private var designMetrics
-
     let image: ProcessedBatchImage
     var imageTapAction: (() -> Void)?
     let resolvedFilename: String
@@ -15,7 +12,12 @@ struct ProcessedBatchImageTile: View {
             alignment: .leading,
             spacing: BatchDesign.ProcessedTile.textSpacing
         ) {
-            previewImage()
+            BatchImageThumbnailPreviewView(
+                image: image.previewImage,
+                height: BatchDesign.ProcessedTile.imageHeight,
+                accessibilityLabel: "Preview \(resolvedFilename)",
+                imageTapAction: imageTapAction
+            )
             filenameEditor()
             resolvedFilenameText()
             detailText()
@@ -24,36 +26,6 @@ struct ProcessedBatchImageTile: View {
 }
 
 private extension ProcessedBatchImageTile {
-    @ViewBuilder
-    func previewImage() -> some View {
-        let imageView = BatchImagePreviewSurface(
-            image: image.previewImage,
-            showsTransparencyBackground: image.previewImage.batchHasAlphaChannel,
-            tileSize: BatchDesign.TransparencyPreview.thumbnailTileSize,
-            contentMode: .fill
-        )
-        .frame(maxWidth: .infinity)
-        .frame(height: BatchDesign.ProcessedTile.imageHeight)
-        .clipShape(
-            RoundedRectangle(
-                cornerRadius: designMetrics.cornerRadius.surface,
-                style: .continuous
-            )
-        )
-
-        if let imageTapAction {
-            Button(
-                action: imageTapAction
-            ) {
-                imageView
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Preview \(resolvedFilename)")
-        } else {
-            imageView
-        }
-    }
-
     func filenameEditor() -> some View {
         HStack(
             alignment: .firstTextBaseline,
