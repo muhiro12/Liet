@@ -16,7 +16,7 @@ struct BatchImageResultSaveSectionView: View {
             spacing: designMetrics.spacing.control
         ) {
             BatchImageFileExportModeToggle(
-                fileExportMode: $model.fileExportMode
+                exportsAsZIPArchive: $model.exportsAsZIPArchive
             )
             BatchImageFileExportButton(
                 fileExportMode: model.fileExportMode,

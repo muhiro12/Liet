@@ -42,6 +42,19 @@ final class BatchImageResultModel: Identifiable {
 }
 
 extension BatchImageResultModel {
+    var exportsAsZIPArchive: Bool {
+        get {
+            fileExportMode == .zipArchive
+        }
+        set {
+            fileExportMode = if newValue {
+                .zipArchive
+            } else {
+                .files
+            }
+        }
+    }
+
     var exportFolderDocument: ProcessedImageFolderExportDocument {
         .init(
             exportItems: exportItems,

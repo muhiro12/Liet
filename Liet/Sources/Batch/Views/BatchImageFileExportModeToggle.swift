@@ -1,29 +1,12 @@
 import SwiftUI
 
 struct BatchImageFileExportModeToggle: View {
-    @Binding var fileExportMode: BatchImageResultModel.FileExportMode
+    @Binding var exportsAsZIPArchive: Bool
 
     var body: some View {
         Toggle(
             "Export as ZIP",
-            isOn: exportsAsZIP
-        )
-    }
-}
-
-private extension BatchImageFileExportModeToggle {
-    var exportsAsZIP: Binding<Bool> {
-        Binding(
-            get: {
-                fileExportMode == .zipArchive
-            },
-            set: { newValue in
-                fileExportMode = if newValue {
-                    .zipArchive
-                } else {
-                    .files
-                }
-            }
+            isOn: $exportsAsZIPArchive
         )
     }
 }
