@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct BatchStatusChip: View {
     enum Tone: Equatable {
@@ -40,9 +41,9 @@ struct BatchStatusChip: View {
         case .neutral:
             .secondary
         case .success:
-            .green
+            Color(uiColor: .systemGreen)
         case .warning:
-            .orange
+            Color(uiColor: .systemOrange)
         }
     }
 }
