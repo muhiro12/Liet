@@ -12,5 +12,6 @@ struct BatchImageFullscreenDismissBackground: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Close Preview")
+        .accessibilityHidden(true)
     }
 }

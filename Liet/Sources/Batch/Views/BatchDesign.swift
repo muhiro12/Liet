@@ -30,7 +30,7 @@ enum BatchDesign {
     enum Fullscreen {
         static let closeButtonBackgroundOpacity = 0.5
         static let closeButtonImageSize = 22.0
-        static let closeButtonPadding = 10.0
+        static let closeButtonPadding = 11.0
         static let closeButtonTopPadding = 12.0
         static let contentHorizontalPadding = 16.0
         static let contentVerticalSpacing = 16.0

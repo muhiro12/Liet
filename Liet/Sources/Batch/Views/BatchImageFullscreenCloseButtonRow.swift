@@ -7,7 +7,7 @@ struct BatchImageFullscreenCloseButtonRow: View {
         HStack {
             Spacer()
 
-            Button {
+            Button(role: .cancel) {
                 dismissPreview()
             } label: {
                 Image(systemName: "xmark")
@@ -21,6 +21,7 @@ struct BatchImageFullscreenCloseButtonRow: View {
             }
             .padding(.top, BatchDesign.Fullscreen.closeButtonTopPadding)
             .accessibilityLabel("Close Preview")
+            .accessibilityHint("Dismisses the full-screen preview.")
         }
         .frame(maxWidth: .infinity)
     }
