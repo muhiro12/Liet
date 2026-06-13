@@ -1,4 +1,4 @@
-// swiftlint:disable file_length type_contents_order
+// swiftlint:disable type_contents_order
 import LietLibrary
 import MHDesign
 import PhotosUI
@@ -280,63 +280,10 @@ private extension BatchBackgroundRemovalHomeView {
 
     func backgroundRemovalSection() -> some View {
         settingsSection(title: "Background Removal") {
-            backgroundRemovalControls()
-        }
-    }
-
-    func backgroundRemovalControls() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.control
-        ) {
-            adjustmentSlider(
-                title: "Strength",
-                value: strengthBinding,
-                range: 0...1,
-                valueText: percentageText(model.strength)
-            )
-            adjustmentSlider(
-                title: "Edge smoothing",
-                value: edgeSmoothingBinding,
-                range: 0...1,
-                valueText: percentageText(model.edgeSmoothing)
-            )
-            adjustmentSlider(
-                title: "Edge expand / contract",
-                value: edgeExpansionBinding,
-                range: -1...1,
-                valueText: signedPercentageText(model.edgeExpansion)
-            )
-            BatchStatusChip(
-                "Exports PNG with transparency",
-                systemImage: "sparkles",
-                tone: .neutral
-            )
-        }
-    }
-
-    func adjustmentSlider(
-        title: LocalizedStringKey,
-        value: Binding<Double>,
-        range: ClosedRange<Double>,
-        valueText: String
-    ) -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.inline
-        ) {
-            HStack {
-                Text(title)
-                    .batchTextStyle(.bodyStrong)
-                Spacer()
-                Text(valueText)
-                    .font(.footnote.monospacedDigit())
-                    .foregroundStyle(.secondary)
-            }
-
-            Slider(
-                value: value,
-                in: range
+            BatchBackgroundRemovalSettingsView(
+                strength: strengthBinding,
+                edgeSmoothing: edgeSmoothingBinding,
+                edgeExpansion: edgeExpansionBinding
             )
         }
     }
@@ -350,24 +297,6 @@ private extension BatchBackgroundRemovalHomeView {
                 model.saveCurrentAsUserPreset()
             }
         }
-    }
-
-    func percentageText(
-        _ value: Double
-    ) -> String {
-        "\(Int((value * 100).rounded()))%"
-    }
-
-    func signedPercentageText(
-        _ value: Double
-    ) -> String {
-        let percentage = Int((value * 100).rounded())
-
-        if percentage > 0 {
-            return "+\(percentage)%"
-        }
-
-        return "\(percentage)%"
     }
 
     func handleFileImportResult(
@@ -410,4 +339,4 @@ private extension BatchBackgroundRemovalHomeView {
         )
     }
 }
-// swiftlint:enable file_length type_contents_order
+// swiftlint:enable type_contents_order
