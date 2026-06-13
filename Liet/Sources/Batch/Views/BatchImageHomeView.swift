@@ -59,24 +59,8 @@ struct BatchImageHomeView: View {
             value: model.showsCompressionSection
         )
         .toolbar {
-            if let backToChooser {
-                ToolbarItem(placement: .topBarLeading) {
-                    BatchToolbarIconButton(
-                        systemImage: "square.grid.2x2",
-                        accessibilityLabel: "Choose Feature"
-                    ) {
-                        backToChooser()
-                    }
-                }
-            }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                BatchToolbarIconButton(
-                    systemImage: "questionmark.circle",
-                    accessibilityLabel: "Show Tips Again"
-                ) {
-                    model.replayTips()
-                }
+            BatchHomeToolbar(backToChooser: backToChooser) {
+                model.replayTips()
             }
         }
         .onChange(of: selectedItems) { _, newValue in
