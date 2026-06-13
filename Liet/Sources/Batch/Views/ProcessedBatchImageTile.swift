@@ -18,7 +18,11 @@ struct ProcessedBatchImageTile: View {
                 accessibilityLabel: "Preview \(resolvedFilename)",
                 imageTapAction: imageTapAction
             )
-            filenameEditor()
+            ProcessedBatchImageFilenameEditor(
+                defaultOutputStem: image.defaultOutputStem,
+                outputFilenameExtension: image.outputFilenameExtension,
+                filenameStem: filenameStem
+            )
             resolvedFilenameText()
             detailText()
         }
@@ -26,25 +30,6 @@ struct ProcessedBatchImageTile: View {
 }
 
 private extension ProcessedBatchImageTile {
-    func filenameEditor() -> some View {
-        HStack(
-            alignment: .firstTextBaseline,
-            spacing: BatchDesign.ProcessedTile.filenameSpacing
-        ) {
-            TextField(
-                image.defaultOutputStem,
-                text: filenameStem
-            )
-            .textFieldStyle(.roundedBorder)
-
-            Text(".\(image.outputFilenameExtension)")
-                .batchTextStyle(
-                    .caption,
-                    color: .secondary
-                )
-        }
-    }
-
     func resolvedFilenameText() -> some View {
         Text(resolvedFilename)
             .batchTextStyle(.caption)
