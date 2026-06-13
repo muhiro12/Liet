@@ -84,19 +84,11 @@ private extension BatchImageResultSaveSectionView {
                 await model.saveToPhotos()
             }
         } label: {
-            photosButtonLabel
+            BatchSaveToPhotosButtonLabel(
+                isSaving: model.isSavingToPhotos
+            )
         }
         .buttonStyle(.bordered)
         .disabled(model.isSavingToPhotos)
-    }
-
-    @ViewBuilder var photosButtonLabel: some View {
-        if model.isSavingToPhotos {
-            ProgressView("Saving to Photos")
-                .frame(maxWidth: .infinity)
-        } else {
-            Label("Save to Photos", systemImage: "photo.on.rectangle")
-                .frame(maxWidth: .infinity)
-        }
     }
 }
