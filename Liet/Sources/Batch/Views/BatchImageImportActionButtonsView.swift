@@ -8,20 +8,14 @@ struct BatchImageImportActionButtonsView: View {
     var body: some View {
         if importedImageCount > 0 {
             if let reviewSelection {
-                Button {
-                    reviewSelection()
-                } label: {
-                    Label("Review", systemImage: "eye")
-                }
-                .buttonStyle(.bordered)
+                BatchImageReviewSelectionButton(
+                    reviewSelection: reviewSelection
+                )
             }
 
-            Button {
-                clearSelection()
-            } label: {
-                Label("Clear", systemImage: "xmark.circle")
-            }
-            .buttonStyle(.bordered)
+            BatchImageClearSelectionButton(
+                clearSelection: clearSelection
+            )
         }
     }
 }
