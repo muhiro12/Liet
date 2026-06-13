@@ -4,7 +4,6 @@ import MHDesign
 import PhotosUI
 import SwiftUI
 import TipKit
-import UIKit
 
 struct BatchImageHomeView: View {
     @Environment(\.mhDesignMetrics)
@@ -17,7 +16,6 @@ struct BatchImageHomeView: View {
 
     @State private var isPresentingFileImporter = false
     @State private var suppressesSelectedItemsDidChange = false
-    @Namespace private var processingMorphNamespace
 
     private let selectImagesTip = SelectImagesTip()
     private let processingSetupTip = ProcessingSetupTip()
@@ -282,7 +280,15 @@ private extension BatchImageHomeView {
 
     func outputSizeSection() -> some View {
         settingsSection(title: "Output Size") {
-            resizeSection()
+            BatchResizeOutputSizeView(
+                keepsAspectRatio: keepsAspectRatioBinding,
+                referenceDimension: referenceDimensionBinding,
+                referencePixels: referencePixelsBinding,
+                resizeWidth: resizeWidthBinding,
+                resizeHeight: resizeHeightBinding,
+                exactResizeStrategy: $model.exactResizeStrategy,
+                resizeMethodTip: resizeMethodTip
+            )
         }
     }
 
@@ -293,92 +299,6 @@ private extension BatchImageHomeView {
                 hasUserPresetSettings: model.hasUserPresetSettings,
                 processingSetupTip: processingSetupTip
             )
-        }
-    }
-
-    func resizeSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.control
-        ) {
-            Toggle(
-                "Keep aspect ratio",
-                isOn: keepsAspectRatioBinding
-            )
-
-            resizeModeSection()
-        }
-    }
-
-    @ViewBuilder
-    func resizeModeSection() -> some View {
-        ZStack(alignment: .topLeading) {
-            if model.keepsAspectRatio {
-                aspectRatioInputSection()
-                    .matchedGeometryEffect(
-                        id: "processing.resize.mode",
-                        in: processingMorphNamespace
-                    )
-                    .transition(resizeModeTransition)
-            } else {
-                exactResizeInputSection()
-                    .matchedGeometryEffect(
-                        id: "processing.resize.mode",
-                        in: processingMorphNamespace
-                    )
-                    .transition(resizeModeTransition)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    func aspectRatioInputSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.control
-        ) {
-            VStack(
-                alignment: .leading,
-                spacing: designMetrics.spacing.inline
-            ) {
-                Text("Reference edge")
-                    .batchTextStyle(.bodyStrong)
-
-                Picker("Reference edge", selection: referenceDimensionBinding) {
-                    Text("Width")
-                        .tag(BatchResizeReferenceDimension.width)
-                    Text("Height")
-                        .tag(BatchResizeReferenceDimension.height)
-                }
-                .pickerStyle(.segmented)
-            }
-
-            dimensionInputSection(
-                title: referencePixelsTitle,
-                placeholder: referencePixelsPlaceholder,
-                text: referencePixelsBinding
-            )
-        }
-    }
-
-    func exactResizeInputSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.control
-        ) {
-            dimensionInputSection(
-                title: Text("Width (px)"),
-                placeholder: "1920",
-                text: resizeWidthBinding
-            )
-
-            dimensionInputSection(
-                title: Text("Height (px)"),
-                placeholder: "1080",
-                text: resizeHeightBinding
-            )
-
-            exactSizeSection()
         }
     }
 
@@ -409,72 +329,12 @@ private extension BatchImageHomeView {
         }
     }
 
-    func dimensionInputSection(
-        title: Text,
-        placeholder: String,
-        text: Binding<String>,
-        keyboardType: UIKeyboardType = .numberPad
-    ) -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.inline
-        ) {
-            title
-                .batchTextStyle(.bodyStrong)
-
-            TextField(placeholder, text: text)
-                .keyboardType(keyboardType)
-                .textFieldStyle(.roundedBorder)
-        }
-    }
-
-    func exactSizeSection() -> some View {
-        VStack(
-            alignment: .leading,
-            spacing: designMetrics.spacing.inline
-        ) {
-            Text("Method")
-                .batchTextStyle(.bodyStrong)
-
-            Picker(selection: $model.exactResizeStrategy) {
-                Text("Stretch")
-                    .tag(BatchExactResizeStrategy.stretch)
-                Text("Contain")
-                    .tag(BatchExactResizeStrategy.contain)
-                Text("Crop")
-                    .tag(BatchExactResizeStrategy.coverCrop)
-            } label: {
-                Text("Method")
-            }
-            .pickerStyle(.segmented)
-            .popoverTip(
-                resizeMethodTip,
-                arrowEdge: .top
-            )
-        }
-    }
-
     func compressionSection() -> some View {
         settingsSection(title: "Compression") {
-            Picker("Compression", selection: $model.compression) {
-                Text("Off")
-                    .tag(BatchImageCompression.off)
-                Text("High")
-                    .tag(BatchImageCompression.high)
-                Text("Medium")
-                    .tag(BatchImageCompression.medium)
-                Text("Low")
-                    .tag(BatchImageCompression.low)
-            }
-            .pickerStyle(.segmented)
-
-            if model.showsMixedCompressionHint {
-                BatchStatusChip(
-                    "PNG keeps original format",
-                    systemImage: "photo",
-                    tone: .neutral
-                )
-            }
+            BatchCompressionPickerView(
+                compression: $model.compression,
+                showsMixedCompressionHint: model.showsMixedCompressionHint
+            )
         }
     }
 
@@ -536,33 +396,6 @@ private extension BatchImageHomeView {
                 anchor: .top
             )
         )
-    }
-
-    var resizeModeTransition: AnyTransition {
-        .opacity.combined(
-            with: .scale(
-                scale: BatchDesign.Animation.sectionTransitionScale,
-                anchor: .top
-            )
-        )
-    }
-
-    var referencePixelsTitle: Text {
-        switch model.referenceDimension {
-        case .width:
-            Text("Width (px)")
-        case .height:
-            Text("Height (px)")
-        }
-    }
-
-    var referencePixelsPlaceholder: String {
-        switch model.referenceDimension {
-        case .width:
-            "1920"
-        case .height:
-            "1080"
-        }
     }
 }
 // swiftlint:enable file_length type_contents_order
