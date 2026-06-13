@@ -24,7 +24,7 @@ struct BatchResizeModeInputView: View {
                     id: "processing.resize.mode",
                     in: resizeModeNamespace
                 )
-                .transition(resizeModeTransition)
+                .transition(BatchProcessingAnimation.sectionRevealTransition)
             } else {
                 BatchExactResizeInputView(
                     resizeWidth: $resizeWidth,
@@ -36,20 +36,9 @@ struct BatchResizeModeInputView: View {
                     id: "processing.resize.mode",
                     in: resizeModeNamespace
                 )
-                .transition(resizeModeTransition)
+                .transition(BatchProcessingAnimation.sectionRevealTransition)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
-private extension BatchResizeModeInputView {
-    var resizeModeTransition: AnyTransition {
-        .opacity.combined(
-            with: .scale(
-                scale: BatchDesign.Animation.sectionTransitionScale,
-                anchor: .top
-            )
-        )
     }
 }

@@ -45,7 +45,7 @@ struct BatchBackgroundRemovalHomeView: View {
                     runProcessingTip: runProcessingTip,
                     userPresetTip: userPresetTip
                 )
-                .transition(processingStepTransition)
+                .transition(BatchProcessingAnimation.sectionRevealTransition)
             }
         }
         .batchScreen(
@@ -56,7 +56,7 @@ struct BatchBackgroundRemovalHomeView: View {
         .navigationTitle("Remove Background")
         .navigationBarTitleDisplayMode(.large)
         .animation(
-            processingAnimation,
+            BatchProcessingAnimation.stepReveal,
             value: model.importedImages.count
         )
         .toolbar {
@@ -108,23 +108,6 @@ private extension BatchBackgroundRemovalHomeView {
                     model.activeAlert = nil
                 }
             }
-        )
-    }
-
-    var processingAnimation: Animation {
-        .spring(
-            response: BatchDesign.Animation.processingSpringResponse,
-            dampingFraction: BatchDesign.Animation.processingSpringDampingFraction,
-            blendDuration: BatchDesign.Animation.processingSpringBlendDuration
-        )
-    }
-
-    var processingStepTransition: AnyTransition {
-        .opacity.combined(
-            with: .scale(
-                scale: BatchDesign.Animation.sectionTransitionScale,
-                anchor: .top
-            )
         )
     }
 }

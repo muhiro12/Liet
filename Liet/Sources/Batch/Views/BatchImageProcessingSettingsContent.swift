@@ -64,7 +64,7 @@ struct BatchImageProcessingSettingsContent: View {
                     showsMixedCompressionHint: showsMixedCompressionHint
                 )
             }
-            .transition(optionalProcessingSectionTransition)
+            .transition(BatchProcessingAnimation.sectionRevealTransition)
         }
 
         BatchSettingsSection(title: "User Preset") {
@@ -74,16 +74,5 @@ struct BatchImageProcessingSettingsContent: View {
                 savePreset: savePreset
             )
         }
-    }
-}
-
-private extension BatchImageProcessingSettingsContent {
-    var optionalProcessingSectionTransition: AnyTransition {
-        .opacity.combined(
-            with: .scale(
-                scale: BatchDesign.Animation.sectionTransitionScale,
-                anchor: .top
-            )
-        )
     }
 }

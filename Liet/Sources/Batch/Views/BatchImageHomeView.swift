@@ -47,7 +47,7 @@ struct BatchImageHomeView: View {
                     resizeMethodTip: resizeMethodTip,
                     userPresetTip: userPresetTip
                 )
-                .transition(processingStepTransition)
+                .transition(BatchProcessingAnimation.sectionRevealTransition)
             }
         }
         .batchScreen(
@@ -58,15 +58,15 @@ struct BatchImageHomeView: View {
         .navigationTitle("Resize Images")
         .navigationBarTitleDisplayMode(.large)
         .animation(
-            processingAnimation,
+            BatchProcessingAnimation.stepReveal,
             value: model.importedImages.count
         )
         .animation(
-            processingAnimation,
+            BatchProcessingAnimation.stepReveal,
             value: model.keepsAspectRatio
         )
         .animation(
-            processingAnimation,
+            BatchProcessingAnimation.stepReveal,
             value: model.showsCompressionSection
         )
         .toolbar {
@@ -118,23 +118,6 @@ private extension BatchImageHomeView {
                     model.activeAlert = nil
                 }
             }
-        )
-    }
-
-    var processingAnimation: Animation {
-        .spring(
-            response: BatchDesign.Animation.processingSpringResponse,
-            dampingFraction: BatchDesign.Animation.processingSpringDampingFraction,
-            blendDuration: BatchDesign.Animation.processingSpringBlendDuration
-        )
-    }
-
-    var processingStepTransition: AnyTransition {
-        .opacity.combined(
-            with: .scale(
-                scale: BatchDesign.Animation.sectionTransitionScale,
-                anchor: .top
-            )
         )
     }
 }
