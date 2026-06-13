@@ -85,6 +85,13 @@ private extension BatchImageHomeView {
             isPresentingFileImporter: $isPresentingFileImporter,
             suppressesSelectedItemsDidChange: $suppressesSelectedItemsDidChange,
             errorPresented: errorPresented,
+            alertTitle: {
+                guard let activeAlert = model.activeAlert else {
+                    return nil
+                }
+
+                return alertTitle(for: activeAlert)
+            },
             alertMessage: {
                 guard let activeAlert = model.activeAlert else {
                     return nil

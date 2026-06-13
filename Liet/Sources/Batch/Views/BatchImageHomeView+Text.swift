@@ -1,6 +1,19 @@
 import SwiftUI
 
 extension BatchImageHomeView {
+    func alertTitle(
+        for alert: BatchImageHomeModel.AlertState
+    ) -> Text {
+        switch alert {
+        case .invalidResizeSize:
+            Text("Invalid Settings")
+        case .importSelectionFailed:
+            Text("Import Failed")
+        case .processSelectionFailed:
+            Text("Processing Failed")
+        }
+    }
+
     func alertText(
         for alert: BatchImageHomeModel.AlertState
     ) -> Text {

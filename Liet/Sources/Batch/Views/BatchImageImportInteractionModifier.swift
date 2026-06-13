@@ -7,6 +7,7 @@ struct BatchImageImportInteractionModifier: ViewModifier {
     @Binding var suppressesSelectedItemsDidChange: Bool
 
     let errorPresented: Binding<Bool>
+    let alertTitle: () -> Text?
     let alertMessage: () -> Text?
     let dismissAlert: () -> Void
     let importPhotos: ([PhotosPickerItem]) async -> Void
@@ -34,7 +35,10 @@ struct BatchImageImportInteractionModifier: ViewModifier {
             } onCancellation: {
                 // Keep the current selection unchanged when the picker is dismissed.
             }
-            .alert("Error", isPresented: errorPresented) {
+            .alert(
+                alertTitle() ?? Text("Action Failed"),
+                isPresented: errorPresented
+            ) {
                 Button("OK", role: .cancel) {
                     dismissAlert()
                 }

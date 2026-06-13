@@ -1,6 +1,19 @@
 import SwiftUI
 
 extension BatchBackgroundRemovalHomeView {
+    func alertTitle(
+        for alert: BatchBackgroundRemovalHomeModel.AlertState
+    ) -> Text {
+        switch alert {
+        case .invalidConfiguration:
+            Text("Invalid Settings")
+        case .importSelectionFailed:
+            Text("Import Failed")
+        case .processSelectionFailed:
+            Text("Background Removal Failed")
+        }
+    }
+
     func alertText(
         for alert: BatchBackgroundRemovalHomeModel.AlertState
     ) -> Text {
