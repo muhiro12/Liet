@@ -369,7 +369,7 @@ extension BatchImageHomeModel {
         resultModel = nil
     }
 
-    func processImages() {
+    func processImages() async {
         let preferencesState = currentPreferencesState
 
         guard let settings = preferencesState.settings,
@@ -386,6 +386,7 @@ extension BatchImageHomeModel {
         savePreferences(updatedPreferencesState.preferences)
         activeAlert = nil
         isProcessing = true
+        await Task.yield()
         let outcome = BatchImageProcessor.process(
             images: importedImages,
             settings: settings

@@ -38,7 +38,7 @@ struct BatchBackgroundRemovalStepsView: View {
 private extension BatchBackgroundRemovalStepsView {
     func processImages() {
         Task {
-            model.processImages()
+            await model.processImages()
         }
     }
 }

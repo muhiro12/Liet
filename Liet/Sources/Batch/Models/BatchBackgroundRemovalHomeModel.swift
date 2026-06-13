@@ -264,7 +264,7 @@ extension BatchBackgroundRemovalHomeModel {
         resultModel = nil
     }
 
-    func processImages() {
+    func processImages() async {
         let preferencesState = currentPreferencesState
 
         guard let currentPersistedSettings = preferencesState.currentPersistedSettings,
@@ -281,6 +281,7 @@ extension BatchBackgroundRemovalHomeModel {
         savePreferences(updatedPreferencesState.preferences)
         activeAlert = nil
         isProcessing = true
+        await Task.yield()
         let outcome = BatchBackgroundRemovalProcessor.process(
             images: importedImages,
             settings: preferencesState.settings,

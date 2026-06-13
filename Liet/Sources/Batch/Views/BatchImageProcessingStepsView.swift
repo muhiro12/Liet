@@ -40,7 +40,7 @@ struct BatchImageProcessingStepsView: View {
 private extension BatchImageProcessingStepsView {
     func processImages() {
         Task {
-            model.processImages()
+            await model.processImages()
         }
     }
 }
