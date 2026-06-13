@@ -1,5 +1,3 @@
-// swiftlint:disable type_contents_order
-import LietLibrary
 import MHDesign
 import PhotosUI
 import SwiftUI
@@ -41,20 +39,13 @@ struct BatchBackgroundRemovalHomeView: View {
             )
 
             if model.showsProcessingStep {
-                processingStepSection()
-                    .transition(processingStepTransition)
-                BatchImageProcessStepSection(
-                    isProcessing: model.isProcessing,
-                    canProcess: model.canProcess,
-                    runProcessingTip: runProcessingTip
-                ) {
-                    Task {
-                        model.processImages()
-                    }
-                }
+                BatchBackgroundRemovalStepsView(
+                    model: model,
+                    processingSetupTip: processingSetupTip,
+                    runProcessingTip: runProcessingTip,
+                    userPresetTip: userPresetTip
+                )
                 .transition(processingStepTransition)
-                AdvertisementSection(.small)
-                    .transition(processingStepTransition)
             }
         }
         .batchScreen(
@@ -120,138 +111,6 @@ private extension BatchBackgroundRemovalHomeView {
         )
     }
 
-    var strengthBinding: Binding<Double> {
-        Binding(
-            get: {
-                model.strength
-            },
-            set: { newValue in
-                model.strength = newValue
-            }
-        )
-    }
-
-    var edgeSmoothingBinding: Binding<Double> {
-        Binding(
-            get: {
-                model.edgeSmoothing
-            },
-            set: { newValue in
-                model.edgeSmoothing = newValue
-            }
-        )
-    }
-
-    var edgeExpansionBinding: Binding<Double> {
-        Binding(
-            get: {
-                model.edgeExpansion
-            },
-            set: { newValue in
-                model.edgeExpansion = newValue
-            }
-        )
-    }
-
-    var namingTemplateBinding: Binding<BatchImageNamingTemplate> {
-        Binding(
-            get: {
-                model.namingTemplate
-            },
-            set: { newValue in
-                model.setNamingTemplate(newValue)
-            }
-        )
-    }
-
-    var customNamingPrefixBinding: Binding<String> {
-        Binding(
-            get: {
-                model.customNamingPrefixText
-            },
-            set: { newValue in
-                model.setCustomNamingPrefixText(newValue)
-            }
-        )
-    }
-
-    var numberingStyleBinding: Binding<BatchImageNumberingStyle> {
-        Binding(
-            get: {
-                model.numberingStyle
-            },
-            set: { newValue in
-                model.setNumberingStyle(newValue)
-            }
-        )
-    }
-
-    var settingsSourceBinding: Binding<BatchBackgroundRemovalHomeModel.SettingsSource> {
-        Binding(
-            get: {
-                model.settingsSource
-            },
-            set: { newValue in
-                model.settingsSource = newValue
-            }
-        )
-    }
-
-    func processingStepSection() -> some View {
-        BatchStepSection(
-            number: BatchDesign.Step.processing,
-            title: "Processing Settings"
-        ) {
-            settingsSourceSection()
-            fileNamingSection()
-            backgroundRemovalSection()
-            userPresetSection()
-        }
-    }
-
-    func settingsSourceSection() -> some View {
-        BatchSettingsSection(title: "Starting Point") {
-            BatchSettingsSourcePickerView(
-                selection: settingsSourceBinding,
-                hasUserPresetSettings: model.hasUserPresetSettings,
-                processingSetupTip: processingSetupTip
-            )
-        }
-    }
-
-    func fileNamingSection() -> some View {
-        BatchSettingsSection(title: "File Naming") {
-            BatchFileNamingSectionView(
-                namingTemplate: namingTemplateBinding,
-                customNamingPrefix: customNamingPrefixBinding,
-                numberingStyle: numberingStyleBinding,
-                showsCustomNamingPrefixField: model.showsCustomNamingPrefixField,
-                hasValidNaming: model.hasValidNaming
-            )
-        }
-    }
-
-    func backgroundRemovalSection() -> some View {
-        BatchSettingsSection(title: "Background Removal") {
-            BatchBackgroundRemovalSettingsView(
-                strength: strengthBinding,
-                edgeSmoothing: edgeSmoothingBinding,
-                edgeExpansion: edgeExpansionBinding
-            )
-        }
-    }
-
-    func userPresetSection() -> some View {
-        BatchSettingsSection(title: "User Preset") {
-            BatchUserPresetButtonView(
-                canSavePreset: model.canSaveCurrentAsUserPreset,
-                userPresetTip: userPresetTip
-            ) {
-                model.saveCurrentAsUserPreset()
-            }
-        }
-    }
-
     var processingAnimation: Animation {
         .spring(
             response: BatchDesign.Animation.processingSpringResponse,
@@ -269,4 +128,3 @@ private extension BatchBackgroundRemovalHomeView {
         )
     }
 }
-// swiftlint:enable type_contents_order
