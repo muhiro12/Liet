@@ -1,6 +1,5 @@
 import MHDesign
 import SwiftUI
-import TipKit
 import UniformTypeIdentifiers
 
 struct BatchImageResultView: View {
@@ -12,14 +11,18 @@ struct BatchImageResultView: View {
 
     @State private var activePreviewItem: BatchImagePreviewItem?
 
-    private let processedResultsTip = ProcessedResultsTip()
-
     var body: some View {
         VStack(
             alignment: .leading,
             spacing: designMetrics.spacing.section
         ) {
-            summarySection()
+            BatchImageResultSummarySection(
+                processedImageCount: model.processedImages.count,
+                failureCount: model.failureCount,
+                jpegFallbackCount: model.jpegFallbackCount,
+                ignoredCompressionCount: model.ignoredCompressionCount,
+                saveFeedback: model.saveFeedback
+            )
             AdvertisementSection(.medium)
             previewsSection()
             saveSection()
@@ -95,44 +98,6 @@ private extension BatchImageResultView {
         )
     }
 
-    var hasResultChips: Bool {
-        model.failureCount > 0 ||
-            model.jpegFallbackCount > 0 ||
-            model.ignoredCompressionCount > 0 ||
-            model.saveFeedback != nil
-    }
-
-    @ViewBuilder
-    func summarySection() -> some View {
-        if hasResultChips {
-            BatchSection(
-                title: resultTitleText(model.processedImages.count)
-            ) {
-                ScrollView(
-                    .horizontal,
-                    showsIndicators: false
-                ) {
-                    HStack(
-                        spacing: designMetrics.spacing.control
-                    ) {
-                        resultDetailChips()
-                    }
-                }
-            }
-            .popoverTip(
-                processedResultsTip,
-                arrowEdge: .top
-            )
-        } else {
-            resultTitleText(model.processedImages.count)
-                .batchTextStyle(.screenTitle)
-                .popoverTip(
-                    processedResultsTip,
-                    arrowEdge: .top
-                )
-        }
-    }
-
     func previewsSection() -> some View {
         BatchSection(title: Text("Processed images")) {
             LazyVGrid(
@@ -160,98 +125,6 @@ private extension BatchImageResultView {
     func saveSection() -> some View {
         BatchSection(title: Text("Save")) {
             BatchImageResultSaveSectionView(model: model)
-        }
-    }
-
-    @ViewBuilder
-    func resultDetailChips() -> some View {
-        if model.failureCount > 0 {
-            BatchStatusChip(
-                text: resultFailureText(model.failureCount),
-                systemImage: "exclamationmark.triangle.fill",
-                tone: .warning
-            )
-        }
-
-        if model.jpegFallbackCount > 0 {
-            BatchStatusChip(
-                text: jpegFallbackText(model.jpegFallbackCount),
-                systemImage: "arrow.triangle.2.circlepath",
-                tone: .warning
-            )
-        }
-
-        if model.ignoredCompressionCount > 0 {
-            BatchStatusChip(
-                text: pngCompressionText(model.ignoredCompressionCount),
-                systemImage: "photo",
-                tone: .neutral
-            )
-        }
-
-        if let saveFeedback = model.saveFeedback {
-            BatchStatusChip(
-                text: saveFeedbackText(saveFeedback),
-                systemImage: "checkmark.circle.fill",
-                tone: .success
-            )
-        }
-    }
-
-    func resultTitleText(
-        _ count: Int
-    ) -> Text {
-        if count == 1 {
-            Text("1 image ready")
-        } else {
-            Text("\(count) images ready")
-        }
-    }
-
-    func resultFailureText(
-        _ count: Int
-    ) -> Text {
-        if count == 1 {
-            Text("1 failed")
-        } else {
-            Text("\(count) failed")
-        }
-    }
-
-    func jpegFallbackText(
-        _ count: Int
-    ) -> Text {
-        if count == 1 {
-            Text("1 JPEG fallback")
-        } else {
-            Text("\(count) JPEG fallback")
-        }
-    }
-
-    func pngCompressionText(
-        _: Int
-    ) -> Text {
-        Text("PNG output ignored compression")
-    }
-
-    func saveFeedbackText(
-        _ feedback: BatchImageResultModel.SaveFeedback
-    ) -> Text {
-        switch feedback {
-        case .exportedArchive:
-            Text("ZIP saved to Files")
-        case let .exportedFiles(count):
-            if count == 1 {
-                Text("1 saved to Files")
-            } else {
-                Text("\(count) saved to Files")
-            }
-        case let .savedToPhotos(count):
-            if count == 1 {
-                Text("1 saved to Photos")
-            } else {
-                Text("\(count) saved to Photos")
-            }
         }
     }
 
