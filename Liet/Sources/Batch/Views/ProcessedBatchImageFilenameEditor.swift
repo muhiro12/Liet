@@ -17,6 +17,7 @@ struct ProcessedBatchImageFilenameEditor: View {
             )
             .textFieldStyle(.roundedBorder)
             .accessibilityLabel("Output filename")
+            .accessibilityHint("The file extension is added automatically.")
 
             Text(".\(outputFilenameExtension)")
                 .batchTextStyle(

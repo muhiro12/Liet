@@ -23,23 +23,10 @@ struct ProcessedBatchImageTile: View {
                 outputFilenameExtension: image.outputFilenameExtension,
                 filenameStem: filenameStem
             )
-            resolvedFilenameText()
-            detailText()
+            ProcessedBatchImageMetadataView(
+                resolvedFilename: resolvedFilename,
+                detailText: image.detailText
+            )
         }
-    }
-}
-
-private extension ProcessedBatchImageTile {
-    func resolvedFilenameText() -> some View {
-        Text(resolvedFilename)
-            .batchTextStyle(.caption)
-            .lineLimit(1)
-    }
-
-    func detailText() -> some View {
-        Text(image.detailText)
-            .font(.caption2)
-            .foregroundStyle(.secondary)
-            .lineLimit(BatchDesign.ProcessedTile.detailLineLimit)
     }
 }
