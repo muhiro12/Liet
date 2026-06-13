@@ -32,7 +32,7 @@ struct BatchImageResultView: View {
                 filenameStem: filenameStemBinding(for:),
                 openPreview: openPreview(for:)
             )
-            saveSection()
+            BatchImageResultSaveSection(model: model)
         }
         .batchScreen(
             title: nil as Text?,
@@ -94,12 +94,6 @@ private extension BatchImageResultView {
                 }
             }
         )
-    }
-
-    func saveSection() -> some View {
-        BatchSection(title: Text("Save")) {
-            BatchImageResultSaveSectionView(model: model)
-        }
     }
 
     func openPreview(
