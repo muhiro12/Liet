@@ -21,6 +21,7 @@ struct BatchCustomNamingPrefixView: View {
 
                 TextField("prefix", text: $customNamingPrefix)
                     .textFieldStyle(.roundedBorder)
+                    .accessibilityLabel("Custom prefix")
 
                 if !hasValidNaming {
                     BatchStatusChip(

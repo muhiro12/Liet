@@ -22,6 +22,7 @@ struct BatchDimensionInputView: View {
             TextField(placeholder, text: $text)
                 .keyboardType(.numberPad)
                 .textFieldStyle(.roundedBorder)
+                .accessibilityLabel(title)
         }
     }
 }
