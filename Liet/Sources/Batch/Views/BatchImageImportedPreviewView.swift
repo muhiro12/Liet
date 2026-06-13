@@ -1,6 +1,5 @@
 import MHDesign
 import SwiftUI
-import TipKit
 
 struct BatchImageImportedPreviewView: View {
     @Environment(\.mhDesignMetrics)
@@ -12,14 +11,19 @@ struct BatchImageImportedPreviewView: View {
     let summaryText: Text?
     let projectedPixelSizeResolver: ((ImportedBatchImage) -> CGSize?)?
     let backToSettings: (() -> Void)?
-    private let selectionPreviewTip = SelectionPreviewTip()
 
     var body: some View {
         VStack(
             alignment: .leading,
             spacing: designMetrics.spacing.section
         ) {
-            previewsSection()
+            BatchImportedImagesGridSection(
+                importedImages: importedImages,
+                summaryText: summaryText,
+                projectedPixelSize: projectedPixelSizeResolver,
+                showsSelectionPreviewTip: showsSelectionPreviewTip,
+                openPreview: openPreview(for:)
+            )
         }
         .batchScreen(
             title: nil as Text?,
@@ -41,80 +45,15 @@ struct BatchImageImportedPreviewView: View {
 }
 
 private extension BatchImageImportedPreviewView {
-    var columns: [GridItem] {
-        [
-            GridItem(
-                .adaptive(minimum: BatchDesign.Grid.thumbnailColumnMinimum),
-                spacing: designMetrics.spacing.control
-            )
-        ]
+    var showsSelectionPreviewTip: Bool {
+        summaryText == nil && projectedPixelSizeResolver == nil
     }
 
-    var selectionTitle: Text {
-        if importedImages.count == 1 {
-            Text("1 image selected")
-        } else {
-            Text("\(importedImages.count) images selected")
-        }
-    }
-
-    @ViewBuilder
-    func previewsSection() -> some View {
-        if summaryText == nil,
-           projectedPixelSizeResolver == nil {
-            previewsGridSection()
-                .popoverTip(
-                    selectionPreviewTip,
-                    arrowEdge: .top
-                )
-        } else {
-            previewsGridSection()
-        }
-    }
-
-    @ViewBuilder
-    func previewsGridSection() -> some View {
-        let grid = LazyVGrid(
-            columns: columns,
-            alignment: .leading,
-            spacing: designMetrics.spacing.control
-        ) {
-            ForEach(importedImages) { image in
-                ImportedBatchImageTile(
-                    image: image,
-                    imageTapAction: {
-                        activePreviewItem = .init(
-                            importedImage: image
-                        )
-                    },
-                    projectedPixelSize: projectedPixelSize(for: image)
-                )
-            }
-        }
-
-        if let summaryText {
-            BatchSection(
-                title: selectionTitle,
-                accessory: AnyView(
-                    BatchStatusChip(
-                        text: summaryText,
-                        systemImage: "arrow.up.left.and.arrow.down.right",
-                        tone: .accent
-                    )
-                )
-            ) {
-                grid
-            }
-        } else {
-            BatchSection(title: selectionTitle) {
-                grid
-            }
-        }
-    }
-
-    func projectedPixelSize(
+    func openPreview(
         for image: ImportedBatchImage
-    ) -> CGSize? {
-        projectedPixelSizeResolver?(image)
+    ) {
+        activePreviewItem = .init(
+            importedImage: image
+        )
     }
 }
