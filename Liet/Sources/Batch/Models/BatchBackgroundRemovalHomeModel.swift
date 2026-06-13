@@ -135,6 +135,33 @@ extension BatchBackgroundRemovalHomeModel {
         currentPreferencesState.hasUserPresetSettings
     }
 
+    var editableNamingTemplate: BatchImageNamingTemplate {
+        get {
+            namingTemplate
+        }
+        set {
+            setNamingTemplate(newValue)
+        }
+    }
+
+    var customNamingPrefixInputText: String {
+        get {
+            customNamingPrefixText
+        }
+        set {
+            setCustomNamingPrefixText(newValue)
+        }
+    }
+
+    var editableNumberingStyle: BatchImageNumberingStyle {
+        get {
+            numberingStyle
+        }
+        set {
+            setNumberingStyle(newValue)
+        }
+    }
+
     var showsCustomNamingPrefixField: Bool {
         namingTemplate == .custom
     }

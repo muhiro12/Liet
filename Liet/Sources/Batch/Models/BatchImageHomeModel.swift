@@ -145,6 +145,78 @@ extension BatchImageHomeModel {
         currentPreferencesState.exactHeightPixels
     }
 
+    var editableReferenceDimension: BatchResizeReferenceDimension {
+        get {
+            referenceDimension
+        }
+        set {
+            setReferenceDimension(newValue)
+        }
+    }
+
+    var referencePixelsInputText: String {
+        get {
+            referencePixelsText
+        }
+        set {
+            setReferencePixelsText(newValue)
+        }
+    }
+
+    var resizeWidthInputText: String {
+        get {
+            resizeWidthText
+        }
+        set {
+            setResizeWidthText(newValue)
+        }
+    }
+
+    var resizeHeightInputText: String {
+        get {
+            resizeHeightText
+        }
+        set {
+            setResizeHeightText(newValue)
+        }
+    }
+
+    var editableKeepsAspectRatio: Bool {
+        get {
+            keepsAspectRatio
+        }
+        set {
+            setKeepsAspectRatio(newValue)
+        }
+    }
+
+    var editableNamingTemplate: BatchImageNamingTemplate {
+        get {
+            namingTemplate
+        }
+        set {
+            setNamingTemplate(newValue)
+        }
+    }
+
+    var customNamingPrefixInputText: String {
+        get {
+            customNamingPrefixText
+        }
+        set {
+            setCustomNamingPrefixText(newValue)
+        }
+    }
+
+    var editableNumberingStyle: BatchImageNumberingStyle {
+        get {
+            numberingStyle
+        }
+        set {
+            setNumberingStyle(newValue)
+        }
+    }
+
     var showsExactResizeStrategy: Bool {
         !keepsAspectRatio
     }
