@@ -24,7 +24,14 @@ struct BatchImageResultView: View {
                 saveFeedback: model.saveFeedback
             )
             AdvertisementSection(.medium)
-            previewsSection()
+            BatchProcessedImagesGridSection(
+                processedImages: model.processedImages,
+                resolvedFilename: { image in
+                    model.resolvedFilename(for: image)
+                },
+                filenameStem: filenameStemBinding(for:),
+                openPreview: openPreview(for:)
+            )
             saveSection()
         }
         .batchScreen(
@@ -76,15 +83,6 @@ struct BatchImageResultView: View {
 }
 
 private extension BatchImageResultView {
-    var columns: [GridItem] {
-        [
-            GridItem(
-                .adaptive(minimum: BatchDesign.Grid.thumbnailColumnMinimum),
-                spacing: designMetrics.spacing.control
-            )
-        ]
-    }
-
     var errorPresented: Binding<Bool> {
         Binding(
             get: {
@@ -98,34 +96,19 @@ private extension BatchImageResultView {
         )
     }
 
-    func previewsSection() -> some View {
-        BatchSection(title: Text("Processed images")) {
-            LazyVGrid(
-                columns: columns,
-                alignment: .leading,
-                spacing: designMetrics.spacing.control
-            ) {
-                ForEach(model.processedImages) { image in
-                    ProcessedBatchImageTile(
-                        image: image,
-                        imageTapAction: {
-                            activePreviewItem = .init(
-                                processedImage: image,
-                                displayName: model.resolvedFilename(for: image)
-                            )
-                        },
-                        resolvedFilename: model.resolvedFilename(for: image),
-                        filenameStem: filenameStemBinding(for: image)
-                    )
-                }
-            }
-        }
-    }
-
     func saveSection() -> some View {
         BatchSection(title: Text("Save")) {
             BatchImageResultSaveSectionView(model: model)
         }
+    }
+
+    func openPreview(
+        for image: ProcessedBatchImage
+    ) {
+        activePreviewItem = .init(
+            processedImage: image,
+            displayName: model.resolvedFilename(for: image)
+        )
     }
 
     func errorText(
