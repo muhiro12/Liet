@@ -369,6 +369,22 @@
         }
       }
     },
+    "Background Removal Failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background Removal Failed"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景除去に失敗しました"
+          }
+        }
+      }
+    },
     "Choose a feature" : {
       "localizations" : {
         "en" : {
@@ -1057,6 +1073,22 @@
         }
       }
     },
+    "Import Failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Failed"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り込みに失敗しました"
+          }
+        }
+      }
+    },
     "Import from Files" : {
       "localizations" : {
         "en" : {
@@ -1101,6 +1133,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "縦横比を保持"
+          }
+        }
+      }
+    },
+    "Invalid Settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid Settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定が正しくありません"
           }
         }
       }
@@ -1457,6 +1505,22 @@
         }
       }
     },
+    "Processing Failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Processing Failed"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理に失敗しました"
+          }
+        }
+      }
+    },
     "Processed" : {
       "localizations" : {
         "en" : {
@@ -1629,6 +1693,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "保存"
+          }
+        }
+      }
+    },
+    "Save to Files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save to Files"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルに保存"
+          }
+        }
+      }
+    },
+    "Save to Photos" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save to Photos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真に保存"
+          }
+        }
+      }
+    },
+    "Save ZIP to Files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save ZIP to Files"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZIP をファイルに保存"
+          }
+        }
+      }
+    },
+    "Saving to Photos" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saving to Photos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真に保存中"
           }
         }
       }

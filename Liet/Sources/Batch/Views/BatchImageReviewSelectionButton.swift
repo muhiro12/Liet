@@ -5,9 +5,9 @@ struct BatchImageReviewSelectionButton: View {
 
     var body: some View {
         Button(action: reviewSelection) {
-            Label("Review", systemImage: "eye")
+            Label("Review Selection", systemImage: "eye")
         }
         .buttonStyle(.bordered)
-        .accessibilityLabel("Review imported images")
+        .accessibilityLabel("Review Selection")
     }
 }

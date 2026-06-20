@@ -16,9 +16,11 @@ enum BatchDesign {
     }
 
     enum ProcessedTile {
+        static let accessibilityResolvedFilenameLineLimit = 2
         static let detailLineLimit = 2
         static let filenameSpacing = 6.0
         static let imageHeight = 112.0
+        static let resolvedFilenameLineLimit = 1
         static let textSpacing = 6.0
     }
 

@@ -52,6 +52,7 @@ extension BatchImageTipSupport {
         isConfigured = true
     }
 
+    @MainActor
     static func resetTips() {
         SelectImagesTip.hasCompletedImportStep = false
         RunProcessingTip.hasCompletedProcessStep = false
@@ -59,6 +60,10 @@ extension BatchImageTipSupport {
         SaveDestinationTip.hasSavedToPhotos = false
         ResizeMethodTip.hasConfiguredExactResizeMethod = false
         UserPresetTip.hasSavedUserPreset = false
+
+        Task {
+            await resetTipEligibility()
+        }
     }
 
     static func donateImportSuccess() {
@@ -87,6 +92,18 @@ extension BatchImageTipSupport {
 
     static func markUserPresetSaved() {
         UserPresetTip.hasSavedUserPreset = true
+    }
+
+    @MainActor
+    private static func resetTipEligibility() async {
+        await SelectImagesTip().resetEligibility()
+        await ProcessingSetupTip().resetEligibility()
+        await RunProcessingTip().resetEligibility()
+        await ResizeMethodTip().resetEligibility()
+        await UserPresetTip().resetEligibility()
+        await SelectionPreviewTip().resetEligibility()
+        await ProcessedResultsTip().resetEligibility()
+        await SaveDestinationTip().resetEligibility()
     }
 
     nonisolated static func donationSnapshot() -> DonationSnapshot {

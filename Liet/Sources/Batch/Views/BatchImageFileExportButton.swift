@@ -33,7 +33,7 @@ private extension BatchImageFileExportButton {
         }
     }
 
-    var title: String {
+    var title: LocalizedStringKey {
         if fileExportMode == .zipArchive {
             "Save ZIP to Files"
         } else {
