@@ -32,6 +32,10 @@ struct BatchImageFullscreenPreviewView: View {
             .padding(.horizontal, BatchDesign.Fullscreen.contentHorizontalPadding)
             .padding(.bottom, BatchDesign.Fullscreen.metadataBottomPadding)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black.ignoresSafeArea())
+        .statusBarHidden()
+        .toolbar(.hidden, for: .navigationBar)
         .task(id: item.id) {
             guard !usesInjectedPreviewImage else {
                 return
