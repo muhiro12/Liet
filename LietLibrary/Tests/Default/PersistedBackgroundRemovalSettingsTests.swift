@@ -2,8 +2,7 @@ import Foundation
 @testable import LietLibrary
 import Testing
 
-// swiftlint:disable type_name
-struct PersistedBatchBackgroundRemovalSettingsTests {
+struct PersistedBackgroundRemovalSettingsTests {
     @Test
     func settings_round_trip_through_raw_value() throws {
         let settings = PersistedBatchBackgroundRemovalSettings(
@@ -28,9 +27,9 @@ struct PersistedBatchBackgroundRemovalSettingsTests {
     func default_preferences_keep_last_used_defaults_and_no_user_preset() {
         let defaultSettings = PersistedBatchBackgroundRemovalSettings.default
 
-        #expect(PersistedBatchBackgroundRemovalPreferences.default.userPresetSettings == nil)
+        #expect(BatchBackgroundRemovalPreferences.default.userPresetSettings == nil)
         #expect(
-            PersistedBatchBackgroundRemovalPreferences.default.lastUsedSettings ==
+            BatchBackgroundRemovalPreferences.default.lastUsedSettings ==
                 defaultSettings
         )
         #expect(defaultSettings.naming == .default)
@@ -55,7 +54,7 @@ struct PersistedBatchBackgroundRemovalSettingsTests {
             JSONSerialization.jsonObject(with: rawData) as? [String: Any]
         )
         payload.removeValue(
-            forKey: PersistedBatchBackgroundRemovalSettingsCodingKeys.naming.rawValue
+            forKey: BackgroundRemovalSettingsCodingKeys.naming.rawValue
         )
         let legacyData = try JSONSerialization.data(
             withJSONObject: payload,
@@ -72,4 +71,3 @@ struct PersistedBatchBackgroundRemovalSettingsTests {
         #expect(restoredSettings.naming == .default)
     }
 }
-// swiftlint:enable type_name

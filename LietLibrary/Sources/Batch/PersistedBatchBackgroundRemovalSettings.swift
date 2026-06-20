@@ -55,7 +55,7 @@ public struct PersistedBatchBackgroundRemovalSettings: Codable, Equatable, RawRe
     /// Decodes stored settings from the app preference payload.
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(
-            keyedBy: PersistedBatchBackgroundRemovalSettingsCodingKeys.self
+            keyedBy: BackgroundRemovalSettingsCodingKeys.self
         )
         strength = try container.decode(
             Double.self,
@@ -80,7 +80,7 @@ public struct PersistedBatchBackgroundRemovalSettings: Codable, Equatable, RawRe
         to encoder: any Encoder
     ) throws {
         var container = encoder.container(
-            keyedBy: PersistedBatchBackgroundRemovalSettingsCodingKeys.self
+            keyedBy: BackgroundRemovalSettingsCodingKeys.self
         )
         try container.encode(strength, forKey: .strength)
         try container.encode(edgeSmoothing, forKey: .edgeSmoothing)

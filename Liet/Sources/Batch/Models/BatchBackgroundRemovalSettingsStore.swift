@@ -3,23 +3,23 @@ import LietLibrary
 import MHPlatform
 
 struct BatchBackgroundRemovalSettingsStore {
-    private let loadHandler: () -> PersistedBatchBackgroundRemovalPreferences?
-    private let saveHandler: (PersistedBatchBackgroundRemovalPreferences) -> Void
+    private let loadHandler: () -> BatchBackgroundRemovalPreferences?
+    private let saveHandler: (BatchBackgroundRemovalPreferences) -> Void
 
     init(
-        loadHandler: @escaping () -> PersistedBatchBackgroundRemovalPreferences?,
-        saveHandler: @escaping (PersistedBatchBackgroundRemovalPreferences) -> Void
+        loadHandler: @escaping () -> BatchBackgroundRemovalPreferences?,
+        saveHandler: @escaping (BatchBackgroundRemovalPreferences) -> Void
     ) {
         self.loadHandler = loadHandler
         self.saveHandler = saveHandler
     }
 
-    func load() -> PersistedBatchBackgroundRemovalPreferences? {
+    func load() -> BatchBackgroundRemovalPreferences? {
         loadHandler()
     }
 
     func save(
-        _ preferences: PersistedBatchBackgroundRemovalPreferences
+        _ preferences: BatchBackgroundRemovalPreferences
     ) {
         saveHandler(preferences)
     }
@@ -51,13 +51,13 @@ extension BatchBackgroundRemovalSettingsStore {
     }
 
     static func inMemory(
-        initialValue: PersistedBatchBackgroundRemovalPreferences? = nil
+        initialValue: BatchBackgroundRemovalPreferences? = nil
     ) -> Self {
         final class StorageBox {
-            var value: PersistedBatchBackgroundRemovalPreferences?
+            var value: BatchBackgroundRemovalPreferences?
 
             init(
-                value: PersistedBatchBackgroundRemovalPreferences?
+                value: BatchBackgroundRemovalPreferences?
             ) {
                 self.value = value
             }

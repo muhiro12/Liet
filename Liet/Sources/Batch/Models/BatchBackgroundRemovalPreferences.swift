@@ -1,0 +1,3 @@
+import LietLibrary
+
+typealias BatchBackgroundRemovalPreferences = LietLibrary.BatchBackgroundRemovalPreferences

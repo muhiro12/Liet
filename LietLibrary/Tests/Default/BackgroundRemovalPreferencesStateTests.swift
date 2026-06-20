@@ -1,8 +1,7 @@
 @testable import LietLibrary
 import Testing
 
-// swiftlint:disable type_name
-struct BatchBackgroundRemovalPreferencesStateTests {
+struct BackgroundRemovalPreferencesStateTests {
     @Test
     func state_starts_from_last_used_settings_and_tracks_saved_preset() {
         let userPresetSettings = makeSettings(
@@ -156,13 +155,12 @@ struct BatchBackgroundRemovalPreferencesStateTests {
         #expect(state.canSaveCurrentAsUserPreset == false)
     }
 }
-// swiftlint:enable type_name
 
-private extension BatchBackgroundRemovalPreferencesStateTests {
+private extension BackgroundRemovalPreferencesStateTests {
     func makePreferences(
         userPresetSettings: PersistedBatchBackgroundRemovalSettings?,
         lastUsedSettings: PersistedBatchBackgroundRemovalSettings
-    ) -> PersistedBatchBackgroundRemovalPreferences {
+    ) -> BatchBackgroundRemovalPreferences {
         .init(
             userPresetSettings: userPresetSettings,
             lastUsedSettings: lastUsedSettings

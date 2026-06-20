@@ -12,7 +12,7 @@ struct BatchBackgroundRemovalPreferencesStore {
     }
 
     /// Returns the current persisted preferences when available.
-    func load() -> PersistedBatchBackgroundRemovalPreferences? {
+    func load() -> BatchBackgroundRemovalPreferences? {
         preferenceStore.codable(
             for: LietPreferenceDescriptors.BatchBackgroundRemoval.preferences
         )
@@ -20,7 +20,7 @@ struct BatchBackgroundRemovalPreferencesStore {
 
     /// Persists the current preferences to the opaque storage slot.
     func save(
-        _ preferences: PersistedBatchBackgroundRemovalPreferences
+        _ preferences: BatchBackgroundRemovalPreferences
     ) {
         preferenceStore.setCodable(
             preferences,

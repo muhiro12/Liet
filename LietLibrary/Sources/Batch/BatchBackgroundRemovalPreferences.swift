@@ -1,8 +1,7 @@
 import Foundation
 
-// swiftlint:disable type_name
 /// Persisted background-removal preference slots stored by the app.
-public struct PersistedBatchBackgroundRemovalPreferences: Codable, Equatable, Sendable {
+public struct BatchBackgroundRemovalPreferences: Codable, Equatable, Sendable {
     /// The default stored preferences used on first launch.
     public static let `default`: Self = .init(
         userPresetSettings: nil,
@@ -23,4 +22,3 @@ public struct PersistedBatchBackgroundRemovalPreferences: Codable, Equatable, Se
         self.lastUsedSettings = lastUsedSettings
     }
 }
-// swiftlint:enable type_name

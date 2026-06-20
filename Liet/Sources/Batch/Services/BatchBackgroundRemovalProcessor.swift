@@ -7,7 +7,6 @@ enum BatchBackgroundRemovalProcessor {
 }
 
 extension BatchBackgroundRemovalProcessor {
-    // swiftlint:disable:next function_body_length
     nonisolated static func process(
         images: [ImportedBatchImage],
         settings: BatchBackgroundRemovalSettings,
@@ -22,17 +21,7 @@ extension BatchBackgroundRemovalProcessor {
             )
         }
 
-        let outputDirectory = FileManager.default.temporaryDirectory.appendingPathComponent(
-            "LietBackgroundRemoved-\(UUID().uuidString)",
-            isDirectory: true
-        )
-
-        do {
-            try FileManager.default.createDirectory(
-                at: outputDirectory,
-                withIntermediateDirectories: true
-            )
-        } catch {
+        guard let outputDirectory = try? makeOutputDirectory() else {
             return .init(
                 processedImages: [],
                 failureCount: images.count,
@@ -47,42 +36,14 @@ extension BatchBackgroundRemovalProcessor {
 
         for image in images {
             do {
-                let plan = BatchBackgroundRemovalOperations.makePlan(
-                    for: .init(
-                        originalPixelSize: image.pixelSize,
-                        selectionIndex: image.selectionIndex
-                    ),
+                let processedImage = try processedImage(
+                    for: image,
+                    outputDirectory: outputDirectory,
                     naming: naming,
-                    existingFilenames: usedFilenames
-                )
-                usedFilenames.insert(plan.outputFilename)
-                let outputURL = outputDirectory.appendingPathComponent(
-                    plan.outputFilename
-                )
-                let renderedImage = try renderedImage(
-                    from: image.sourceURL,
+                    usedFilenames: &usedFilenames,
                     settings: settings
                 )
-                try BatchImageProcessor.writeImage(
-                    renderedImage.cgImage,
-                    format: plan.outputFormat,
-                    compression: .off,
-                    outputURL: outputURL
-                )
-                let previewImage = try ImageIOImageSupport.previewImage(from: outputURL)
-                processedImages.append(
-                    .init(
-                        sourceID: image.id,
-                        outputURL: outputURL,
-                        outputFilename: plan.outputFilename,
-                        outputFormat: plan.outputFormat,
-                        originalFormat: image.originalFormat,
-                        pixelSize: renderedImage.pixelSize,
-                        previewImage: previewImage,
-                        usedJPEGFallback: false,
-                        ignoredCompressionSetting: false
-                    )
-                )
+                processedImages.append(processedImage)
             } catch {
                 failureCount += 1
             }
@@ -119,6 +80,64 @@ extension BatchBackgroundRemovalProcessor {
                 width: outputImage.width,
                 height: outputImage.height
             )
+        )
+    }
+}
+
+private extension BatchBackgroundRemovalProcessor {
+    nonisolated static func makeOutputDirectory() throws -> URL {
+        let outputDirectory = FileManager.default.temporaryDirectory.appendingPathComponent(
+            "LietBackgroundRemoved-\(UUID().uuidString)",
+            isDirectory: true
+        )
+        try FileManager.default.createDirectory(
+            at: outputDirectory,
+            withIntermediateDirectories: true
+        )
+        return outputDirectory
+    }
+
+    nonisolated static func processedImage(
+        for image: ImportedBatchImage,
+        outputDirectory: URL,
+        naming: BatchImageNaming,
+        usedFilenames: inout Set<String>,
+        settings: BatchBackgroundRemovalSettings
+    ) throws -> ProcessedBatchImage {
+        let plan = BatchBackgroundRemovalOperations.makePlan(
+            for: .init(
+                originalPixelSize: image.pixelSize,
+                selectionIndex: image.selectionIndex
+            ),
+            naming: naming,
+            existingFilenames: usedFilenames
+        )
+        usedFilenames.insert(plan.outputFilename)
+        let outputURL = outputDirectory.appendingPathComponent(
+            plan.outputFilename
+        )
+        let renderedImage = try renderedImage(
+            from: image.sourceURL,
+            settings: settings
+        )
+        try BatchImageProcessor.writeImage(
+            renderedImage.cgImage,
+            format: plan.outputFormat,
+            compression: .off,
+            outputURL: outputURL
+        )
+        let previewImage = try ImageIOImageSupport.previewImage(from: outputURL)
+
+        return .init(
+            sourceID: image.id,
+            outputURL: outputURL,
+            outputFilename: plan.outputFilename,
+            outputFormat: plan.outputFormat,
+            originalFormat: image.originalFormat,
+            pixelSize: renderedImage.pixelSize,
+            previewImage: previewImage,
+            usedJPEGFallback: false,
+            ignoredCompressionSetting: false
         )
     }
 }

@@ -57,7 +57,6 @@ extension BatchImageProcessor {
         )
     }
 
-    // swiftlint:disable:next function_body_length
     nonisolated static func process(
         images: [ImportedBatchImage],
         settings: BatchImageSettings,
@@ -72,17 +71,9 @@ extension BatchImageProcessor {
             )
         }
 
-        let outputDirectory = FileManager.default.temporaryDirectory.appendingPathComponent(
-            "LietProcessed-\(UUID().uuidString)",
-            isDirectory: true
-        )
-
-        do {
-            try FileManager.default.createDirectory(
-                at: outputDirectory,
-                withIntermediateDirectories: true
-            )
-        } catch {
+        guard let outputDirectory = try? makeOutputDirectory(
+            prefix: "LietProcessed"
+        ) else {
             return .init(
                 processedImages: [],
                 failureCount: images.count,
@@ -99,73 +90,22 @@ extension BatchImageProcessor {
 
         for image in images {
             do {
-                let plan = BatchImageProcessingOperations.makePlan(
-                    for: .init(
-                        originalFormat: image.originalFormat,
-                        originalPixelSize: image.pixelSize,
-                        selectionIndex: image.selectionIndex
-                    ),
+                let processedImage = try processedImage(
+                    for: image,
                     settings: settings,
                     heicEncoderAvailable: heicEncoderAvailable,
-                    existingFilenames: usedFilenames
+                    outputDirectory: outputDirectory,
+                    usedFilenames: &usedFilenames
                 )
-                if plan.usedJPEGFallback {
+                if processedImage.usedJPEGFallback {
                     jpegFallbackCount += 1
                 }
 
-                if plan.ignoredCompressionSetting {
+                if processedImage.ignoredCompressionSetting {
                     ignoredCompressionCount += 1
                 }
-                usedFilenames.insert(plan.outputFilename)
-                let outputURL = outputDirectory.appendingPathComponent(
-                    plan.outputFilename
-                )
 
-                if plan.shouldCopyOriginal {
-                    try FileManager.default.copyItem(
-                        at: image.sourceURL,
-                        to: outputURL
-                    )
-                    processedImages.append(
-                        .init(
-                            sourceID: image.id,
-                            outputURL: outputURL,
-                            outputFilename: plan.outputFilename,
-                            outputFormat: plan.outputFormat,
-                            originalFormat: image.originalFormat,
-                            pixelSize: image.pixelSize,
-                            previewImage: image.previewImage,
-                            usedJPEGFallback: plan.usedJPEGFallback,
-                            ignoredCompressionSetting: plan.ignoredCompressionSetting
-                        )
-                    )
-                } else {
-                    let renderedOutput = try renderedImage(
-                        from: image.sourceURL,
-                        settings: settings,
-                        outputFormat: plan.outputFormat
-                    )
-                    try writeImage(
-                        renderedOutput.cgImage,
-                        format: plan.outputFormat,
-                        compression: settings.compression,
-                        outputURL: outputURL
-                    )
-                    let previewImage = try ImageIOImageSupport.previewImage(from: outputURL)
-                    processedImages.append(
-                        .init(
-                            sourceID: image.id,
-                            outputURL: outputURL,
-                            outputFilename: plan.outputFilename,
-                            outputFormat: plan.outputFormat,
-                            originalFormat: image.originalFormat,
-                            pixelSize: renderedOutput.pixelSize,
-                            previewImage: previewImage,
-                            usedJPEGFallback: plan.usedJPEGFallback,
-                            ignoredCompressionSetting: plan.ignoredCompressionSetting
-                        )
-                    )
-                }
+                processedImages.append(processedImage)
             } catch {
                 failureCount += 1
             }
@@ -176,6 +116,114 @@ extension BatchImageProcessor {
             failureCount: failureCount,
             jpegFallbackCount: jpegFallbackCount,
             ignoredCompressionCount: ignoredCompressionCount
+        )
+    }
+}
+
+private extension BatchImageProcessor {
+    nonisolated static func makeOutputDirectory(
+        prefix: String
+    ) throws -> URL {
+        let outputDirectory = FileManager.default.temporaryDirectory.appendingPathComponent(
+            "\(prefix)-\(UUID().uuidString)",
+            isDirectory: true
+        )
+        try FileManager.default.createDirectory(
+            at: outputDirectory,
+            withIntermediateDirectories: true
+        )
+        return outputDirectory
+    }
+
+    nonisolated static func processedImage(
+        for image: ImportedBatchImage,
+        settings: BatchImageSettings,
+        heicEncoderAvailable: Bool,
+        outputDirectory: URL,
+        usedFilenames: inout Set<String>
+    ) throws -> ProcessedBatchImage {
+        let plan = BatchImageProcessingOperations.makePlan(
+            for: .init(
+                originalFormat: image.originalFormat,
+                originalPixelSize: image.pixelSize,
+                selectionIndex: image.selectionIndex
+            ),
+            settings: settings,
+            heicEncoderAvailable: heicEncoderAvailable,
+            existingFilenames: usedFilenames
+        )
+        usedFilenames.insert(plan.outputFilename)
+        let outputURL = outputDirectory.appendingPathComponent(
+            plan.outputFilename
+        )
+
+        if plan.shouldCopyOriginal {
+            return try copiedProcessedImage(
+                for: image,
+                plan: plan,
+                outputURL: outputURL
+            )
+        }
+
+        return try renderedProcessedImage(
+            for: image,
+            settings: settings,
+            plan: plan,
+            outputURL: outputURL
+        )
+    }
+
+    nonisolated static func copiedProcessedImage(
+        for image: ImportedBatchImage,
+        plan: BatchImageProcessingOperations.Plan,
+        outputURL: URL
+    ) throws -> ProcessedBatchImage {
+        try FileManager.default.copyItem(
+            at: image.sourceURL,
+            to: outputURL
+        )
+        return .init(
+            sourceID: image.id,
+            outputURL: outputURL,
+            outputFilename: plan.outputFilename,
+            outputFormat: plan.outputFormat,
+            originalFormat: image.originalFormat,
+            pixelSize: image.pixelSize,
+            previewImage: image.previewImage,
+            usedJPEGFallback: plan.usedJPEGFallback,
+            ignoredCompressionSetting: plan.ignoredCompressionSetting
+        )
+    }
+
+    nonisolated static func renderedProcessedImage(
+        for image: ImportedBatchImage,
+        settings: BatchImageSettings,
+        plan: BatchImageProcessingOperations.Plan,
+        outputURL: URL
+    ) throws -> ProcessedBatchImage {
+        let renderedOutput = try renderedImage(
+            from: image.sourceURL,
+            settings: settings,
+            outputFormat: plan.outputFormat
+        )
+        try writeImage(
+            renderedOutput.cgImage,
+            format: plan.outputFormat,
+            compression: settings.compression,
+            outputURL: outputURL
+        )
+        let previewImage = try ImageIOImageSupport.previewImage(from: outputURL)
+
+        return .init(
+            sourceID: image.id,
+            outputURL: outputURL,
+            outputFilename: plan.outputFilename,
+            outputFormat: plan.outputFormat,
+            originalFormat: image.originalFormat,
+            pixelSize: renderedOutput.pixelSize,
+            previewImage: previewImage,
+            usedJPEGFallback: plan.usedJPEGFallback,
+            ignoredCompressionSetting: plan.ignoredCompressionSetting
         )
     }
 }

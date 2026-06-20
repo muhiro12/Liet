@@ -14,13 +14,13 @@ public struct BackgroundRemovalPreferencesOperations {
     }
 
     /// Returns the current persisted preferences when available.
-    public func loadPreferences() -> PersistedBatchBackgroundRemovalPreferences? {
+    public func loadPreferences() -> BatchBackgroundRemovalPreferences? {
         store.load()
     }
 
     /// Persists the current preferences to the opaque storage slot.
     public func savePreferences(
-        _ preferences: PersistedBatchBackgroundRemovalPreferences
+        _ preferences: BatchBackgroundRemovalPreferences
     ) {
         store.save(
             preferences

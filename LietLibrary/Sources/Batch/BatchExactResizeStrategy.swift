@@ -4,6 +4,6 @@ import Foundation
 public enum BatchExactResizeStrategy: String, CaseIterable, Codable, Sendable {
     case stretch
     case contain
-    // swiftlint:disable:next redundant_string_enum_value
-    case coverCrop = "coverCrop"
+    // swiftlint:disable:next raw_value_for_camel_cased_codable_enum
+    case coverCrop
 }

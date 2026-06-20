@@ -14,7 +14,7 @@ public enum LietPreferenceDescriptors {
     /// Preference descriptors used by the batch background-removal workflow.
     public enum BatchBackgroundRemoval {
         /// Persisted background-removal preference payload.
-        public static let preferences = MHCodablePreferenceDescriptor<PersistedBatchBackgroundRemovalPreferences>(
+        public static let preferences = MHCodablePreferenceDescriptor<BatchBackgroundRemovalPreferences>(
             storageKey: LietUserDefaultsKeys.AppGroup.batchBackgroundRemovalPreferences.rawValue,
             defaultSelection: AppGroup.preferencesDefaultsSelection
         )

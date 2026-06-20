@@ -46,7 +46,7 @@ public struct BatchBackgroundRemovalPreferencesState: Equatable, Sendable {
 
     /// Creates a preferences state from the persisted preference slots.
     public init(
-        preferences: PersistedBatchBackgroundRemovalPreferences = .default
+        preferences: BatchBackgroundRemovalPreferences = .default
     ) {
         let initialSettings = preferences.lastUsedSettings
         self.init(
@@ -107,7 +107,7 @@ public extension BatchBackgroundRemovalPreferencesState {
     }
 
     /// The persisted preference slots represented by the current state.
-    var preferences: PersistedBatchBackgroundRemovalPreferences {
+    var preferences: BatchBackgroundRemovalPreferences {
         .init(
             userPresetSettings: userPresetSettings,
             lastUsedSettings: lastUsedSettings

@@ -3,6 +3,13 @@ import ImageIO
 import LietLibrary
 import UIKit
 
+private struct ExactSizeImageRequest {
+    let originalPixelSize: CGSize
+    let outputFormat: ImageFileFormat
+    let canvasPixelSize: CGSize
+    let strategy: BatchExactResizeStrategy
+}
+
 extension BatchImageProcessor {
     struct RenderedImage {
         let cgImage: CGImage
@@ -37,11 +44,15 @@ extension BatchImageProcessor {
         ):
             return try exactSizeImage(
                 from: imageSource,
-                originalPixelSize: originalPixelSize,
-                outputFormat: outputFormat,
-                widthPixels: widthPixels,
-                heightPixels: heightPixels,
-                strategy: strategy
+                request: .init(
+                    originalPixelSize: originalPixelSize,
+                    outputFormat: outputFormat,
+                    canvasPixelSize: exactCanvasPixelSize(
+                        widthPixels: widthPixels,
+                        heightPixels: heightPixels
+                    ),
+                    strategy: strategy
+                )
             )
         }
     }
@@ -66,23 +77,14 @@ extension BatchImageProcessor {
         )
     }
 
-    // swiftlint:disable:next function_parameter_count
-    nonisolated static func exactSizeImage(
+    nonisolated private static func exactSizeImage(
         from imageSource: CGImageSource,
-        originalPixelSize: CGSize,
-        outputFormat: ImageFileFormat,
-        widthPixels: Int,
-        heightPixels: Int,
-        strategy: BatchExactResizeStrategy
+        request: ExactSizeImageRequest
     ) throws -> RenderedImage {
-        let canvasPixelSize = exactCanvasPixelSize(
-            widthPixels: widthPixels,
-            heightPixels: heightPixels
-        )
         let projectedContentPixelSize = ImageIOImageSupport.projectedContentPixelSize(
-            sourcePixelSize: originalPixelSize,
-            canvasPixelSize: canvasPixelSize,
-            strategy: strategy
+            sourcePixelSize: request.originalPixelSize,
+            canvasPixelSize: request.canvasPixelSize,
+            strategy: request.strategy
         )
         let sourceImage = try ImageIOImageSupport.cgImage(
             from: imageSource,
@@ -96,24 +98,24 @@ extension BatchImageProcessor {
         )
         let drawingRect = ImageIOImageSupport.drawingRect(
             sourcePixelSize: sourcePixelSize,
-            canvasPixelSize: canvasPixelSize,
-            strategy: strategy
+            canvasPixelSize: request.canvasPixelSize,
+            strategy: request.strategy
         )
-        let backgroundColor: UIColor? = if outputFormat == .png {
+        let backgroundColor: UIColor? = if request.outputFormat == .png {
             nil
         } else {
             .white
         }
         let renderedCGImage = try ImageIOImageSupport.renderedCanvasImage(
             sourceImage: sourceImage,
-            canvasPixelSize: canvasPixelSize,
+            canvasPixelSize: request.canvasPixelSize,
             drawingRect: drawingRect,
             backgroundColor: backgroundColor
         )
 
         return .init(
             cgImage: renderedCGImage,
-            pixelSize: canvasPixelSize
+            pixelSize: request.canvasPixelSize
         )
     }
 

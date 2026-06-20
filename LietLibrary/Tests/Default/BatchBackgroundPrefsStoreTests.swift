@@ -53,7 +53,7 @@ private extension BatchBackgroundPrefsStoreTests {
         )
     }
 
-    func makePreferences() -> PersistedBatchBackgroundRemovalPreferences {
+    func makePreferences() -> BatchBackgroundRemovalPreferences {
         .init(
             userPresetSettings: .init(
                 strength: Fixture.userPresetStrength,
