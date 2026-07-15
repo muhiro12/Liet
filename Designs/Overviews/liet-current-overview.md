@@ -59,7 +59,7 @@ remain in the app target.
 - App-side adapter isolation for `PhotosUI`, `PhotoKit`, `ImageIO`, `TipKit`,
   and file export APIs.
 - Logic verification concentrated in `LietLibraryTests`, while the app target
-  is validated through XcodeBuildMCP app build checks.
+  is validated through Xcode-native app build checks.
 - Partial-success batch processing so one failed image does not block the
   successful outputs.
 - Retained repository rule scripts under `ci_scripts/tasks`.

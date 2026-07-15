@@ -2,8 +2,9 @@
 
 ## Overview
 
-Liet is an iPhone batch image pre-processing app aligned with the repository
-and architecture conventions used by `../Incomes`.
+Liet is an iPhone batch image pre-processing app shaped by the
+shared-library-first architecture and Apple-platform conventions established
+in Incomes, without requiring a sibling checkout.
 The current MVP offers two dedicated batch jobs chosen from the app entry
 screen: resize a batch with shared size and compression settings, or remove
 backgrounds to create transparent PNG copies. Both flows save processed
@@ -87,24 +88,25 @@ results as new files to either Files or Photos.
 
 ## Build and Test
 
-Use Xcode and XcodeBuildMCP for Apple build, test, run, Simulator, runtime log,
-screenshot, and UI snapshot verification. Xcode Cloud owns formal CI builds,
-tests, and archives.
+Use Xcode and the Xcode-native integration available in the agent environment
+for Apple build, test, run, Simulator, runtime-log, Preview, live UI, and
+screenshot evidence. Xcode Cloud owns formal CI builds, tests, and archives.
 
 The remaining helper scripts in `ci_scripts/` support retained repository
 rules. Direct entrypoints live in `ci_scripts/tasks/`, shared shell helpers
 live in `ci_scripts/lib/`, and
 `ci_scripts/ci_post_clone.sh` is reserved for external post-clone CI setup.
 
-- XcodeBuildMCP owns Apple build, test, run, Simulator, runtime log,
-  screenshot, and UI snapshot evidence.
+- The available Xcode-native integration owns Apple build, test, run,
+  Simulator, runtime-log, Preview, live UI, and screenshot evidence.
 - `bash ci_scripts/tasks/check_environment.sh --profile <profile>` diagnoses
   missing local prerequisites before you start a tool-dependent flow. Use
   `swiftlint` or `rules`.
 - `bash ci_scripts/tasks/format_swift.sh` is the explicit SwiftLint autofix
   step to run after Swift edits.
 - `bash ci_scripts/tasks/check_repository_rules.sh` runs retained SwiftLint and
-  static architecture checks that are not naturally covered by XcodeBuildMCP.
+  static architecture checks that are not naturally covered by the available
+  Xcode-native integration.
 - Release UI smoke auditing is intentionally separate from the normal verify
   gate. Use the global `$xcode-ui-smoke-auditor` skill and the
   [release UI smoke audit guide](Designs/Architecture/release-ui-smoke-audit.md)
@@ -132,10 +134,12 @@ Then run retained repository rules:
 bash ci_scripts/tasks/check_repository_rules.sh
 ```
 
-For app compile checks, use XcodeBuildMCP `build_sim` with the `Liet` scheme.
-For shared-library tests, use XcodeBuildMCP `test_sim` with the `LietLibrary`
-scheme. For runtime or UI-sensitive checks, use XcodeBuildMCP `build_run_sim`,
-`launch_app_sim`, `snapshot_ui`, and `screenshot`.
+For app compile checks, use the available Xcode-native build capability with
+project `Liet.xcodeproj`, scheme `Liet`, and a discovered iOS Simulator
+destination. For shared-library tests, use the integration's test capability
+with the `LietLibrary` scheme. For runtime or UI-sensitive checks, add a
+targeted run, runtime-log review, Preview rendering when appropriate, and live
+UI or screenshot evidence.
 
 ## CI artifact layout
 
