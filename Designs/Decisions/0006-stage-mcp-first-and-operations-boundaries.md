@@ -5,10 +5,11 @@
 
 ## Current Verification Guidance
 
-Updated 2026-09-18: the XcodeBuildMCP references below record the original
-June integration. Current verification follows the Xcode-native contract in
-[AGENTS.md](../../AGENTS.md), which owns tool selection, required evidence,
-and restoration of the original scheme and destination.
+Updated 2026-10-02: the XcodeBuildMCP references below record the original
+June integration. Current verification follows
+[Build and Test in the README](../../README.md#build-and-test), which describes
+the available Xcode-native integration, required evidence, and restoration of
+the original scheme and destination.
 
 ## Context
 

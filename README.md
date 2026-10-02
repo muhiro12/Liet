@@ -111,6 +111,9 @@ live in `ci_scripts/lib/`, and
   gate. Use the global `$xcode-ui-smoke-auditor` skill and the
   [release UI smoke audit guide](Designs/Architecture/release-ui-smoke-audit.md)
   when a release or UI-sensitive change needs live Simulator evidence.
+  Keep audits non-destructive by default: do not erase Simulator data, reset
+  containers, or add UI test targets solely for an audit unless explicitly
+  requested.
 
 SwiftLint is resolved from the `SimplyDanny/SwiftLintPlugins` package declared
 in `Liet.xcodeproj`. The repository scripts do not require a separately
@@ -134,12 +137,29 @@ Then run retained repository rules:
 bash ci_scripts/tasks/check_repository_rules.sh
 ```
 
-For app compile checks, use the available Xcode-native build capability with
-project `Liet.xcodeproj`, scheme `Liet`, and a discovered iOS Simulator
-destination. For shared-library tests, use the integration's test capability
-with the `LietLibrary` scheme. For runtime or UI-sensitive checks, add a
-targeted run, runtime-log review, Preview rendering when appropriate, and live
-UI or screenshot evidence.
+Before changing Xcode's active selection, discover `Liet.xcodeproj`, its
+schemes, and its run destinations. Record the original scheme and destination,
+and switch only to discovered values. After verification, restore the original
+scheme first, rediscover its valid destinations, restore the original
+destination, and confirm the final selection. Report any selection that cannot
+be restored.
+
+Treat library tests, consumer builds, retained repository rules, and runtime/UI
+evidence separately. Choose the smallest set that proves the changed boundary:
+
+- For shared-library logic, model, or test changes, test the `LietLibrary`
+  scheme on a discovered iOS Simulator destination.
+- For public `LietLibrary` APIs, `*Operations`, shared or wire contracts,
+  SwiftData schema, or adapter-facing contracts, also build the `Liet` scheme.
+- For app compile changes, build `Liet.xcodeproj` with the `Liet` scheme on a
+  discovered iOS Simulator destination.
+- For lifecycle, runtime, or UI-sensitive changes, add a targeted run,
+  runtime-log review, Preview rendering when appropriate, and live UI or
+  screenshot evidence.
+
+Follow the repository's source style and SwiftLint configuration. Markdown
+should follow the
+[markdownlint rules](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md).
 
 ## CI artifact layout
 
