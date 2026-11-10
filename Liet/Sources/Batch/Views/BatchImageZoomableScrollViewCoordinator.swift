@@ -163,16 +163,16 @@ final class BatchImageZoomableScrollViewCoordinator:
     func handleBackgroundTap(
         _ recognizer: UITapGestureRecognizer
     ) {
-        guard let scrollView = recognizer.view as? UIScrollView else {
+        guard let tappedScrollView = recognizer.view as? UIScrollView else {
             return
         }
 
         let contentFrame = contentView.convert(
             contentView.bounds,
-            to: scrollView
+            to: tappedScrollView
         )
         let tapLocation = recognizer.location(
-            in: scrollView
+            in: tappedScrollView
         )
 
         guard !contentFrame.contains(tapLocation) else {

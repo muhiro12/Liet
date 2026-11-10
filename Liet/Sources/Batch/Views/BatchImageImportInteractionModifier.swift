@@ -43,8 +43,8 @@ struct BatchImageImportInteractionModifier: ViewModifier {
                     dismissAlert()
                 }
             } message: {
-                if let alertMessage = alertMessage() {
-                    alertMessage
+                if let message = alertMessage() {
+                    message
                 }
             }
     }

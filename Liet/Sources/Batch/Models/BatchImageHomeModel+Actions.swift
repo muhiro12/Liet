@@ -157,28 +157,28 @@ extension BatchImageHomeModel {
         }
 
         if let referenceDimension = settings.referenceDimension,
-           let referencePixels = settings.referencePixels {
+           let selectedReferencePixels = settings.referencePixels {
             return switch referenceDimension {
             case .width:
-                Text("Width \(referencePixels) px • Keep ratio")
+                Text("Width \(selectedReferencePixels) px • Keep ratio")
             case .height:
-                Text("Height \(referencePixels) px • Keep ratio")
+                Text("Height \(selectedReferencePixels) px • Keep ratio")
             }
         }
 
-        guard let exactWidthPixels = settings.exactWidthPixels,
-              let exactHeightPixels = settings.exactHeightPixels,
+        guard let selectedWidthPixels = settings.exactWidthPixels,
+              let selectedHeightPixels = settings.exactHeightPixels,
               let exactResizeStrategy = settings.exactResizeStrategy else {
             return nil
         }
 
         return switch exactResizeStrategy {
         case .stretch:
-            Text("\(exactWidthPixels)×\(exactHeightPixels) • Stretch")
+            Text("\(selectedWidthPixels)×\(selectedHeightPixels) • Stretch")
         case .contain:
-            Text("\(exactWidthPixels)×\(exactHeightPixels) • Contain")
+            Text("\(selectedWidthPixels)×\(selectedHeightPixels) • Contain")
         case .coverCrop:
-            Text("\(exactWidthPixels)×\(exactHeightPixels) • Crop")
+            Text("\(selectedWidthPixels)×\(selectedHeightPixels) • Crop")
         }
     }
 
@@ -345,7 +345,7 @@ extension BatchImageHomeModel {
     func processImages() async {
         let preferencesState = currentPreferencesState
 
-        guard let settings = preferencesState.settings,
+        guard let processingSettings = preferencesState.settings,
               let currentPersistedSettings = preferencesState.currentPersistedSettings else {
             activeAlert = .invalidResizeSize
             return
@@ -362,7 +362,7 @@ extension BatchImageHomeModel {
         await Task.yield()
         let outcome = BatchImageProcessor.process(
             images: importedImages,
-            settings: settings
+            settings: processingSettings
         )
         isProcessing = false
 
