@@ -1,5 +1,14 @@
 # Liet
 
+## Branches and release review
+
+Use `develop` for daily development. Keep agent review and the documented
+verification checks in the daily workflow. `main` tracks the released baseline.
+Before shipping, review `main...develop` and record the exact candidate commit.
+After publication, merge that released commit into `main`; do not include later
+work added to `develop`. Preserve commit ancestry so the next release comparison
+starts from the previous released candidate.
+
 ## Overview
 
 Liet is an iPhone batch image pre-processing app shaped by the
